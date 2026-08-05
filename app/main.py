@@ -8,6 +8,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from app.api.api import api_router
+from app.workers.scheduler import start_scheduler, stop_scheduler
 
 from app.config import get_settings
 from app.database import init_db
@@ -29,8 +30,10 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Expense Tracker API...")
     await init_db()
     logger.info("Database initialized.")
+    start_scheduler()
     yield
     # Shutdown
+    stop_scheduler()
     logger.info("Shutting down Expense Tracker API...")
 
 app = FastAPI(
