@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from app.api.deps import get_db_session, get_current_user
 from app.models.transaction import Transaction
 from app.models.rule import Rule
+from app.models.categorization_log import CategorizationLog
 from app.models.user import User
 from app.schemas.transaction import TransactionResponse
 from app.schemas.pagination import PaginatedResponse
@@ -67,7 +68,19 @@ async def categorize_transaction(
     txn = result.scalar_one_or_none()
     if not txn:
         raise NotFoundError("Transaction", txn_id)
-        
+    
+    # Determine log action based on current state
+    is_recategorize = txn.status == "categorized"
+    action = "user_recategorize" if is_recategorize else "user_categorize"
+    
+    # Save old category for recategorize logging
+    old_category_id = txn.category_id
+    old_sub_category_id = txn.sub_category_id
+    
+    # If recategorizing, mark as misclassified
+    if is_recategorize:
+        txn.is_misclassified = True
+
     # Update transaction
     txn.category_id = categorize_in.category_id
     txn.sub_category_id = categorize_in.sub_category_id
@@ -76,16 +89,13 @@ async def categorize_transaction(
     
     # Create rule if requested and VPA exists
     if categorize_in.create_rule and txn.vpa:
-        # Check if rule exists
         rule_result = await db.execute(select(Rule).where(Rule.vpa == txn.vpa))
         rule = rule_result.scalar_one_or_none()
         if rule:
-            # Update existing rule
             rule.category_id = categorize_in.category_id
             rule.sub_category_id = categorize_in.sub_category_id
             rule.merchant_name = txn.merchant_name
         else:
-            # Create new rule
             new_rule = Rule(
                 vpa=txn.vpa,
                 merchant_name=txn.merchant_name,
@@ -94,8 +104,20 @@ async def categorize_transaction(
                 hit_count=0
             )
             db.add(new_rule)
-            
+    
+    # Write categorization log entry
+    log = CategorizationLog(
+        transaction_id=txn.id,
+        action=action,
+        from_category_id=old_category_id if is_recategorize else None,
+        from_sub_category_id=old_sub_category_id if is_recategorize else None,
+        to_category_id=categorize_in.category_id,
+        to_sub_category_id=categorize_in.sub_category_id,
+    )
+    db.add(log)
+
     await db.commit()
     await db.refresh(txn)
     
     return txn
+

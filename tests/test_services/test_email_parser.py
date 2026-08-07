@@ -15,7 +15,7 @@ If you did not authorize this transaction, please report it immediately at:"""
     
     assert parsed is not None
     assert parsed.amount == 60.00
-    assert parsed.direction == "debited"
+    assert parsed.direction == "debit"
     assert parsed.account_last4 == "4762"
     assert parsed.vpa == "q816661384@ybl"
     assert parsed.merchant_name == "JAI MATHA DI CHAT BHANDAR"

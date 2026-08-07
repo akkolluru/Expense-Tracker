@@ -33,8 +33,9 @@ def parse_hdfc_upi_email(body: str, received_timestamp: datetime) -> Optional[Pa
     if not match:
         return None
         
-    amount_str, direction, account_last4, vpa, merchant_name, date_str = match.groups()
+    amount_str, direction_raw, account_last4, vpa, merchant_name, date_str = match.groups()
     amount = float(amount_str.replace(",", ""))
+    direction = "debit" if direction_raw == "debited" else "credit"
     date_str = date_str.replace(" ", "")
     
     ref_pattern = r"UPI transaction reference no\.:\s*(\d+)"
