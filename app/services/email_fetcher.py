@@ -1,12 +1,13 @@
 import json
 import logging
-from typing import Optional, List, Dict, Any
+from datetime import UTC, datetime
+from typing import Any
+
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from google.auth.transport.requests import Request
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from datetime import datetime, timezone
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.core.encryption import decrypt_data
@@ -94,7 +95,7 @@ class EmailFetcherService:
         # Get current history ID to save for next time
         profile = self.service.users().getProfile(userId='me').execute()
         sync_state.last_history_id = str(profile.get('historyId'))
-        sync_state.last_poll_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        sync_state.last_poll_at = datetime.now(UTC).replace(tzinfo=None)
         
         await self.db.commit()
 
@@ -126,7 +127,7 @@ class EmailFetcherService:
             await self._initial_sync(sync_state)
             return
 
-        sync_state.last_poll_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        sync_state.last_poll_at = datetime.now(UTC).replace(tzinfo=None)
         await self.db.commit()
 
     async def _process_message_id(self, msg_id: str):
@@ -145,7 +146,7 @@ class EmailFetcherService:
             
         # Get internal date (epoch ms)
         internal_date_ms = int(msg['internalDate'])
-        received_timestamp = datetime.fromtimestamp(internal_date_ms / 1000.0, tz=timezone.utc).replace(tzinfo=None)
+        received_timestamp = datetime.fromtimestamp(internal_date_ms / 1000.0, tz=UTC).replace(tzinfo=None)
 
         parsed_email = parse_hdfc_upi_email(body, received_timestamp)
         if not parsed_email:
@@ -176,7 +177,7 @@ class EmailFetcherService:
         self.db.add(new_txn)
         logger.info(f"Added new transaction from email: {parsed_email.txn_ref} - {parsed_email.amount}")
         
-    def _extract_body(self, payload: Dict[str, Any]) -> str:
+    def _extract_body(self, payload: dict[str, Any]) -> str:
         """Extract plain text body from email payload."""
         import base64
         

@@ -1,18 +1,23 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-from typing import List
 
-from app.api.deps import get_db_session, get_current_user
+from fastapi import APIRouter, Depends
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from app.api.deps import get_current_user, get_db_session
+from app.core.exceptions import DuplicateError, NotFoundError
 from app.models.category import Category
 from app.models.user import User
-from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryResponse, CategoryTreeResponse
-from app.core.exceptions import NotFoundError, DuplicateError
+from app.schemas.category import (
+    CategoryCreate,
+    CategoryResponse,
+    CategoryTreeResponse,
+    CategoryUpdate,
+)
 
 router = APIRouter()
 
-@router.get("/", response_model=List[CategoryResponse])
+@router.get("/", response_model=list[CategoryResponse])
 async def list_categories(
     db: AsyncSession = Depends(get_db_session),
     current_user: User = Depends(get_current_user)
@@ -20,7 +25,7 @@ async def list_categories(
     result = await db.execute(select(Category).order_by(Category.name))
     return result.scalars().all()
 
-@router.get("/tree", response_model=List[CategoryTreeResponse])
+@router.get("/tree", response_model=list[CategoryTreeResponse])
 async def get_category_tree(
     db: AsyncSession = Depends(get_db_session),
     current_user: User = Depends(get_current_user)

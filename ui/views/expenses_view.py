@@ -1,6 +1,9 @@
-import flet as ft
-from ui.api_client import APIClient
 import datetime
+
+import flet as ft
+
+from ui.api_client import APIClient
+
 
 async def ExpensesView(page: ft.Page, api_client: APIClient):
     

@@ -1,6 +1,7 @@
-import httpx
-from typing import Optional, Dict, Any
 import logging
+from typing import Any
+
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -43,25 +44,25 @@ class APIClient:
             self.is_authenticated = False
             return False
 
-    async def get(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    async def get(self, endpoint: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """Perform a GET request."""
         response = await self.client.get(endpoint, params=params)
         response.raise_for_status()
         return response.json()
         
-    async def post(self, endpoint: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def post(self, endpoint: str, json_data: dict[str, Any]) -> dict[str, Any]:
         """Perform a POST request."""
         response = await self.client.post(endpoint, json=json_data)
         response.raise_for_status()
         return response.json()
         
-    async def patch(self, endpoint: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def patch(self, endpoint: str, json_data: dict[str, Any]) -> dict[str, Any]:
         """Perform a PATCH request."""
         response = await self.client.patch(endpoint, json=json_data)
         response.raise_for_status()
         return response.json()
         
-    async def delete(self, endpoint: str) -> Dict[str, Any]:
+    async def delete(self, endpoint: str) -> dict[str, Any]:
         """Perform a DELETE request."""
         response = await self.client.delete(endpoint)
         response.raise_for_status()

@@ -1,4 +1,5 @@
 import flet as ft
+
 from ui.api_client import APIClient
 
 # Helper mapping for category colors

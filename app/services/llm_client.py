@@ -7,7 +7,6 @@ The llama-server runs Qwen2.5-1.5B-Instruct Q4_K_M at http://127.0.0.1:8080.
 import json
 import logging
 import time
-from typing import Optional
 
 import httpx
 
@@ -43,12 +42,12 @@ class LLMClassificationResult:
 
     def __init__(
         self,
-        category: Optional[str] = None,
-        sub_category: Optional[str] = None,
-        confidence: Optional[str] = None,
-        raw_response: Optional[str] = None,
+        category: str | None = None,
+        sub_category: str | None = None,
+        confidence: str | None = None,
+        raw_response: str | None = None,
         inference_time_ms: int = 0,
-        error: Optional[str] = None,
+        error: str | None = None,
     ):
         self.category = category
         self.sub_category = sub_category

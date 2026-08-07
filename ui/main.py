@@ -1,10 +1,13 @@
 import flet as ft
+
 from ui.api_client import APIClient
-from ui.views.login_view import LoginView
+from ui.views.expenses_view import ExpensesView
+
 # These will be implemented next
 from ui.views.home_view import HomeView
 from ui.views.inbox_view import InboxView
-from ui.views.expenses_view import ExpensesView
+from ui.views.login_view import LoginView
+
 
 async def main(page: ft.Page):
     page.title = "Expense Tracker"
@@ -84,5 +87,4 @@ async def main(page: ft.Page):
 
 if __name__ == "__main__":
     # We use asyncio mode since our api_client uses httpx.AsyncClient
-    import asyncio
     ft.app(target=main, port=8550, view=ft.AppView.WEB_BROWSER)

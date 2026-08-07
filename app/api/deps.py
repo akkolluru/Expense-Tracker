@@ -1,13 +1,15 @@
 import datetime
-from typing import AsyncGenerator
-from fastapi import Request, Depends, Cookie
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from collections.abc import AsyncGenerator
 
-from app.database import get_db
-from app.models.user import User
-from app.models.session import Session as DBSession
+from fastapi import Depends, Request
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.exceptions import AuthenticationError
+from app.database import get_db
+from app.models.session import Session as DBSession
+from app.models.user import User
+
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async for db in get_db():
@@ -33,7 +35,7 @@ async def get_current_user(
     if not session:
         raise AuthenticationError("Invalid session")
         
-    if session.expires_at < datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None):
+    if session.expires_at < datetime.datetime.now(datetime.UTC).replace(tzinfo=None):
         # Session expired, we could delete it here
         await db.delete(session)
         await db.commit()

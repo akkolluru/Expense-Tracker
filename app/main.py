@@ -1,18 +1,18 @@
 import logging
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from app.api.api import api_router
-from app.workers.scheduler import start_scheduler, stop_scheduler
-
 from app.config import get_settings
-from app.database import init_db
 from app.core.exceptions import AppException
+from app.database import init_db
+from app.workers.scheduler import start_scheduler, stop_scheduler
 
 # Configure logging at the module level
 logging.basicConfig(

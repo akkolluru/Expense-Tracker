@@ -1,5 +1,7 @@
 import flet as ft
+
 from ui.api_client import APIClient
+
 
 async def InboxView(page: ft.Page, api_client: APIClient):
     

@@ -7,18 +7,15 @@ We test the three layers independently:
 3. Fallthrough: no rule, LLM fails → pending_review
 """
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
-from datetime import datetime
 
 from app.services.categorizer import (
-    check_rule,
     categorize_transaction,
-    build_category_tree_string,
-    resolve_category_id,
+    check_rule,
 )
 from app.services.llm_client import LLMClassificationResult
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 

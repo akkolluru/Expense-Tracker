@@ -1,16 +1,17 @@
 import datetime
-from fastapi import APIRouter, Depends, Response, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
-from app.api.deps import get_db_session, get_current_user
-from app.models.user import User
+from fastapi import APIRouter, Depends, Request, Response
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.deps import get_current_user, get_db_session
+from app.config import get_settings
+from app.core.exceptions import AuthenticationError
+from app.core.security import generate_session_token, verify_password
 from app.models.session import Session as DBSession
+from app.models.user import User
 from app.schemas.auth import LoginRequest, LoginResponse, LogoutResponse
 from app.schemas.user import UserResponse
-from app.core.security import verify_password, generate_session_token
-from app.core.exceptions import AuthenticationError
-from app.config import get_settings
 
 settings = get_settings()
 router = APIRouter()
@@ -18,6 +19,7 @@ router = APIRouter()
 # We need to import the global limiter to use it in routes
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+
 limiter = Limiter(key_func=get_remote_address)
 
 @router.post("/login", response_model=LoginResponse)
@@ -42,7 +44,7 @@ async def login(
     session_id = generate_session_token()
     
     # 4. Create session record
-    expires_at = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(days=settings.session_ttl_days)
+    expires_at = datetime.datetime.now(datetime.UTC).replace(tzinfo=None) + datetime.timedelta(days=settings.session_ttl_days)
     new_session = DBSession(
         id=session_id,
         user_id=user.id,

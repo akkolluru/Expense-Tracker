@@ -1,17 +1,20 @@
 import datetime
-from sqlalchemy import String, Integer, DateTime, ForeignKey, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
+
+from sqlalchemy import DateTime, ForeignKey, Integer, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.database import Base
+
 
 class Rule(Base):
     __tablename__ = "rules"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     vpa: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    merchant_name: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    merchant_name: Mapped[str | None] = mapped_column(String, nullable=True)
     category_id: Mapped[int] = mapped_column(Integer, ForeignKey("categories.id"), nullable=False)
-    sub_category_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("categories.id"), nullable=True)
+    sub_category_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("categories.id"), nullable=True)
     hit_count: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())

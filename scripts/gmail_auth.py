@@ -1,8 +1,6 @@
-import os
 import json
+
 from google_auth_oauthlib.flow import InstalledAppFlow
-from google.oauth2.credentials import Credentials
-from google.auth.transport.requests import Request
 
 # Need to import from app, so ensure PYTHONPATH=. is used
 from app.config import get_settings

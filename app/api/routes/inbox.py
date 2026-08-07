@@ -1,17 +1,17 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, desc
-from typing import List
-from pydantic import BaseModel
 
-from app.api.deps import get_db_session, get_current_user
-from app.models.transaction import Transaction
-from app.models.rule import Rule
-from app.models.categorization_log import CategorizationLog
-from app.models.user import User
-from app.schemas.transaction import TransactionResponse
-from app.schemas.pagination import PaginatedResponse
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel
+from sqlalchemy import desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.deps import get_current_user, get_db_session
 from app.core.exceptions import NotFoundError
+from app.models.categorization_log import CategorizationLog
+from app.models.rule import Rule
+from app.models.transaction import Transaction
+from app.models.user import User
+from app.schemas.pagination import PaginatedResponse
+from app.schemas.transaction import TransactionResponse
 
 router = APIRouter()
 

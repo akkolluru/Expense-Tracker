@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
-from typing import List, Optional
 
-from app.api.deps import get_db_session, get_current_user
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.deps import get_current_user, get_db_session
+from app.core.exceptions import DuplicateError, NotFoundError
 from app.models.rule import Rule
 from app.models.user import User
-from app.schemas.rule import RuleCreate, RuleUpdate, RuleResponse
 from app.schemas.pagination import PaginatedResponse
-from app.core.exceptions import NotFoundError, DuplicateError
+from app.schemas.rule import RuleCreate, RuleResponse, RuleUpdate
 
 router = APIRouter()
 
@@ -16,7 +16,7 @@ router = APIRouter()
 async def list_rules(
     page: int = Query(1, ge=1),
     size: int = Query(50, ge=1, le=100),
-    search: Optional[str] = None,
+    search: str | None = None,
     db: AsyncSession = Depends(get_db_session),
     current_user: User = Depends(get_current_user)
 ):

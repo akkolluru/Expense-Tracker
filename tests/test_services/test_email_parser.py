@@ -1,6 +1,7 @@
-import pytest
-from datetime import datetime, timezone
+from datetime import datetime
+
 from app.services.email_parser import parse_hdfc_upi_email
+
 
 def test_parse_hdfc_upi_email_debit_1():
     body = """Dear Customer,

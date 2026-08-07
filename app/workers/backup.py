@@ -1,7 +1,7 @@
+import datetime
 import logging
 import shutil
-import datetime
-from pathlib import Path
+
 from app.config import get_settings
 from app.workers.notifications import send_ntfy_alert
 

@@ -1,7 +1,6 @@
 from fastapi.testclient import TestClient
-import pytest
+
 from app.main import app
-from app.schemas.auth import LoginRequest
 
 client = TestClient(app)
 

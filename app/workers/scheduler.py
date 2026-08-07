@@ -1,17 +1,18 @@
-import logging
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.interval import IntervalTrigger
-from apscheduler.triggers.cron import CronTrigger
 import datetime
-from sqlalchemy import select, func
+import logging
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
+from sqlalchemy import func, select
 
 from app.config import get_settings
 from app.database import AsyncSessionLocal
-from app.services.email_fetcher import EmailFetcherService
-from app.services.categorizer import categorize_pending_transactions
 from app.models.transaction import Transaction
-from app.workers.notifications import send_ntfy_alert
+from app.services.categorizer import categorize_pending_transactions
+from app.services.email_fetcher import EmailFetcherService
 from app.workers.backup import run_daily_backup
+from app.workers.notifications import send_ntfy_alert
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

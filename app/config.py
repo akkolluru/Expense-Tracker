@@ -1,6 +1,8 @@
-from pydantic_settings import BaseSettings
-from pathlib import Path
 from functools import lru_cache
+from pathlib import Path
+
+from pydantic_settings import BaseSettings
+
 
 class Settings(BaseSettings):
     # Paths
@@ -41,7 +43,7 @@ class Settings(BaseSettings):
     flet_port: int = 8550
     
     # Rate limiting
-    login_rate_limit: str = "5/5minutes"
+    login_rate_limit: str = "20/5minutes"
     
     model_config = {
         "env_file": ".env",

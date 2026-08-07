@@ -1,19 +1,17 @@
 import asyncio
 import json
 import logging
-import os
 from pathlib import Path
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import select
-from passlib.context import CryptContext
 
-from app.database import Base, engine, AsyncSessionLocal
-from app.models.category import Category
-from app.models.user import User
-from app.models.app_config import AppConfig
-from app.models.email_sync_state import EmailSyncState
+from passlib.context import CryptContext
+from sqlalchemy import select
+
 from app.config import get_settings
+from app.database import AsyncSessionLocal, Base, engine
+from app.models.app_config import AppConfig
+from app.models.category import Category
+from app.models.email_sync_state import EmailSyncState
+from app.models.user import User
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

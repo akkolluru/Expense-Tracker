@@ -1,21 +1,22 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
+
 
 class CategoryBase(BaseModel):
     name: str
-    icon: Optional[str] = None
-    parent_id: Optional[int] = None
+    icon: str | None = None
+    parent_id: int | None = None
     is_active: bool = True
 
 class CategoryCreate(CategoryBase):
     pass
 
 class CategoryUpdate(BaseModel):
-    name: Optional[str] = None
-    icon: Optional[str] = None
-    parent_id: Optional[int] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    icon: str | None = None
+    parent_id: int | None = None
+    is_active: bool | None = None
 
 class CategoryResponse(CategoryBase):
     id: int
@@ -24,6 +25,6 @@ class CategoryResponse(CategoryBase):
     model_config = ConfigDict(from_attributes=True)
 
 class CategoryTreeResponse(CategoryResponse):
-    children: List['CategoryTreeResponse'] = []
+    children: list['CategoryTreeResponse'] = []
     
     model_config = ConfigDict(from_attributes=True)

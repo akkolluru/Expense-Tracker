@@ -1,7 +1,8 @@
 import re
-from typing import Optional
 from datetime import datetime
+
 from pydantic import BaseModel
+
 
 class ParsedEmail(BaseModel):
     amount: float
@@ -13,7 +14,7 @@ class ParsedEmail(BaseModel):
     txn_ref: str
     timestamp: datetime
 
-def parse_hdfc_upi_email(body: str, received_timestamp: datetime) -> Optional[ParsedEmail]:
+def parse_hdfc_upi_email(body: str, received_timestamp: datetime) -> ParsedEmail | None:
     """
     Parses an HDFC Bank UPI transaction email.
     Matches strings like:

@@ -9,16 +9,15 @@ Each path writes a CategorizationLog entry for auditability.
 """
 
 import logging
-from typing import Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.models.categorization_log import CategorizationLog
 from app.models.category import Category
 from app.models.rule import Rule
 from app.models.transaction import Transaction
-from app.models.categorization_log import CategorizationLog
 from app.services.llm_client import classify_transaction
 
 logger = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 # ── Layer 1: Rule Engine ──────────────────────────────────────────────────────
 
-async def check_rule(vpa: str, db: AsyncSession) -> Optional[Rule]:
+async def check_rule(vpa: str, db: AsyncSession) -> Rule | None:
     """Exact VPA match against the rules table."""
     result = await db.execute(select(Rule).where(Rule.vpa == vpa))
     return result.scalar_one_or_none()
@@ -41,7 +40,7 @@ async def build_category_tree_string(db: AsyncSession) -> str:
     """
     result = await db.execute(
         select(Category)
-        .where(Category.parent_id == None, Category.is_active == True)  # noqa: E711
+        .where(Category.parent_id == None, Category.is_active == True)
         .options(selectinload(Category.children))
         .order_by(Category.name)
     )
@@ -62,8 +61,8 @@ async def build_category_tree_string(db: AsyncSession) -> str:
 # ── Helper: resolve category name → id ────────────────────────────────────────
 
 async def resolve_category_id(
-    name: str, parent_id: Optional[int], db: AsyncSession
-) -> Optional[int]:
+    name: str, parent_id: int | None, db: AsyncSession
+) -> int | None:
     """Look up a category by name and optional parent_id."""
     if not name or name == "null":
         return None
@@ -71,7 +70,7 @@ async def resolve_category_id(
     stmt = select(Category).where(
         Category.name == name,
         Category.parent_id == parent_id,
-        Category.is_active == True,  # noqa: E711
+        Category.is_active == True,
     )
     result = await db.execute(stmt)
     cat = result.scalar_one_or_none()
@@ -179,8 +178,9 @@ async def categorize_transaction(txn: Transaction, db: AsyncSession) -> str:
     )
     
     # Fire off push notification for manual review
-    from app.workers.notifications import send_ntfy_alert
     import asyncio
+
+    from app.workers.notifications import send_ntfy_alert
     asyncio.create_task(
         send_ntfy_alert(
             title="Action Required: Review Transaction",
@@ -205,7 +205,7 @@ async def categorize_pending_transactions(db: AsyncSession) -> dict:
         select(Transaction).where(
             Transaction.status == "pending_review",
             Transaction.source == "email_auto",
-            Transaction.categorized_by == None,  # noqa: E711
+            Transaction.categorized_by == None,
         )
     )
     pending_txns = result.scalars().all()
