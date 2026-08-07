@@ -31,8 +31,8 @@ class Settings(BaseSettings):
     llm_timeout_seconds: float = 30.0
     
     # ntfy
-    ntfy_server_url: str = "http://127.0.0.1:9090"
-    ntfy_topic: str = "expense-inbox"
+    ntfy_server_url: str = "https://ntfy.sh"
+    ntfy_topic: str = "kaushik-expense-inbox-2026"
     
     # Server
     api_host: str = "0.0.0.0"

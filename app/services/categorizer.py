@@ -177,6 +177,18 @@ async def categorize_transaction(txn: Transaction, db: AsyncSession) -> str:
         f"[Pending Review] Transaction {txn.id} sent to inbox "
         f"(llm_error={llm_result.error}, confidence={llm_result.confidence})"
     )
+    
+    # Fire off push notification for manual review
+    from app.workers.notifications import send_ntfy_alert
+    import asyncio
+    asyncio.create_task(
+        send_ntfy_alert(
+            title="Action Required: Review Transaction",
+            message=f"₹{txn.amount} at {txn.merchant_name or txn.vpa or 'Unknown'} could not be categorized automatically.",
+            tags="warning,mag"
+        )
+    )
+
     return "pending_review"
 
 
