@@ -160,17 +160,15 @@ async def categorize_transaction(txn: Transaction, db: AsyncSession) -> str:
 
     # ── Layer 3: Human-in-the-Loop ────────────────────────────────────────
     txn.status = "pending_review"
+    txn.categorized_by = "pending"  # Mark as attempted to prevent infinite retry loop
 
-    # Still log the LLM attempt for debugging
-    if llm_result.raw_response or llm_result.error:
-        log = CategorizationLog(
-            transaction_id=txn.id,
-            action="auto_llm",
-            to_category_id=txn.category_id or 0,  # placeholder
-            llm_response_raw=llm_result.raw_response or llm_result.error,
-            llm_inference_time_ms=llm_result.inference_time_ms,
+    # Log the LLM attempt for debugging (only if we have a valid category to reference)
+    # We skip logging here to avoid FK violation since to_category_id is NOT NULL
+    # and we have no valid category. The raw LLM response is still visible in server logs.
+    if llm_result.error:
+        logger.warning(
+            f"[LLM Error] Transaction {txn.id}: {llm_result.error}"
         )
-        db.add(log)
 
     logger.info(
         f"[Pending Review] Transaction {txn.id} sent to inbox "
@@ -178,16 +176,18 @@ async def categorize_transaction(txn: Transaction, db: AsyncSession) -> str:
     )
     
     # Fire off push notification for manual review
-    import asyncio
-
-    from app.workers.notifications import send_ntfy_alert
-    asyncio.create_task(
-        send_ntfy_alert(
-            title="Action Required: Review Transaction",
-            message=f"₹{txn.amount} at {txn.merchant_name or txn.vpa or 'Unknown'} could not be categorized automatically.",
-            tags="warning,mag"
+    try:
+        from app.workers.notifications import send_ntfy_alert
+        import asyncio
+        asyncio.ensure_future(
+            send_ntfy_alert(
+                title="Action Required: Review Transaction",
+                message=f"Rs.{txn.amount} at {txn.merchant_name or txn.vpa or 'Unknown'} needs review.",
+                tags="warning,mag"
+            )
         )
-    )
+    except Exception as e:
+        logger.error(f"Failed to send notification: {e}")
 
     return "pending_review"
 
@@ -205,8 +205,8 @@ async def categorize_pending_transactions(db: AsyncSession) -> dict:
         select(Transaction).where(
             Transaction.status == "pending_review",
             Transaction.source == "email_auto",
-            Transaction.categorized_by == None,
-        )
+            Transaction.categorized_by == None,  # noqa: E711
+        ).limit(50)  # Prevent processing too many at once
     )
     pending_txns = result.scalars().all()
 

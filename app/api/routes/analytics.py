@@ -4,16 +4,18 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api import deps
+from app.api.deps import get_current_user, get_db_session
 from app.models.category import Category
 from app.models.transaction import Transaction
+from app.models.user import User
 
 router = APIRouter()
 
 @router.get("/spending-summary")
 async def get_spending_summary(
     range: str = "1M",
-    db: AsyncSession = Depends(deps.get_db)
+    db: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Get aggregated spending data for the donut chart based on the time range.
@@ -38,7 +40,7 @@ async def get_spending_summary(
         .where(
             Transaction.timestamp >= start_date,
             Transaction.direction == "debit",
-            Transaction.status != "ignored"
+            Transaction.status == "categorized"
         )
         .group_by(Transaction.category_id, Category.name)
     )
@@ -49,7 +51,7 @@ async def get_spending_summary(
     total_debit_stmt = select(func.sum(Transaction.amount)).where(
         Transaction.timestamp >= start_date,
         Transaction.direction == "debit",
-        Transaction.status != "ignored"
+        Transaction.status == "categorized"
     )
     total_debit_result = await db.execute(total_debit_stmt)
     total_debit = total_debit_result.scalar() or 0.0
@@ -57,7 +59,7 @@ async def get_spending_summary(
     total_credit_stmt = select(func.sum(Transaction.amount)).where(
         Transaction.timestamp >= start_date,
         Transaction.direction == "credit",
-        Transaction.status != "ignored"
+        Transaction.status == "categorized"
     )
     total_credit_result = await db.execute(total_credit_stmt)
     total_credit = total_credit_result.scalar() or 0.0
@@ -79,13 +81,19 @@ async def get_spending_summary(
     }
 
 @router.get("/categorization-stats")
-async def get_categorization_stats(db: AsyncSession = Depends(deps.get_db)):
+async def get_categorization_stats(
+    db: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user),
+):
     """
     Return metrics on how transactions are being categorized (Rule Engine vs LLM vs User).
     """
     stmt = (
         select(Transaction.categorized_by, func.count(Transaction.id).label("count"))
-        .where(Transaction.categorized_by.isnot(None))
+        .where(
+            Transaction.categorized_by.isnot(None),
+            Transaction.categorized_by != "pending",
+        )
         .group_by(Transaction.categorized_by)
     )
     result = await db.execute(stmt)
@@ -107,11 +115,13 @@ async def get_categorization_stats(db: AsyncSession = Depends(deps.get_db)):
     }
 
 @router.get("/misclassified")
-async def get_misclassified(db: AsyncSession = Depends(deps.get_db), limit: int = 50):
+async def get_misclassified(
+    db: AsyncSession = Depends(get_db_session),
+    current_user: User = Depends(get_current_user),
+    limit: int = 50,
+):
     """
-    Get transactions that might be misclassified or were corrected by the user.
-    For this MVP, we return transactions that the user explicitly recategorized 
-    so they can review them, or transactions still needing review.
+    Get transactions still needing review.
     """
     stmt = (
         select(Transaction)
@@ -122,4 +132,17 @@ async def get_misclassified(db: AsyncSession = Depends(deps.get_db), limit: int 
     result = await db.execute(stmt)
     txns = result.scalars().all()
     
-    return {"items": [t.to_dict() for t in txns]}
+    items = []
+    for t in txns:
+        items.append({
+            "id": t.id,
+            "amount": t.amount,
+            "direction": t.direction,
+            "timestamp": t.timestamp.isoformat() if t.timestamp else None,
+            "vpa": t.vpa,
+            "merchant_name": t.merchant_name,
+            "category_id": t.category_id,
+            "status": t.status,
+        })
+    
+    return {"items": items}

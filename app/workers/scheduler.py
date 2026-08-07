@@ -40,29 +40,26 @@ async def combined_job():
 async def daily_summary_job():
     """Calculates total spent today and sends a push notification."""
     logger.info("Running daily summary job...")
-    today = datetime.datetime.now().date()
-    start_of_day = datetime.datetime.combine(today, datetime.time.min)
-    
-    async with AsyncSessionLocal() as db:
-        stmt = select(func.sum(Transaction.amount)).where(
-            Transaction.timestamp >= start_date,
-            Transaction.direction == "debit",
-            Transaction.status != "ignored"
-        )
-        # Fix start_date variable to start_of_day
-        stmt = select(func.sum(Transaction.amount)).where(
-            Transaction.timestamp >= start_of_day,
-            Transaction.direction == "debit",
-            Transaction.status != "ignored"
-        )
-        result = await db.execute(stmt)
-        total_spent = result.scalar() or 0.0
+    try:
+        today = datetime.datetime.now().date()
+        start_of_day = datetime.datetime.combine(today, datetime.time.min)
         
-    await send_ntfy_alert(
-        title="Daily Expense Summary",
-        message=f"You spent ₹{total_spent:,.0f} today.",
-        tags="moneybag"
-    )
+        async with AsyncSessionLocal() as db:
+            stmt = select(func.sum(Transaction.amount)).where(
+                Transaction.timestamp >= start_of_day,
+                Transaction.direction == "debit",
+                Transaction.status == "categorized"
+            )
+            result = await db.execute(stmt)
+            total_spent = result.scalar() or 0.0
+            
+        await send_ntfy_alert(
+            title="Daily Expense Summary",
+            message=f"You spent ₹{total_spent:,.0f} today.",
+            tags="moneybag"
+        )
+    except Exception as e:
+        logger.error(f"Daily summary job failed: {e}")
 
 def start_scheduler():
     if not scheduler.running:

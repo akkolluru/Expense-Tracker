@@ -39,7 +39,7 @@ class Transaction(Base):
     txn_type: Mapped[str] = mapped_column(String, CheckConstraint("txn_type IN ('upi', 'neft', 'imps', 'card', 'atm', 'manual')", name="chk_txn_type"), nullable=False)
     account_last4: Mapped[str | None] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, CheckConstraint("status IN ('categorized', 'pending_review')", name="chk_txn_status"), default='pending_review', nullable=False)
-    categorized_by: Mapped[str | None] = mapped_column(String, CheckConstraint("categorized_by IN ('rule_engine', 'llm', 'user')", name="chk_txn_categorized_by"), nullable=True)
+    categorized_by: Mapped[str | None] = mapped_column(String, CheckConstraint("categorized_by IN ('rule_engine', 'llm', 'user', 'pending')", name="chk_txn_categorized_by"), nullable=True)
     source: Mapped[str] = mapped_column(String, CheckConstraint("source IN ('email_auto', 'manual')", name="chk_txn_source"), nullable=False)
     email_message_id: Mapped[str | None] = mapped_column(String, nullable=True)
     is_misclassified: Mapped[bool] = mapped_column(Boolean, default=False)
