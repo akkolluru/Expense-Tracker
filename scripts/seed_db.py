@@ -1,7 +1,11 @@
 import asyncio
 import json
 import logging
+import sys
 from pathlib import Path
+
+# Add project root to sys.path so 'app' can be imported
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from passlib.context import CryptContext
 from sqlalchemy import select

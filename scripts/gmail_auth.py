@@ -1,8 +1,12 @@
 import json
+import sys
+from pathlib import Path
+
+# Add project root to sys.path so 'app' can be imported
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-# Need to import from app, so ensure PYTHONPATH=. is used
 from app.config import get_settings
 from app.core.encryption import encrypt_data
 
@@ -13,13 +17,14 @@ def main():
     credentials_dir.mkdir(parents=True, exist_ok=True)
     
     client_secret_file = credentials_dir / "client_secret.json"
-    token_file = credentials_dir / "token.encrypted.json"
-    
     if not client_secret_file.exists():
-        print(f"Error: {client_secret_file} not found.")
-        print("Please download your OAuth 2.0 Client ID JSON from Google Cloud Console")
-        print("and save it as 'credentials/client_secret.json'.")
-        return
+        if (credentials_dir / "credentials.json").exists():
+            client_secret_file = credentials_dir / "credentials.json"
+        else:
+            print(f"Error: Neither 'client_secret.json' nor 'credentials.json' found in {credentials_dir}.")
+            print("Please download your OAuth 2.0 Client ID JSON from Google Cloud Console")
+            print("and save it as 'credentials/credentials.json' (or 'credentials/client_secret.json').")
+            return
         
     print("Starting OAuth flow...")
     

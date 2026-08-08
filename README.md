@@ -26,8 +26,8 @@ This project is optimized for Termux on Android devices like the Nothing Phone (
 
 2. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/expense-tracker.git
-   cd expense-tracker
+   git clone https://github.com/akkolluru/Expense-Tracker.git
+   cd Expense-Tracker
    ```
 
 3. **Set up the Virtual Environment:**
