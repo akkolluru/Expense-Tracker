@@ -2,7 +2,7 @@
 
 from app.models.account import Account, AccountType
 from app.models.app_config import AppConfig
-from app.models.categorization_log import CategorizationLog
+from app.models.categorization_log import CategorizationAction, CategorizationLog
 from app.models.category import Category
 from app.models.email_sync_state import EmailSyncState
 from app.models.group import Group
@@ -24,6 +24,7 @@ __all__ = [
     "Account",
     "AccountType",
     "AppConfig",
+    "CategorizationAction",
     "CategorizationLog",
     "CategorizationStrategy",
     "Category",

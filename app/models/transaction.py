@@ -128,7 +128,7 @@ class Transaction(Base):
     )
     group_id: Mapped[str | None] = mapped_column(
         String(36),
-        ForeignKey("groups.id"),
+        ForeignKey("groups.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
         doc="Optional event/trip group association",
@@ -198,4 +198,11 @@ class Transaction(Base):
 
     __table_args__ = (
         Index("ix_transactions_timestamp_desc", timestamp.desc()),
+        Index(
+            "ix_transactions_analytics",
+            timestamp,
+            category_id,
+            group_id,
+            source_account_id,
+        ),
     )

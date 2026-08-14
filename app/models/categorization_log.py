@@ -1,6 +1,7 @@
 """CategorizationLog model for tracking audit history of categorization decisions."""
 
 from datetime import datetime
+from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, func
@@ -11,6 +12,15 @@ from app.database import Base
 if TYPE_CHECKING:
     from app.models.category import Category
     from app.models.transaction import Transaction
+
+
+class CategorizationAction(str, Enum):
+    AUTO_RULE = "AUTO_RULE"
+    MERCHANT_MEMORY = "MERCHANT_MEMORY"
+    AUTO_LLM = "AUTO_LLM"
+    MANUAL_APPROVE = "MANUAL_APPROVE"
+    MANUAL_RECATEGORIZE = "MANUAL_RECATEGORIZE"
+    MANUAL_SPLIT = "MANUAL_SPLIT"
 
 
 class CategorizationLog(Base):
@@ -25,6 +35,7 @@ class CategorizationLog(Base):
     )
     action: Mapped[str] = mapped_column(
         String(50),
+        default=CategorizationAction.AUTO_RULE.value,
         nullable=False,
         doc="e.g. AUTO_RULE, MERCHANT_MEMORY, AUTO_LLM, MANUAL_APPROVE, MANUAL_RECATEGORIZE, MANUAL_SPLIT",
     )
