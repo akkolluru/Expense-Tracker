@@ -184,9 +184,7 @@ class Transaction(Base):
     sub_category: Mapped[Optional["Category"]] = relationship(
         "Category", foreign_keys=[sub_category_id]
     )
-    group: Mapped[Optional["Group"]] = relationship(
-        "Group", foreign_keys=[group_id]
-    )
+    group: Mapped[Optional["Group"]] = relationship("Group", foreign_keys=[group_id])
     splits: Mapped[list["Split"]] = relationship(
         "Split", back_populates="transaction", cascade="all, delete-orphan"
     )

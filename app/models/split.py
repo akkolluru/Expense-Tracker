@@ -49,9 +49,7 @@ class Split(Base):
     transaction: Mapped["Transaction"] = relationship(
         "Transaction", back_populates="splits"
     )
-    category: Mapped["Category"] = relationship(
-        "Category", foreign_keys=[category_id]
-    )
+    category: Mapped["Category"] = relationship("Category", foreign_keys=[category_id])
     sub_category: Mapped[Optional["Category"]] = relationship(
         "Category", foreign_keys=[sub_category_id]
     )

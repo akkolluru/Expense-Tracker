@@ -63,9 +63,7 @@ class MerchantMemory(Base):
         nullable=False,
     )
 
-    category: Mapped["Category"] = relationship(
-        "Category", foreign_keys=[category_id]
-    )
+    category: Mapped["Category"] = relationship("Category", foreign_keys=[category_id])
     sub_category: Mapped[Optional["Category"]] = relationship(
         "Category", foreign_keys=[sub_category_id]
     )
