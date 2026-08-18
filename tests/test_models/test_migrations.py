@@ -9,7 +9,7 @@ import pytest
 from alembic.autogenerate import compare_metadata
 from alembic.config import Config
 from alembic.runtime.migration import MigrationContext
-from sqlalchemy import create_engine, inspect, select, text
+from sqlalchemy import Engine, create_engine, inspect, select, text
 from sqlalchemy.orm import Session
 
 import app.models  # noqa: F401
@@ -32,16 +32,16 @@ from app.models.transaction import (
 @pytest.fixture
 def temp_db_path() -> Generator[Path, None, None]:
     """Provide a temporary file path for SQLite migration testing."""
-    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
-        path = Path(f.name)
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as temporary_file:
+        path = Path(temporary_file.name)
     yield path
     if path.exists():
         path.unlink()
     # Clean up any WAL/SHM companion files if created
-    for ext in ("-wal", "-shm"):
-        companion = Path(str(path) + ext)
-        if companion.exists():
-            companion.unlink()
+    for extension in ("-wal", "-shm"):
+        companion_file = Path(str(path) + extension)
+        if companion_file.exists():
+            companion_file.unlink()
 
 
 @pytest.fixture
@@ -54,12 +54,20 @@ def alembic_config(temp_db_path: Path) -> Config:
     return config
 
 
-def test_alembic_upgrade_and_table_creation(alembic_config: Config, temp_db_path: Path):
-    """Test that alembic upgrade head creates all expected v2.0 tables."""
+@pytest.fixture
+def migrated_engine(
+    alembic_config: Config, temp_db_path: Path
+) -> Generator[Engine, None, None]:
+    """Provide a synchronous SQLAlchemy Engine bound to an upgraded database."""
     command.upgrade(alembic_config, "head")
+    engine = create_engine(f"sqlite:///{temp_db_path.as_posix()}")
+    yield engine
+    engine.dispose()
 
-    sync_engine = create_engine(f"sqlite:///{temp_db_path.as_posix()}")
-    inspector = inspect(sync_engine)
+
+def test_alembic_upgrade_and_table_creation(migrated_engine: Engine):
+    """Test that alembic upgrade head creates all expected v2.0 tables."""
+    inspector = inspect(migrated_engine)
     table_names = set(inspector.get_table_names())
 
     expected_tables = {
@@ -84,42 +92,38 @@ def test_alembic_upgrade_and_table_creation(alembic_config: Config, temp_db_path
     )
 
 
-def test_migration_schema_drift_zero(alembic_config: Config, temp_db_path: Path):
+def test_migration_schema_drift_zero(migrated_engine: Engine):
     """Verify zero schema drift between Base.metadata and the migrated database."""
-    command.upgrade(alembic_config, "head")
-
-    sync_engine = create_engine(f"sqlite:///{temp_db_path.as_posix()}")
-    with sync_engine.connect() as connection:
-        mc = MigrationContext.configure(connection)
-        diff = compare_metadata(mc, Base.metadata)
+    with migrated_engine.connect() as connection:
+        migration_context = MigrationContext.configure(connection)
+        discrepancies = compare_metadata(migration_context, Base.metadata)
 
     # Filter out SQLite internal sequences or harmless type variations if any
-    relevant_diffs = [
-        d
-        for d in diff
+    relevant_discrepancies = [
+        discrepancy
+        for discrepancy in discrepancies
         if not (
-            isinstance(d, tuple)
-            and len(d) > 1
-            and getattr(d[1], "name", "") == "sqlite_sequence"
+            isinstance(discrepancy, tuple)
+            and len(discrepancy) > 1
+            and getattr(discrepancy[1], "name", "") == "sqlite_sequence"
         )
     ]
-    assert relevant_diffs == [], f"Schema differences detected: {relevant_diffs}"
+    assert relevant_discrepancies == [], (
+        f"Schema differences detected: {relevant_discrepancies}"
+    )
 
 
-def test_indexes_and_constraints_created(alembic_config: Config, temp_db_path: Path):
+def test_indexes_and_constraints_created(migrated_engine: Engine):
     """Verify compound indexes, single-column indexes, and unique constraints."""
-    command.upgrade(alembic_config, "head")
-
-    sync_engine = create_engine(f"sqlite:///{temp_db_path.as_posix()}")
-    inspector = inspect(sync_engine)
+    inspector = inspect(migrated_engine)
 
     # 1. Transactions indexes
-    txn_indexes = {
-        idx["name"]: idx["column_names"]
-        for idx in inspector.get_indexes("transactions")
+    transaction_indexes = {
+        index_info["name"]: index_info["column_names"]
+        for index_info in inspector.get_indexes("transactions")
     }
-    assert "ix_transactions_analytics" in txn_indexes
-    assert txn_indexes["ix_transactions_analytics"] == [
+    assert "ix_transactions_analytics" in transaction_indexes
+    assert transaction_indexes["ix_transactions_analytics"] == [
         "timestamp",
         "category_id",
         "group_id",
@@ -127,65 +131,66 @@ def test_indexes_and_constraints_created(alembic_config: Config, temp_db_path: P
     ]
 
     # 2. RawMessage payload_hash unique index
-    raw_indexes = {
-        idx["name"]: idx["column_names"]
-        for idx in inspector.get_indexes("raw_messages")
+    raw_message_indexes = {
+        index_info["name"]: index_info["column_names"]
+        for index_info in inspector.get_indexes("raw_messages")
     }
-    assert "ix_raw_messages_payload_hash" in raw_indexes
+    assert "ix_raw_messages_payload_hash" in raw_message_indexes
 
     # 3. MerchantMemory merchant_key unique index
-    mm_indexes = {
-        idx["name"]: idx["column_names"]
-        for idx in inspector.get_indexes("merchant_memory")
+    merchant_memory_indexes = {
+        index_info["name"]: index_info["column_names"]
+        for index_info in inspector.get_indexes("merchant_memory")
     }
-    assert "ix_merchant_memory_merchant_key" in mm_indexes
+    assert "ix_merchant_memory_merchant_key" in merchant_memory_indexes
 
     # 4. Unique constraints
-    cat_uqs = [uq["name"] for uq in inspector.get_unique_constraints("categories")]
-    assert "uq_category_name_parent" in cat_uqs
-
-    report_uqs = [
-        uq["name"] for uq in inspector.get_unique_constraints("monthly_reports")
+    category_unique_constraints = [
+        constraint["name"]
+        for constraint in inspector.get_unique_constraints("categories")
     ]
-    assert "uq_monthly_report_year_month" in report_uqs
+    assert "uq_category_name_parent" in category_unique_constraints
+
+    report_unique_constraints = [
+        constraint["name"]
+        for constraint in inspector.get_unique_constraints("monthly_reports")
+    ]
+    assert "uq_monthly_report_year_month" in report_unique_constraints
 
 
-def test_foreign_key_cascades_on_migrated_db(
-    alembic_config: Config, temp_db_path: Path
+def test_foreign_key_cascades_and_set_null_on_migrated_db(
+    migrated_engine: Engine,
 ):
-    """Verify foreign key cascading delete and set null on migrated DB."""
-    command.upgrade(alembic_config, "head")
-
-    sync_engine = create_engine(f"sqlite:///{temp_db_path.as_posix()}")
-    with Session(sync_engine) as session:
+    """Verify foreign key cascading delete on splits/logs and SET NULL on group_id."""
+    with Session(migrated_engine) as session:
         session.execute(text("PRAGMA foreign_keys = ON;"))
 
-        # Seed data
-        acc = Account(
+        # Seed initial records
+        account = Account(
             name="Salary",
             institution="HDFC",
             account_type=AccountType.SAVINGS.value,
         )
-        cat = Category(name="Travel")
-        grp = Group(
+        category = Category(name="Travel")
+        event_group = Group(
             name="Goa Trip",
             start_date=date(2026, 8, 1),
             end_date=date(2026, 8, 10),
         )
-        msg = RawMessage(
+        raw_message = RawMessage(
             source=RawMessageSource.GMAIL.value,
             payload_hash="hash123",
             raw_payload="raw data",
             status=RawMessageStatus.PARSED.value,
             received_at=datetime.now(UTC),
         )
-        session.add_all([acc, cat, grp, msg])
+        session.add_all([account, category, event_group, raw_message])
         session.commit()
 
-        txn = Transaction(
-            source_account_id=acc.id,
-            raw_message_id=msg.id,
-            group_id=grp.id,
+        transaction = Transaction(
+            source_account_id=account.id,
+            raw_message_id=raw_message.id,
+            group_id=event_group.id,
             transaction_type=TransactionType.EXPENSE.value,
             amount=500.0,
             timestamp=datetime.now(UTC),
@@ -194,36 +199,42 @@ def test_foreign_key_cascades_on_migrated_db(
             categorized_by=CategorizationStrategy.MANUAL.value,
             txn_ref="UTR111",
         )
-        session.add(txn)
+        session.add(transaction)
         session.commit()
 
         split = Split(
-            transaction_id=txn.id,
-            category_id=cat.id,
+            transaction_id=transaction.id,
+            category_id=category.id,
             amount=500.0,
             note="Flight",
         )
-        log = CategorizationLog(
-            transaction_id=txn.id,
+        categorization_log = CategorizationLog(
+            transaction_id=transaction.id,
             action=CategorizationAction.MANUAL_APPROVE.value,
-            to_category_id=cat.id,
+            to_category_id=category.id,
         )
-        session.add_all([split, log])
+        session.add_all([split, categorization_log])
         session.commit()
 
-        # Delete transaction -> splits & categorization_logs should CASCADE delete
-        session.delete(txn)
+        # 1. Test SET NULL behavior on transaction.group_id when Group is deleted
+        session.delete(event_group)
+        session.commit()
+        session.refresh(transaction)
+        assert transaction.group_id is None
+
+        # 2. Test CASCADE delete behavior on Split and CategorizationLog when Transaction is deleted
+        session.delete(transaction)
         session.commit()
 
         splits_remaining = (
-            session.execute(select(Split).where(Split.transaction_id == txn.id))
+            session.execute(select(Split).where(Split.transaction_id == transaction.id))
             .scalars()
             .all()
         )
         logs_remaining = (
             session.execute(
                 select(CategorizationLog).where(
-                    CategorizationLog.transaction_id == txn.id
+                    CategorizationLog.transaction_id == transaction.id
                 )
             )
             .scalars()
@@ -233,18 +244,17 @@ def test_foreign_key_cascades_on_migrated_db(
         assert len(logs_remaining) == 0
 
 
-def test_alembic_downgrade_and_reupgrade(alembic_config: Config, temp_db_path: Path):
+def test_alembic_downgrade_and_reupgrade(
+    alembic_config: Config, migrated_engine: Engine
+):
     """Test that downgrade drops all tables, and re-upgrade succeeds cleanly."""
-    command.upgrade(alembic_config, "head")
-
-    sync_engine = create_engine(f"sqlite:///{temp_db_path.as_posix()}")
-    inspector = inspect(sync_engine)
+    inspector = inspect(migrated_engine)
     assert len(inspector.get_table_names()) >= 14
 
     # Downgrade to base
     command.downgrade(alembic_config, "base")
 
-    inspector = inspect(sync_engine)
+    inspector = inspect(migrated_engine)
     remaining_tables = set(inspector.get_table_names()) - {
         "alembic_version",
         "sqlite_sequence",
@@ -253,5 +263,22 @@ def test_alembic_downgrade_and_reupgrade(alembic_config: Config, temp_db_path: P
 
     # Re-upgrade to head
     command.upgrade(alembic_config, "head")
+    inspector = inspect(migrated_engine)
+    assert len(inspector.get_table_names()) >= 14
+
+
+def test_async_sqlite_migration_execution(temp_db_path: Path):
+    """Test running Alembic migration with an async SQLite URL."""
+    ini_path = Path(__file__).resolve().parents[2] / "alembic.ini"
+    async_config = Config(str(ini_path))
+    async_config.set_main_option(
+        "sqlalchemy.url", f"sqlite+aiosqlite:///{temp_db_path.as_posix()}"
+    )
+
+    # Run upgrade using async path
+    command.upgrade(async_config, "head")
+
+    sync_engine = create_engine(f"sqlite:///{temp_db_path.as_posix()}")
     inspector = inspect(sync_engine)
     assert len(inspector.get_table_names()) >= 14
+    sync_engine.dispose()

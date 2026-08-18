@@ -62,8 +62,8 @@ def upgrade() -> None:
         sa.Column(
             "total_emails_processed",
             sa.Integer(),
+            server_default=sa.text("0"),
             nullable=False,
-            default=0,
         ),
         sa.Column(
             "updated_at",

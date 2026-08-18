@@ -1,5 +1,6 @@
 import asyncio
 from logging.config import fileConfig
+from typing import Any
 
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
@@ -23,6 +24,12 @@ def get_url() -> str:
         settings = get_settings()
         url = settings.async_database_url
     return url
+
+
+def get_engine_configuration() -> dict[str, Any]:
+    configuration = dict(config.get_section(config.config_ini_section, {}) or {})
+    configuration["sqlalchemy.url"] = get_url()
+    return configuration
 
 
 def run_migrations_offline() -> None:
@@ -49,10 +56,8 @@ def do_run_migrations(connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    configuration = config.get_section(config.config_ini_section, {}) or {}
-    configuration["sqlalchemy.url"] = get_url()
     connectable = async_engine_from_config(
-        configuration,
+        get_engine_configuration(),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
@@ -62,10 +67,8 @@ async def run_async_migrations() -> None:
 
 
 def run_sync_migrations() -> None:
-    configuration = config.get_section(config.config_ini_section, {}) or {}
-    configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
-        configuration,
+        get_engine_configuration(),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
