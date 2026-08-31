@@ -1,4 +1,83 @@
-# Setup Guide: Self-Hosted Expense Tracker on Nothing Phone
+# Setup Guide: Self-Hosted Expense Tracker
+
+This guide covers running the Expense Tracker locally on your laptop (macOS/Linux) for testing, and deploying it on a Nothing Phone (Android) via Termux.
+
+---
+
+## Part 1: Running on your PC (macOS/Linux)
+
+Since the app is built on Python, FastAPI, and Flet, it runs perfectly on any PC. This is recommended for testing and making code changes before deploying to your phone.
+
+### Step 1: Install Dependencies
+```bash
+# Clone the repository
+git clone https://github.com/akkolluru/Expense-Tracker.git expense-tracker
+cd expense-tracker
+
+# Set up virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install requirements (compiles Rust for bcrypt/cryptography automatically on Mac/Linux)
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Step 2: Configure Environment
+Create a `.env` file in the project root:
+```env
+# REQUIRED: Generate a random string: python -c "import secrets; print(secrets.token_hex(32))"
+SECRET_KEY="your-random-64-char-hex-string-here"
+
+# Email
+HDFC_SENDER_EMAIL="alerts@hdfcbank.net"
+EMAIL_POLL_INTERVAL_MINUTES=15
+
+# LLM
+LLM_SERVER_URL="http://127.0.0.1:8080/v1/chat/completions"
+
+# Push Notifications
+NTFY_SERVER_URL="https://ntfy.sh"
+NTFY_TOPIC="your-unique-topic-name-2026"
+```
+
+### Step 3: Seed Database and Set Up OAuth
+```bash
+# Initialize DB with default categories and admin user
+PYTHONPATH=. python scripts/seed_db.py
+
+# Authorize Gmail API (make sure your email is added to Test Users in GCP!)
+PYTHONPATH=. python scripts/gmail_auth.py
+```
+
+### Step 4: Run the LLM Server (llama.cpp)
+On a Mac, you can easily install `llama.cpp` using Homebrew:
+```bash
+brew install llama.cpp
+
+# Download the model
+wget https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf
+
+# Run it
+llama-server -m qwen2.5-1.5b-instruct-q4_k_m.gguf --port 8080 -ngl 99
+```
+
+### Step 5: Start Backend and Frontend
+In separate terminal tabs:
+```bash
+# Terminal 1: Backend
+source .venv/bin/activate
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Frontend
+source .venv/bin/activate
+python -m ui.main
+```
+Open `http://127.0.0.1:8550` to log in (admin / changeme).
+
+---
+
+## Part 2: Running on Nothing Phone (Android / Termux)
 
 ## Prerequisites
 - **Nothing Phone (1)** with 12GB RAM, 256GB storage
@@ -10,7 +89,8 @@
 Open Termux and run:
 ```bash
 pkg update -y && pkg upgrade -y
-pkg install python git clang make cmake wget libcrypt openssl
+# Install basic dependencies and the Rust compiler (required for cryptography/bcrypt)
+pkg install python git clang make cmake wget libcrypt openssl rust binutils
 ```
 
 ## Step 2: Clone the Project
@@ -24,6 +104,9 @@ cd expense-tracker
 ## Step 3: Set Up Python Virtual Environment
 
 ```bash
+# Export the Android API level for the Rust compiler to work properly (fixes maturin build errors)
+export ANDROID_API_LEVEL=$(getprop ro.build.version.sdk)
+
 python -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
@@ -58,17 +141,21 @@ NTFY_TOPIC="your-unique-topic-name-2026"
 
 ```bash
 source .venv/bin/activate
-python scripts/seed_db.py
+# Use PYTHONPATH=. so Python can find the 'app' module
+PYTHONPATH=. python scripts/seed_db.py
 ```
 
 This creates the database, default categories, and the admin user (username: `admin`, password: `changeme`).
 
 ## Step 6: Set Up Gmail OAuth
 
+> [!IMPORTANT]
+> If your Google Cloud project is in "Testing" mode, you must add your Gmail address to the **Test Users** list in the Google Cloud Console (OAuth consent screen) before running this script, or you will get a 403 Access Denied error.
+
 ```bash
 # You'll need to create a Google Cloud OAuth Client ID first
 # Download the credentials.json and place it in credentials/
-python scripts/gmail_auth.py
+PYTHONPATH=. python scripts/gmail_auth.py
 ```
 
 Follow the on-screen prompts to authorize Gmail read-only access. The token will be encrypted and saved.

@@ -12,7 +12,7 @@ from ui.views.login_view import LoginView
 async def main(page: ft.Page):
     page.title = "Expense Tracker"
     page.theme_mode = ft.ThemeMode.DARK
-    page.bgcolor = ft.colors.BACKGROUND
+    page.bgcolor = ft.Colors.SURFACE
     
     # Initialize API Client
     api_client = APIClient()
@@ -29,9 +29,9 @@ async def main(page: ft.Page):
             
     bottom_nav = ft.NavigationBar(
         destinations=[
-            ft.NavigationBarDestination(icon=ft.icons.HOME_OUTLINED, selected_icon=ft.icons.HOME, label="Home"),
-            ft.NavigationBarDestination(icon=ft.icons.INBOX_OUTLINED, selected_icon=ft.icons.INBOX, label="Inbox"),
-            ft.NavigationBarDestination(icon=ft.icons.LIST_ALT_OUTLINED, selected_icon=ft.icons.LIST_ALT, label="Expenses"),
+            ft.NavigationBarDestination(icon=ft.Icons.HOME_OUTLINED, selected_icon=ft.Icons.HOME, label="Home"),
+            ft.NavigationBarDestination(icon=ft.Icons.INBOX_OUTLINED, selected_icon=ft.Icons.INBOX, label="Inbox"),
+            ft.NavigationBarDestination(icon=ft.Icons.LIST_ALT_OUTLINED, selected_icon=ft.Icons.LIST_ALT, label="Expenses"),
         ],
         selected_index=0,
         on_change=on_nav_change,
@@ -82,9 +82,9 @@ async def main(page: ft.Page):
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     
-    # Trigger initial route
-    page.go(page.route if page.route else "/home")
+    # Always start at login — auth check inside route_change will redirect to /home if already logged in
+    page.go("/login")
 
 if __name__ == "__main__":
     # We use asyncio mode since our api_client uses httpx.AsyncClient
-    ft.app(target=main, port=8550, view=ft.AppView.WEB_BROWSER)
+    ft.run(main, port=8550, view=ft.AppView.WEB_BROWSER)

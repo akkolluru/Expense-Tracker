@@ -48,6 +48,7 @@ def main():
     # Encrypt
     encrypted_str = encrypt_data(json.dumps(creds_dict))
     
+    token_file = credentials_dir / "token.json.enc"
     with open(token_file, "w") as f:
         f.write(encrypted_str)
         

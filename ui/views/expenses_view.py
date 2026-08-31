@@ -16,7 +16,7 @@ async def ExpensesView(page: ft.Page, api_client: APIClient):
     amount_field = ft.TextField(label="Amount (₹)", keyboard_type=ft.KeyboardType.NUMBER)
     direction_dropdown = ft.Dropdown(
         label="Type", 
-        options=[ft.dropdown.Option("debit", "Expense"), ft.dropdown.Option("credit", "Income")],
+        options=[ft.DropdownOption(key="debit", text="Expense"), ft.DropdownOption(key="credit", text="Income")],
         value="debit"
     )
     merchant_field = ft.TextField(label="Merchant / Sender")
@@ -35,7 +35,7 @@ async def ExpensesView(page: ft.Page, api_client: APIClient):
             
             # Load categories for manual add dialog
             categories = await api_client.get("/categories/tree")
-            cat_dropdown.options = [ft.dropdown.Option(str(c["id"]), c["name"]) for c in categories]
+            cat_dropdown.options = [ft.DropdownOption(key=str(c["id"]), text=c["name"]) for c in categories]
             
             render_list()
         except Exception as e:
@@ -46,8 +46,8 @@ async def ExpensesView(page: ft.Page, api_client: APIClient):
         if not transactions:
             list_view.controls.append(
                 ft.Container(
-                    content=ft.Text("No transactions yet!", color=ft.colors.WHITE54),
-                    alignment=ft.alignment.center,
+                    content=ft.Text("No transactions yet!", color=ft.Colors.WHITE54),
+                    alignment=ft.Alignment(0, 0),
                     padding=40
                 )
             )
@@ -59,14 +59,14 @@ async def ExpensesView(page: ft.Page, api_client: APIClient):
                         [
                             ft.Column(
                                 [
-                                    ft.Text(t["merchant_name"] or t["vpa"] or "Manual Entry", weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                                    ft.Text(str(t["timestamp"])[:16], size=12, color=ft.colors.WHITE54),
-                                    ft.Text(t.get("description") or "", size=12, color=ft.colors.GREY_500, visible=bool(t.get("description"))),
+                                    ft.Text(t["merchant_name"] or t["vpa"] or "Manual Entry", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                                    ft.Text(str(t["timestamp"])[:16], size=12, color=ft.Colors.WHITE54),
+                                    ft.Text(t.get("description") or "", size=12, color=ft.Colors.GREY_500, visible=bool(t.get("description"))),
                                 ]
                             ),
                             ft.Text(
                                 f"₹{t['amount']:,.0f}", 
-                                color=ft.colors.RED_400 if t["direction"] == "debit" else ft.colors.GREEN_400, 
+                                color=ft.Colors.RED_400 if t["direction"] == "debit" else ft.Colors.GREEN_400, 
                                 weight=ft.FontWeight.BOLD
                             )
                         ],
@@ -85,7 +85,7 @@ async def ExpensesView(page: ft.Page, api_client: APIClient):
         for c in categories:
             if c["id"] == cat_id:
                 if c.get("children"):
-                    subcat_dropdown.options = [ft.dropdown.Option(str(child["id"]), child["name"]) for child in c["children"]]
+                    subcat_dropdown.options = [ft.DropdownOption(key=str(child["id"]), text=child["name"]) for child in c["children"]]
                     subcat_dropdown.disabled = False
                 else:
                     subcat_dropdown.options = []
@@ -164,21 +164,21 @@ async def ExpensesView(page: ft.Page, api_client: APIClient):
     page.run_task(load_data)
 
     return ft.View(
-        "/expenses",
+        route="/expenses",
         controls=[
             ft.Container(
-                content=ft.Text("All Expenses", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                padding=ft.padding.only(left=20, top=20, bottom=10)
+                content=ft.Text("All Expenses", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                padding=ft.Padding(left=20, top=20, right=0, bottom=10)
             ),
             ft.Container(
                 content=list_view,
-                padding=ft.padding.symmetric(horizontal=20),
+                padding=ft.Padding(left=20, top=0, right=20, bottom=0),
                 expand=True
             )
         ],
         floating_action_button=ft.FloatingActionButton(
-            icon=ft.icons.ADD,
-            bgcolor=ft.colors.CYAN_600,
+            icon=ft.Icons.ADD,
+            bgcolor=ft.Colors.CYAN_600,
             on_click=open_add_dialog
         ),
         bgcolor="#121212"

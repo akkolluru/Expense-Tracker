@@ -4,7 +4,8 @@ httpx
 aiosqlite
 sqlalchemy[asyncio]
 alembic
-passlib[bcrypt]
+passlib
+bcrypt==4.0.1
 cryptography
 python-jose[cryptography]
 flet

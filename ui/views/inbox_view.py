@@ -26,7 +26,7 @@ async def InboxView(page: ft.Page, api_client: APIClient):
             categories = await api_client.get("/categories/tree")
             
             # Populate category dropdown
-            cat_dropdown.options = [ft.dropdown.Option(str(c["id"]), c["name"]) for c in categories]
+            cat_dropdown.options = [ft.DropdownOption(key=str(c["id"]), text=c["name"]) for c in categories]
             render_list()
         except Exception as e:
             print(f"Error loading inbox: {e}")
@@ -36,8 +36,8 @@ async def InboxView(page: ft.Page, api_client: APIClient):
         if not transactions:
             list_view.controls.append(
                 ft.Container(
-                    content=ft.Text("No pending transactions!", color=ft.colors.WHITE54),
-                    alignment=ft.alignment.center,
+                    content=ft.Text("No pending transactions!", color=ft.Colors.WHITE54),
+                    alignment=ft.Alignment(0, 0),
                     padding=40
                 )
             )
@@ -49,16 +49,16 @@ async def InboxView(page: ft.Page, api_client: APIClient):
                         [
                             ft.Column(
                                 [
-                                    ft.Text(t["merchant_name"] or t["vpa"] or "Unknown", weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                                    ft.Text(t["date_str"] if "date_str" in t else str(t["timestamp"])[:10], size=12, color=ft.colors.WHITE54),
+                                    ft.Text(t["merchant_name"] or t["vpa"] or "Unknown", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                                    ft.Text(t["date_str"] if "date_str" in t else str(t["timestamp"])[:10], size=12, color=ft.Colors.WHITE54),
                                 ]
                             ),
                             ft.Row(
                                 [
-                                    ft.Text(f"₹{t['amount']:,.0f}", color=ft.colors.RED_400 if t["direction"] == "debit" else ft.colors.GREEN_400, weight=ft.FontWeight.BOLD),
+                                    ft.Text(f"₹{t['amount']:,.0f}", color=ft.Colors.RED_400 if t["direction"] == "debit" else ft.Colors.GREEN_400, weight=ft.FontWeight.BOLD),
                                     ft.IconButton(
-                                        icon=ft.icons.CATEGORY,
-                                        icon_color=ft.colors.CYAN_400,
+                                        icon=ft.Icons.CATEGORY,
+                                        icon_color=ft.Colors.CYAN_400,
                                         on_click=lambda e, txn_id=t["id"]: open_categorize_dialog(txn_id)
                                     )
                                 ]
@@ -79,7 +79,7 @@ async def InboxView(page: ft.Page, api_client: APIClient):
         for c in categories:
             if c["id"] == cat_id:
                 if c.get("children"):
-                    subcat_dropdown.options = [ft.dropdown.Option(str(child["id"]), child["name"]) for child in c["children"]]
+                    subcat_dropdown.options = [ft.DropdownOption(key=str(child["id"]), text=child["name"]) for child in c["children"]]
                     subcat_dropdown.disabled = False
                 else:
                     subcat_dropdown.options = []
@@ -137,15 +137,15 @@ async def InboxView(page: ft.Page, api_client: APIClient):
     page.run_task(load_data)
 
     return ft.View(
-        "/inbox",
+        route="/inbox",
         controls=[
             ft.Container(
-                content=ft.Text("Inbox", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                padding=ft.padding.only(left=20, top=20, bottom=10)
+                content=ft.Text("Inbox", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                padding=ft.Padding(left=20, top=20, right=0, bottom=10)
             ),
             ft.Container(
                 content=list_view,
-                padding=ft.padding.symmetric(horizontal=20),
+                padding=ft.Padding(left=20, top=0, right=20, bottom=0),
                 expand=True
             )
         ],

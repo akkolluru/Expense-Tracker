@@ -8,7 +8,7 @@ async def LoginView(page: ft.Page, api_client: APIClient):
     username_field = ft.TextField(
         label="Username",
         width=300,
-        bgcolor=ft.colors.SURFACE_VARIANT,
+        bgcolor=ft.Colors.SURFACE,
         border_radius=8,
     )
     
@@ -17,12 +17,12 @@ async def LoginView(page: ft.Page, api_client: APIClient):
         password=True,
         can_reveal_password=True,
         width=300,
-        bgcolor=ft.colors.SURFACE_VARIANT,
+        bgcolor=ft.Colors.SURFACE,
         border_radius=8,
         on_submit=lambda e: login_clicked(e),
     )
     
-    error_text = ft.Text(color=ft.colors.ERROR, visible=False)
+    error_text = ft.Text(color=ft.Colors.ERROR, visible=False)
     
     async def login_clicked(e):
         error_text.visible = False
@@ -51,19 +51,19 @@ async def LoginView(page: ft.Page, api_client: APIClient):
         height=50,
         style=ft.ButtonStyle(
             shape=ft.RoundedRectangleBorder(radius=8),
-            bgcolor=ft.colors.PRIMARY,
-            color=ft.colors.ON_PRIMARY,
+            bgcolor=ft.Colors.PRIMARY,
+            color=ft.Colors.ON_PRIMARY,
         ),
         on_click=login_clicked,
     )
 
     return ft.View(
-        "/login",
+        route="/login",
         controls=[
             ft.Container(
                 content=ft.Column(
                     controls=[
-                        ft.Icon(ft.icons.ACCOUNT_BALANCE_WALLET, size=64, color=ft.colors.PRIMARY),
+                        ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET, size=64, color=ft.Colors.PRIMARY),
                         ft.Text("Expense Tracker", size=24, weight=ft.FontWeight.BOLD),
                         ft.Container(height=20),
                         username_field,
@@ -75,10 +75,10 @@ async def LoginView(page: ft.Page, api_client: APIClient):
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 ),
-                alignment=ft.alignment.center,
+                alignment=ft.Alignment(0, 0),
                 expand=True,
             )
         ],
-        bgcolor=ft.colors.BACKGROUND,
+        bgcolor=ft.Colors.SURFACE,
         padding=0,
     )
