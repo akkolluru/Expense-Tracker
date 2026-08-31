@@ -1,95 +1,55 @@
-# Self-Hosted Expense Tracker 💸
+# Expense Tracker v2.0: Master Specification & Planning Portal 💸
 
-A fully private, self-hosted expense tracker designed to run continuously on an Android device (via Termux) or a Raspberry Pi. It automatically parses bank emails, categorizes transactions using a local LLM, and provides a sleek mobile-first UI.
-
-## Architecture 🏛️
-The project uses a 3-layer categorization pipeline:
-1. **Rule Engine:** Exact matches for known VPAs or Merchants.
-2. **LLM Inference:** Uses a local, quantized `llama.cpp` server (Qwen2.5-1.5B) to intelligently classify transactions without sending your data to the cloud.
-3. **Human-in-the-loop:** Any low-confidence inferences fall through to an Inbox for manual review.
-
-The tech stack includes:
-- **Backend:** FastAPI, SQLAlchemy (Async), SQLite (WAL mode)
-- **Frontend:** Flet (Flutter for Python) built for mobile-first web rendering.
-- **Workers:** APScheduler for email polling and daily backups.
-- **Notifications:** `ntfy.sh` for push alerts.
-
-## 📱 Termux / Device Setup
-
-This project is optimized for Termux on Android devices like the Nothing Phone (1).
-
-1. **Install Termux & Dependencies:**
-   ```bash
-   pkg update -y
-   pkg install python git clang make cmake wget libcrypt
-   ```
-
-2. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/akkolluru/Expense-Tracker.git
-   cd Expense-Tracker
-   ```
-
-3. **Set up the Virtual Environment:**
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   ```
-
-## ⚙️ Configuration
-
-1. Create a `.env` file in the root directory:
-   ```env
-   # Database & Secrets
-   SECRET_KEY="generate-a-long-random-string-here"
-   
-   # Email Integration (Gmail)
-   HDFC_SENDER_EMAIL="alerts@hdfcbank.net"
-   EMAIL_POLL_INTERVAL_MINUTES=15
-   
-   # LLM
-   LLM_SERVER_URL="http://127.0.0.1:8080/v1/chat/completions"
-   
-   # Push Notifications
-   NTFY_SERVER_URL="https://ntfy.sh"
-   NTFY_TOPIC="your-unique-topic-name-2026"
-   ```
-
-2. **Gmail API Setup:**
-   Run the interactive script to generate your `token.json` for Gmail read-only access.
-   ```bash
-   python scripts/gmail_auth.py
-   ```
-
-3. **LLM Server Setup:**
-   Download a quantized GGUF model and run `llama-server`.
-   ```bash
-   wget https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf
-   # Run the server in a separate tmux/screen window:
-   ./llama-server -m qwen2.5-1.5b-instruct-q4_k_m.gguf --port 8080
-   ```
-
-## 🚀 Running the App
-
-The system is split into two processes. Run them in separate terminal sessions (or use `tmux`).
-
-**1. Start the FastAPI Backend & Workers:**
-```bash
-source .venv/bin/activate
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-*This handles the API, database migrations, email fetching jobs, and daily backups.*
-
-**2. Start the Flet Frontend:**
-```bash
-source .venv/bin/activate
-python -m ui.main
-```
-*Navigate to `http://127.0.0.1:8550` on your phone's browser to access the app.*
-
-## 🔒 Security & Remote Access
-Do **not** expose port `8550` or `8000` to the public internet. If you want to access the dashboard from your laptop, install **Tailscale** on both your phone and laptop to create a secure, encrypted peer-to-peer network.
+> **Source of Truth & Architectural Blueprint Branch (`v2-planning`)**  
+> This branch contains the complete product requirements, architectural designs, data models, API contracts, mobile UI/UX specifications, and engineering roadmaps for the **Expense Tracker v2.0** system.
 
 ---
-Built with ❤️ for full data privacy and automation.
+
+## 🏛️ System Overview
+
+The **Expense Tracker v2.0** is a 100% private, self-hosted personal finance ledger and expense intelligence system designed specifically for Indian financial workflows (UPI alerts, multi-bank accounts, credit cards, and cash).
+
+```mermaid
+flowchart LR
+    Ingestion["Immutable Raw Ingestion<br/>(Gmail, SMS, CSV)"] --> Parsers["Pluggable Bank Parsers<br/>(HDFC, ICICI, Generic UPI)"]
+    Parsers --> Engine["4-Tier Hybrid AI Engine<br/>(Rules -> Memory -> Qwen/Gemini -> Inbox)"]
+    Engine --> Ledger["Multi-Account Ledger<br/>(Double-Entry Invariants, Splits, Groups)"]
+    Ledger --> Analytics["Real-Time SQL Analytics<br/>(Donut, Top-5 Drilldowns, MoM Variance)"]
+    Analytics <== "Tailscale Mesh VPN (X-API-Key)" ==> Mobile["Cross-Platform Mobile App<br/>(React Native / Expo OLED Dark Mode)"]
+```
+
+---
+
+## 📚 Complete Documentation Index
+
+| Document | Description | Direct Link |
+| :--- | :--- | :--- |
+| **Product Requirements Document (PRD)** | Core mission, user personas, problem scenarios, FR-1 to FR-8, NFR-1 to NFR-6, invariants, and success KPIs. | [PRD.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/PRD.md) |
+| **System Architecture & Design** | Decoupled client-server topology, modular seams, sequence diagrams, failure recovery, and Tailscale VPN security. | [ARCHITECTURE.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/ARCHITECTURE.md) |
+| **Data Model & Ledger Invariants** | Complete Entity Relationship Diagram (ERD), full SQL table schemas, double-entry balance formulas, and compound indexes. | [DATA_MODEL.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/DATA_MODEL.md) |
+| **Categorization Engine & Memory** | 4-tier decision cascade, rule patterns, normalized merchant memory, **Selective Learning** toggle, and hybrid LLM failover. | [CATEGORIZATION_ENGINE.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/CATEGORIZATION_ENGINE.md) |
+| **Bank Ingestion & Parser Pipeline** | Immutable staging store, `BankParser` protocol, regex specs for HDFC/ICICI, and SHA-256 deduplication hashing. | [PARSER_PIPELINE.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/PARSER_PIPELINE.md) |
+| **REST API Specification** | OpenAPI 3.1 contracts, endpoint methods, request/response JSON schemas, query filters, and status codes. | [API_SPEC.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/API_SPEC.md) |
+| **Mobile App UI/UX Specification** | OLED Dark Theme design system tokens, screen wireflows (Home, Inbox Triage, Ledger, Analytics, Settings), and offline caching. | [MOBILE_APP_SPEC.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/MOBILE_APP_SPEC.md) |
+| **Testing Strategy & QA Guide** | Invariant test matrix, real bank email fixture suite, LLM fallback testing, and SQL performance benchmarks. | [TESTING_AND_QA.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/TESTING_AND_QA.md) |
+| **Phased Implementation Roadmap** | Phased engineering roadmap (Phase 1 to Phase 7) with granular ticket breakdowns and verification criteria. | [ROADMAP_AND_MILESTONES.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/ROADMAP_AND_MILESTONES.md) |
+| **Ubiquitous Domain Language** | Domain terminology definitions, ubiquitous language, and naming guardrails. | [CONTEXT.md](file:///Users/kaushik/Projects/Expense%20Tracker/CONTEXT.md) |
+
+---
+
+## 📑 Architectural Decision Records (ADRs)
+
+1. [ADR 0001: Multi-Account Ledger & Raw Ingestion Staging](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0001-multi-account-ledger-and-raw-staging.md)
+2. [ADR 0002: Mobile App & Headless Backend Architecture](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0002-mobile-app-and-group-analytics-architecture.md)
+3. [ADR 0003: Group Lifecycle, Merchant Memory, and Client-Server Topology](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0003-group-lifecycle-and-merchant-memory.md)
+4. [ADR 0004: Bank Parser Registry & Authentication Architecture](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0004-parser-registry-and-auth-architecture.md)
+
+---
+
+## 🎯 Key Architectural Invariants
+
+1. **Transfer Zero-Sum Invariant**: Moving funds between accounts alters individual account balances but never inflates monthly burn rate or net worth.
+2. **Split Balance Invariant**: Line-item splits must strictly sum to the exact parent transaction amount ($\sum \text{Split.amount} = \text{Transaction.amount}$).
+3. **Deterministic AI Precedence**: Deterministic rules and learned merchant memories always override stochastic LLM inferences.
+4. **Selective Memory Learning**: A dedicated toggle prevents one-off peer-to-peer transfers (friends/family) from polluting permanent merchant categorization rules.
+5. **Zero Cloud Leakage**: Financial transaction logs and raw bank payloads reside solely on the self-hosted host behind Tailscale wireguard encryption.
