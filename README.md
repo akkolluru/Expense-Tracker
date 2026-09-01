@@ -43,6 +43,9 @@ flowchart LR
 2. [ADR 0002: Mobile App & Headless Backend Architecture](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0002-mobile-app-and-group-analytics-architecture.md)
 3. [ADR 0003: Group Lifecycle, Merchant Memory, and Client-Server Topology](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0003-group-lifecycle-and-merchant-memory.md)
 4. [ADR 0004: Bank Parser Registry & Authentication Architecture](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0004-parser-registry-and-auth-architecture.md)
+5. [ADR 0005: PWA Deployment Model with PaisaIQ](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0005-pwa-deployment-model-with-paisaiq.md)
+6. [ADR 0006: Cross-Channel Deduplication and Dual Ingestion](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0006-cross-channel-deduplication-and-dual-ingestion.md)
+7. [ADR 0007: Category Split vs Peer Debt Split Disambiguation](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0007-category-split-vs-peer-debt-split.md)
 
 ---
 

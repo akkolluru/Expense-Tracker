@@ -54,12 +54,16 @@ To provide individuals with a **100% private, self-hosted, automated personal fi
   - `Expense`: Outflow from an Account to an external merchant (`is_expense=True`). Decreases account balance and contributes to monthly burn rate.
   - `Income`: Inflow into an Account from an external source (`is_expense=False`). Increases account balance.
   - `Transfer`: Outflow from `source_account_id` and simultaneous inflow to `destination_account_id` (`is_expense=False`). Atomically updates both balances without counting towards monthly expense or income totals.
-- **FR-1.3**: The system shall support line-item `Split` records for any transaction, allowing an expense (e.g., ₹3,000 supermarket purchase) to be distributed across multiple categories (e.g., ₹2,200 Groceries, ₹800 Home Supplies), with strict validation that $\sum \text{Split amounts} = \text{Transaction amount}$.
+- **FR-1.3**: The system shall support both:
+  - **Category Splits**: Line-item distribution of a single transaction across multiple categories (e.g., ₹3,000 supermarket purchase = ₹2,200 Groceries, ₹800 Home Supplies), with strict validation that $\sum \text{Split amounts} = \text{Transaction amount}$.
+  - **Peer Splits & Settlements**: Allocation of payment liability among multiple friends (`SplitMember`) with UPI IDs and shares. Automatically isolates the user's net personal expense from reimbursable amounts owed by others, and reconciles settlements when peers pay back.
 - **FR-1.4**: The system shall support manual cash transaction entry and manual balance adjustments.
 
-### FR-2: Immutable Raw Message Staging & Deduplication
+### FR-2: Immutable Raw Staging, Dual Ingestion & Cross-Channel Deduplication
 - **FR-2.1**: The ingestion worker shall store all incoming emails, SMS alerts, and CSV rows in an immutable `raw_messages` table with raw headers, raw body, source type, and timestamp.
-- **FR-2.2**: The system shall generate a deterministic cryptographic hash (`sha256(source + external_id + payload_summary)`) for each ingested message. Duplicate hashes shall be rejected immediately at the database level (`UNIQUE constraint`), preventing duplicate transactions.
+- **FR-2.2**: The system shall implement a two-stage deduplication protocol:
+  - **Stage 1 (Payload Hash)**: Reject exact duplicate emails or repeated pastes via `SHA256(source + external_id + payload_summary)` at the database constraint level.
+  - **Stage 2 (Cross-Channel Financial Correlation)**: When an on-demand SMS paste and a background Gmail notification arrive for the same financial event, the system correlates them via Bank Reference / UTR within a 48-hour window, enriching the transaction rather than creating duplicates.
 - **FR-2.3**: Staged raw messages shall transition through states: `INGESTED` $\rightarrow$ `PARSED` $\rightarrow$ `FAILED_TO_PARSE` $\rightarrow$ `RE_PARSED`.
 - **FR-2.4**: The system shall provide an administrative endpoint/script to re-run parsers across historical `raw_messages` when parser algorithms are updated.
 
@@ -102,16 +106,17 @@ To provide individuals with a **100% private, self-hosted, automated personal fi
 - **FR-6.4 (Month-over-Month Comparisons)**: Calculate percentage change ($\Delta\%$) and absolute change ($\Delta ₹$) per category compared to the prior month (e.g. "Dining Out: ₹14,200 vs ₹10,500 last month, $+35.2\%$").
 - **FR-6.5 (Spending Pattern Anomaly Detection)**: Flag categories or merchants where spending velocity exceeds $1.25\times$ the 3-month rolling average.
 
-### FR-7: Cross-Platform Native Mobile Client (React Native / Expo)
-- **FR-7.1**: Native mobile app for Android and iOS built with React Native and Expo in strict TypeScript.
-- **FR-7.2 (Design System)**: Deep OLED Dark Mode interface with `#090A0F` background, `#131620` card surfaces, `#8B5CF6` accent purple, `#10B981` positive green, and `#F43F5E` negative red.
-- **FR-7.3 (Screens)**:
-  - `HomeScreen`: Net Worth header, Monthly Burn summary, Quick Add Cash FAB, Recent Transactions feed.
-  - `InboxScreen`: Pending review cards, confidence chips, one-tap approval button, quick category picker, selective memory toggle.
-  - `LedgerScreen`: Paginated infinite-scroll transaction list, search by merchant/note, multi-filter drawer (Date, Account, Category, Group, Type).
-  - `AnalyticsScreen`: Donut chart, interactive slice tap, Top-5 drilldown modal, MoM comparison list, Group expense filter.
-  - `SettingsScreen`: Account balances, active Rules, Gmail Sync trigger, LLM health check, Tailscale connectivity.
-- **FR-7.4 (Offline Caching)**: Cache recent transactions and monthly analytics in local storage (AsyncStorage / TanStack Query cache) for instant offline viewing.
+### FR-7: PaisaIQ Progressive Web App (PWA) & Mobile-First Interface
+- **FR-7.1**: Responsive mobile-first frontend built with React 19, TypeScript, and Tailwind CSS v4, supporting standalone PWA installation on Android and iOS homescreens with offline service-worker caching.
+- **FR-7.2 (Design System)**: Forest/Jade Dark Theme (`#051F20` base canvas, `#0B2B26` cards, `#163832` elevation, `#DAF1DE` mint typography, `#8EB69B` sage accents, and `#235347` border highlights).
+- **FR-7.3 (Core Screens & Modules)**:
+  - `HomeView`: Available Balance hero card, burn rate progress bar, quick actions (Smart SMS Parser modal, Quick manual expense), Clean Slate review queue trigger, AI Time-Travel card, and recent ledger feed with smart alerts.
+  - `InboxView`: Review queue stack, UPI VPA badges, raw SMS snippet accordion, category selector chips, Selective Learning toggle, peer split trigger, and one-tap confirm with Inbox Zero state.
+  - `ExpensesView`: Paginated ledger with search, category filtering, payment method filters, and transaction detail drawer.
+  - `AnalyticsView`: Cash flow analysis, monthly spending breakdowns, interactive category distribution charts (Recharts), and daily burn rate tracker.
+  - `AddTransactionModal`: Dual-mode entry supporting smart bank SMS regex/AI extraction and manual transaction forms.
+  - `TransactionDetailDrawer`: Slide-over drawer with category overrides, notes, and peer debt split management (Split Members with UPI IDs and settlement status).
+- **FR-7.4 (Offline & State Management)**: TanStack Query with local storage caching for instantaneous offline viewing and optimistic review triage.
 
 ### FR-8: System Architecture, Backup & Security
 - **FR-8.1**: Headless FastAPI REST backend running inside a lightweight Docker container.

@@ -26,9 +26,21 @@ _Avoid_: Credit, deposit, earning
 A Transaction moving funds from one owned Account to another without altering net worth or creating an expense/income.
 _Avoid_: Internal movement, self-transfer
 
-**Split**:
+**Category Split**:
 A line-item division of a single Transaction across multiple Categories with specific amounts.
-_Avoid_: Sub-transaction, category breakdown
+_Avoid_: Sub-transaction, category breakdown, line breakdown
+
+**Peer Split**:
+An allocation of a Transaction's financial liability among multiple individuals (Split Members), separating the user's personal net expense from reimbursable amounts owed by others.
+_Avoid_: Shared bill, social split, friend loan, IOUs
+
+**Settlement**:
+A Transaction or record marking the reimbursement of an outstanding Peer Split share by a Split Member.
+_Avoid_: Payback, settlement log, refund
+
+**Split Member**:
+An individual counterparty participating in a Peer Split with a designated share amount and payment status.
+_Avoid_: Friend, peer debtor, contact
 
 ### Ingestion & Pipeline
 
@@ -43,6 +55,10 @@ _Avoid_: Poll event, fetch trigger
 **Draft Transaction**:
 An uncommitted transaction extracted by a parser from a Raw Message, pending categorization and ledger entry.
 _Avoid_: Temporary transaction, pending row
+
+**Cross-Channel Deduplication**:
+The deterministic correlation of multiple incoming alerts representing the same financial event across different channels (e.g. instant SMS and background Gmail notification) matching on bank reference (UTR), amount, account identifier, and a sliding time window.
+_Avoid_: Event merging, duplicate filter, alert join
 
 ### Categorization & Organization
 
@@ -69,3 +85,9 @@ _Avoid_: AI guess, classification result
 **Financial Recap**:
 A periodic narrative summary and statistical insight (monthly, quarterly, bi-annual, annual) highlighting spending patterns, spikes, and habits.
 _Avoid_: Wrapped, summary report, spending story
+
+### Client & Interface
+
+**PWA Client**:
+The responsive, offline-capable Progressive Web Application frontend (PaisaIQ) providing the primary interaction surface across mobile devices and desktop browsers.
+_Avoid_: Web portal, mobile shell, web app

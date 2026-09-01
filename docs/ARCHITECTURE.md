@@ -8,21 +8,23 @@
 The Expense Tracker v2.0 architecture is structured as a **decoupled, local-first client-server model**:
 - **Backend Subsystem**: A headless, containerized Python/FastAPI service managing scheduled bank ingestion, deterministic rule matching, hybrid LLM classification, double-entry ledger state, and real-time SQL analytics.
 - **Persistence Subsystem**: SQLite 3 with Write-Ahead Logging (`WAL`), ACID transactions, strict foreign keys, and point-in-time snapshotting.
-- **Client Subsystem**: A native cross-platform mobile application (React Native / Expo / TypeScript) running on the user's phone, communicating over a private **Tailscale Mesh VPN** with API-Key authentication.
+- **Client Subsystem**: An offline-first Progressive Web Application (PWA) built with **React 19, TypeScript, and Tailwind CSS v4** ("PaisaIQ"), responsive across mobile phone viewports (`max-w-[430px]`) and desktop displays, communicating over a private **Tailscale Mesh VPN** with API-Key authentication.
 
 ```mermaid
 flowchart TB
     subgraph ExternalSources["External Signal Sources"]
-        Gmail["Gmail API (OAuth2)"]
-        SMS["SMS Notification / Webhook"]
+        Gmail["Gmail API (OAuth2 Poller)"]
+        SMS["SMS / WhatsApp Alert (Manual Paste Modal)"]
         CSV["Manual CSV Statements"]
     end
 
     subgraph HostSystem["Self-Hosted Host / Docker Container"]
-        subgraph IngestionSeam["1. Ingestion & Staging"]
-            Poller["Async Ingestion Worker"]
+        subgraph IngestionSeam["1. Dual Ingestion & Deduplication"]
+            Poller["Async Ingestion Worker (Gmail)"]
+            SMSReceiver["On-Demand SMS API (/api/v1/sync/parse-text)"]
             RawStore[("raw_messages (Immutable Staging)")]
-            ParserRegistry["BankParser Registry\n(HDFC UPI, Card, ICICI)"]
+            Deduplicator["Cross-Channel Deduplicator (UTR Match)"]
+            ParserRegistry["BankParser Registry\n(HDFC UPI, Card, ICICI, Generic)"]
         end
 
         subgraph CategorizationSeam["2. Enrichment & Categorization"]
@@ -34,7 +36,7 @@ flowchart TB
 
         subgraph LedgerSeam["3. Multi-Account Ledger"]
             LedgerService["LedgerService\n(Double-Entry Invariants)"]
-            Database[("SQLite 3 (WAL Mode)\naccounts, transactions, splits")]
+            Database[("SQLite 3 (WAL Mode)\naccounts, transactions, splits, peer_splits")]
         end
 
         subgraph AnalyticsSeam["4. Analytics Engine"]
@@ -53,10 +55,10 @@ flowchart TB
         GeminiAPI["Google Gemini API\n(gemini-2.0-flash Fallback)"]
     end
 
-    subgraph MobileClient["User Phone (React Native / Expo)"]
-        UI["Mobile App UI (Dark Mode)"]
+    subgraph MobileClient["PWA Client: PaisaIQ (React 19 / Tailwind)"]
+        UI["PaisaIQ UI (Forest Dark Theme)"]
         LocalCache["TanStack Query / Offline Cache"]
-        SecureStore["Expo SecureStore (X-API-Key)"]
+        AuthStorage["Secure Client Storage (X-API-Key)"]
     end
 
     Gmail --> Poller

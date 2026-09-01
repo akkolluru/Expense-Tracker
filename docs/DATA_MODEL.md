@@ -15,7 +15,8 @@ erDiagram
     CATEGORIES ||--o{ RULES : "assigned by"
     CATEGORIES ||--o{ MERCHANT_MEMORIES : "learned mapping"
     GROUPS ||--o{ TRANSACTIONS : "collects"
-    TRANSACTIONS ||--o{ SPLITS : "broken into"
+    TRANSACTIONS ||--o{ SPLITS : "broken into category splits"
+    TRANSACTIONS ||--o{ PEER_SPLITS : "split among peers"
     TRANSACTIONS ||--o{ CATEGORIZATION_LOGS : "logs decision"
 
     ACCOUNTS {
@@ -95,6 +96,16 @@ erDiagram
         int category_id FK
         decimal amount
         string note
+        datetime created_at
+    }
+
+    PEER_SPLITS {
+        int id PK
+        int transaction_id FK
+        string member_name
+        string upi_id
+        decimal share_amount
+        boolean is_paid
         datetime created_at
     }
 
@@ -250,6 +261,22 @@ Line-item category breakdowns for single transactions.
 
 ---
 
+### 2.6.2 `peer_splits`
+Allocation of transaction liability among peers (Split Members) for social bill splitting and debt tracking.
+
+| Column | Type | Nullable | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `INTEGER` | `NO` | `AUTOINCREMENT` | Primary Key |
+| `transaction_id` | `INTEGER` | `NO` | - | FK $\rightarrow$ `transactions.id` (`ON DELETE CASCADE`) |
+| `member_name` | `VARCHAR(100)` | `NO` | - | Counterparty name (e.g. "Rahul", "Priya") |
+| `upi_id` | `VARCHAR(255)` | `YES` | `NULL` | Peer's UPI VPA (e.g. `rahul@oksbi`) |
+| `share_amount` | `NUMERIC(14, 2)`| `NO` | - | Counterparty's owed share amount |
+| `is_paid` | `BOOLEAN` | `NO` | `FALSE` | Reimbursement status |
+| `settled_at` | `DATETIME` | `YES` | `NULL` | Timestamp when peer settled their share |
+| `created_at` | `DATETIME` | `NO` | `CURRENT_TIMESTAMP` | Timestamp created |
+
+---
+
 ### 2.7 `rules`
 Deterministic pattern matching rules for automated categorization.
 
@@ -332,6 +359,15 @@ ON merchant_memories(merchant_key);
 -- 6. Split Sum Validation
 CREATE INDEX idx_splits_tx 
 ON splits(transaction_id);
+
+-- 7. Cross-Channel UTR / Reference Deduplication
+CREATE INDEX idx_transactions_utr 
+ON transactions(reference_number) 
+WHERE reference_number IS NOT NULL;
+
+-- 8. Peer Split Lookup & Debt Status
+CREATE INDEX idx_peer_splits_tx 
+ON peer_splits(transaction_id, is_paid);
 ```
 
 ---
@@ -345,11 +381,19 @@ Where:
 - $\text{Inflow} \iff (\text{account\_id} = A \land \text{is\_expense} = \text{FALSE} \land \text{is\_transfer} = \text{FALSE}) \lor (\text{destination\_account\_id} = A \land \text{is\_transfer} = \text{TRUE})$
 - $\text{Outflow} \iff (\text{account\_id} = A \land \text{is\_expense} = \text{TRUE}) \lor (\text{account\_id} = A \land \text{is\_transfer} = \text{TRUE})$
 
-### 4.2 Split Sum Invariant
-$$\forall T \in \text{Transactions with Splits}: \quad \text{amount}(T) = \sum_{s \in \text{Splits}(T)} \text{amount}(s)$$
+### 4.2 Split Invariants
+- **Category Split Sum Invariant**:
+  $$\forall T \in \text{Transactions with Category Splits}: \quad \text{amount}(T) = \sum_{s \in \text{Splits}(T)} \text{amount}(s)$$
+- **Peer Split Sum Invariant**:
+  $$\forall T \in \text{Transactions with Peer Splits}: \quad \sum_{m \in \text{PeerSplits}(T)} \text{share\_amount}(m) \le \text{amount}(T)$$
+  The difference $\text{amount}(T) - \sum \text{share\_amount}$ represents the user's personal share.
 
 ### 4.3 Cash Flow Equations
 - **Monthly Income**: $\sum \text{amount}(T)$ where $\text{month}(T) = M \land \text{is\_expense} = \text{FALSE} \land \text{is\_transfer} = \text{FALSE} \land \text{status} = \text{'POSTED'}$
-- **Monthly Expense (Burn Rate)**: $\sum \text{amount}(T)$ where $\text{month}(T) = M \land \text{is\_expense} = \text{TRUE} \land \text{is\_transfer} = \text{FALSE} \land \text{status} = \text{'POSTED'}$
-- **Net Savings**: $\text{Monthly Income} - \text{Monthly Expense}$
+- **Monthly Gross Outflow**: $\sum \text{amount}(T)$ where $\text{month}(T) = M \land \text{is\_expense} = \text{TRUE} \land \text{is\_transfer} = \text{FALSE} \land \text{status} = \text{'POSTED'}$
+- **Personal Monthly Burn Rate (Adjusted for Peer Splits)**:
+  $$\text{Monthly Burn} = \text{Monthly Gross Outflow} - \sum_{m \in \text{PeerSplits}(T), \text{month}(T)=M} \text{share\_amount}(m)$$
+- **Outstanding Peer Receivables (Owed to User)**:
+  $$\text{Total Receivables} = \sum_{m \in \text{PeerSplits}, \text{is\_paid} = \text{FALSE}} \text{share\_amount}(m)$$
+- **Net Savings**: $\text{Monthly Income} - \text{Personal Monthly Burn}$
 - **Savings Rate**: $\frac{\text{Net Savings}}{\text{Monthly Income}} \times 100\%$ (when $\text{Monthly Income} > 0$)

@@ -32,3 +32,4 @@ logs/
 *.db
 .env
 alembic/versions/*.pyc
+.DS_Store

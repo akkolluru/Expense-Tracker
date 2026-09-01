@@ -94,32 +94,31 @@ gantt
 
 ---
 
-### Phase 5: React Native Expo Mobile App Foundation
-- **Ticket 5.1: Mobile Project Initialization & Design System**
-  - Set up React Native Expo with TypeScript.
-  - Configure OLED Dark Theme tokens (`#090A0F` background, `#131620` surfaces, `#8B5CF6` accent).
-- **Ticket 5.2: Secure Storage & API Client**
-  - Implement `api.ts` client with `X-API-Key` headers.
-  - Store credentials in `Expo SecureStore`.
-  - Configure TanStack Query with `AsyncStorage` caching.
-- **Ticket 5.3: Tab Navigation Architecture**
-  - Set up 5-tab bottom navigation bar (`Home`, `Inbox`, `Add`, `Analytics`, `Settings`).
+### Phase 5: PaisaIQ PWA Integration & Foundation
+- **Ticket 5.1: PaisaIQ React 19 Frontend Ingestion & Build Pipeline**
+  - Integrate the PaisaIQ React 19 + TypeScript + Tailwind CSS v4 application into the monorepo (`frontend/`).
+  - Configure PWA manifest, viewport meta (`max-w-[430px]` mobile mode), and Vite build scripts.
+- **Ticket 5.2: API Client (`api.ts`) & TanStack Query Setup**
+  - Implement typed Axios / Fetch client with `X-API-Key` headers and Tailscale endpoint configuration.
+  - Configure TanStack Query with local storage cache persistence.
+- **Ticket 5.3: Responsive Shell & Navigation**
+  - Wire 4-tab mobile navigation (`Home`, `Inbox`, `Expenses`, `Analytics`) and quick action modals.
 
 ---
 
-### Phase 6: Mobile Feature Suite & Interactive Charts
-- **Ticket 6.1: Home Dashboard Screen**
-  - Net Worth hero card, Monthly Burn progress, Account balance carousel, Recent transactions feed.
-- **Ticket 6.2: Review Inbox Triage Screen**
-  - Swipeable review cards, suggested category pills, **Selective Learning Checkbox**, one-tap approve.
-- **Ticket 6.3: Full Ledger & Transaction Detail Screen**
-  - Paginated transaction list, multi-filter drawer, search bar, split editor.
-- **Ticket 6.4: Interactive Analytics & Donut Drilldown**
-  - Animated donut chart (`react-native-gifted-charts`).
-  - Tapping slice opens bottom sheet displaying **Top 5 Largest Spends**.
-  - Month-over-Month variance list with delta indicators.
-- **Ticket 6.5: Settings & Tools Screen**
-  - Tailscale backend IP configuration, Sync Now trigger, Rule editor.
+### Phase 6: PaisaIQ Live Screen Binding & Feature Integration
+- **Ticket 6.1: HomeView Live Binding**
+  - Bind Available Balance hero card, monthly burn progress, savings rate, and recent ledger feed to `/api/v1/analytics/summary` and `/api/v1/transactions`.
+- **Ticket 6.2: InboxView Triage & Selective Learning**
+  - Add **Selective Learning Checkbox** ("Remember for future transactions") to the review card.
+  - Wire one-tap confirm, category picker grid, and raw SMS snippet toggle to `/api/v1/inbox`.
+- **Ticket 6.3: ExpensesView & TransactionDetailDrawer with Peer Splits**
+  - Connect full search, category filter chips, and payment mode filters.
+  - Wire `TransactionDetailDrawer` for category overrides and multi-member peer debt splits (`peer_splits`).
+- **Ticket 6.4: AnalyticsView Recharts Visualizations**
+  - Bind Recharts cash flow breakdowns, category distribution donut, and daily burn rate chart to live analytics endpoints.
+- **Ticket 6.5: AddTransactionModal Live Bank SMS Ingestion**
+  - Wire "Smart Bank SMS Parser" tab to backend `POST /api/v1/sync/parse-text` with instant cross-channel UTR deduplication.
 
 ---
 
