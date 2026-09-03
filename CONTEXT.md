@@ -60,6 +60,10 @@ _Avoid_: Temporary transaction, pending row
 The deterministic correlation of multiple incoming alerts representing the same financial event across different channels (e.g. instant SMS and background Gmail notification) matching on bank reference (UTR), amount, account identifier, and a sliding time window.
 _Avoid_: Event merging, duplicate filter, alert join
 
+**Enrichment Merge**:
+The non-destructive enrichment of an existing Transaction with supplementary verified metadata (such as closing balance, branch name, or account last4) extracted from a later incoming notification matching the same bank reference (UTR), without altering existing category assignments, splits, or notes.
+_Avoid_: In-place update, overwrite, mutation merge
+
 ### Categorization & Organization
 
 **Category**:
@@ -78,6 +82,10 @@ _Avoid_: Filter, heuristic
 An auto-learned persistent lookup cache mapping normalized merchant identities and VPAs to previously approved Categories.
 _Avoid_: Learned rule, merchant cache
 
+**Scoped Merchant Memory**:
+The automated scoping of learned merchant rules into distinct matching tiers based on the identifier type (exact commercial VPA, sanitized merchant name substring for card/POS, or opt-in only for peer VPAs).
+_Avoid_: Pattern scope, rule tiering
+
 **Categorization Decision**:
 A structured output from the categorization engine indicating the assigned Category, confidence score, and matching strategy (Rule, Merchant Memory, or LLM).
 _Avoid_: AI guess, classification result
@@ -91,3 +99,7 @@ _Avoid_: Wrapped, summary report, spending story
 **PWA Client**:
 The responsive, offline-capable Progressive Web Application frontend (PaisaIQ) providing the primary interaction surface across mobile devices and desktop browsers.
 _Avoid_: Web portal, mobile shell, web app
+
+**Offline Queue**:
+A client-side persistent buffer in the PWA Client (using browser IndexedDB) that holds newly recorded cash transactions or pasted SMS drafts while disconnected from the host server, dispatching them automatically once connectivity is restored.
+_Avoid_: Local cache, pending stack, sync buffer

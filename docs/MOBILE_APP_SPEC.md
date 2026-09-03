@@ -145,13 +145,18 @@ Zero-friction human-in-the-loop review queue for ambiguous or new transactions.
 
 ---
 
-## 4. State Management, Caching & Offline Strategy
+## 4. State Management, Caching & Offline Synchronization Strategy
 
 - **TanStack Query (React Query v5)**:
   - Manages server query state, caching, and automatic background invalidation.
   - Query keys: `['accounts']`, `['transactions', filters]`, `['inbox']`, `['analytics', month]`, `['groups']`.
-- **Offline Persistence**:
-  - `createAsyncStoragePersister` serializes query cache to `AsyncStorage`.
-  - When the phone is disconnected from Tailscale, the UI renders cached data immediately with a subtle "Offline / Cached" banner.
-- **Optimistic Updates**:
-  - Approving an Inbox transaction immediately removes it from the UI queue and updates the local cached account balance before the API network roundtrip completes.
+- **IndexedDB Offline Action Queue**:
+  - Utilizes browser `IndexedDB` to buffer mutations when disconnected from the host server (e.g. out of network or VPN down).
+  - Manual cash transactions and pasted SMS drafts are committed to the local queue with client-generated idempotency UUIDs.
+  - The UI optimistically displays these records with an amber **"Pending Sync"** badge.
+- **Automatic Reconnection Flush**:
+  - Listens for browser `online` events and pings `/api/v1/system/health`.
+  - Automatically flushes queued actions sequentially to `POST /api/v1/transactions` and `POST /api/v1/sync/parse-text`.
+- **Manual Debt Settlement Checkbox (`TransactionDetailDrawer`)**:
+  - In line with pragmatic design, peer debt splits provide a simple **"Paid"** toggle next to each `SplitMember`.
+  - Checking the box updates `peer_splits.is_paid = TRUE` and marks `settled_at`, without requiring complex automated reconciliation algorithms.

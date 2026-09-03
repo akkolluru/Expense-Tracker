@@ -46,6 +46,8 @@ flowchart LR
 5. [ADR 0005: PWA Deployment Model with PaisaIQ](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0005-pwa-deployment-model-with-paisaiq.md)
 6. [ADR 0006: Cross-Channel Deduplication and Dual Ingestion](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0006-cross-channel-deduplication-and-dual-ingestion.md)
 7. [ADR 0007: Category Split vs Peer Debt Split Disambiguation](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0007-category-split-vs-peer-debt-split.md)
+8. [ADR 0008: Cross-Channel Enrichment Merge on Bank UTR Collision](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0008-cross-channel-enrichment-merge.md)
+9. [ADR 0009: Offline Queue and Client-to-Host Synchronization Topology](file:///Users/kaushik/Projects/Expense%20Tracker/docs/adr/0009-offline-queue-and-sync-topology.md)
 
 ---
 

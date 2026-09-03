@@ -126,6 +126,15 @@ $$\text{payload\_hash} = \text{SHA256}(\text{source} \parallel \text{external\_i
 
 If the database detects a collision (`UNIQUE constraint on raw_messages.payload_hash`), the ingestion worker quietly skips the message with an `INFO` log.
 
+### 4.2 Cross-Channel UTR Deduplication & Enrichment Merge
+When an on-demand SMS is pasted by the user, and a corresponding bank email arrives later via background Gmail polling:
+1. **UTR Match Discovery**: The engine queries `transactions` for an existing record with matching `reference_number` (Bank UTR) within a 48-hour window.
+2. **Merge Execution**:
+   - The email is saved in `raw_messages` with status `'MERGED'`.
+   - The existing `transactions` row is updated with missing high-fidelity data (e.g. verified `account_id` from email's `last4`, closing balance snapshot, full corporate branch descriptor).
+   - The transaction's user-approved `category_id`, `splits`, `peer_splits`, and notes are left intact.
+   - Zero duplicate transactions are created in the ledger.
+
 ---
 
 ## 5. Historical Re-Parsing Workflow

@@ -75,8 +75,22 @@ When a merchant name or VPA is saved to memory, it is normalized to generate a c
 
 **Solution**:
 Every time the user approves or changes a category in the mobile app, the UI presents a **"Remember for future transactions"** toggle (defaults to `True` for businesses, `False` for peer VPAs):
-- **Toggle ON (`learn_merchant = True`)**: `MerchantMemory` is upserted with `(merchant_key, category_id)`.
+- **Toggle ON (`learn_merchant = True`)**: `MerchantMemory` is upserted with `(merchant_key, category_id)` scoped according to Section 3.4.
 - **Toggle OFF (`learn_merchant = False`)**: The category is applied strictly to the single transaction being edited, preserving memory cleanliness.
+
+### 3.4 Scoped Rule Generation Strategy
+When a transaction is approved with `learn_merchant = True`, the rule engine scopes the memory key dynamically based on the payment method and identifier type:
+
+1. **Commercial UPI VPA (Tier A - Exact VPA)**:
+   - For merchant VPAs containing recognized provider domains or business handles (`@icici`, `@axisbank`, `@paytm`, `@hdfcbank`), the rule is scoped to the **exact lowercase VPA** (e.g. `swiggy@icici`).
+2. **Card Swipes & POS Terminals (Tier B - Sanitized Substring)**:
+   - For credit/debit card transactions lacking VPAs, the raw terminal descriptor is sanitized:
+     - Strips terminal serials (`#1042`, `POS-882`), transaction identifiers (`IN`, `TXN-991`), and city names (`BLR`, `MUM`, `DEL`).
+     - Example: `"STARBUCKS #0492 BLR IN"` $\rightarrow$ `"starbucks"`.
+     - Stored as a `MERCHANT_CONTAINS` rule matching any future card alert containing that canonical brand stem.
+3. **Personal Peer VPAs (Tier C - Opt-In Guardrail)**:
+   - For peer-to-peer VPAs (`@okhdfcbank`, `@okaxis`, `@ybl` paired with personal names), the UI **defaults the toggle to OFF**.
+   - If the user explicitly checks the box (e.g. paying a landlord or maid monthly), the exact VPA is saved.
 
 ---
 
