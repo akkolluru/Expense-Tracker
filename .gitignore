@@ -33,3 +33,11 @@ logs/
 .env
 alembic/versions/*.pyc
 .DS_Store
+
+# LLM weights & Models
+*.gguf
+*.bin
+
+# Archives & Temp
+*.zip
+
