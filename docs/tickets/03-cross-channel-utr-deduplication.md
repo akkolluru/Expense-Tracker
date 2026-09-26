@@ -8,10 +8,10 @@ A dual-channel reconciliation engine that eliminates duplicate transactions acro
 
 **Status:** ready-for-agent
 
-- [ ] Deduplication lookup querying `transactions.reference_number == draft.reference_number` within a 7-day window.
-- [ ] Fallback deduplication signature `(amount == draft.amount AND abs(timestamp - draft.timestamp) <= 10m)` when reference number is missing.
-- [ ] Non-destructive enrichment merge logic:
+- [x] Deduplication lookup querying `transactions.reference_number == draft.reference_number` within a 7-day window.
+- [x] Fallback deduplication signature `(amount == draft.amount AND abs(timestamp - draft.timestamp) <= 10m)` when reference number is missing.
+- [x] Non-destructive enrichment merge logic:
   - If existing transaction is found: populate missing fields (`account_id`, `raw_message_id`, `reference_number`), preserve existing `category_id`, `splits`, `group_id`, and `notes`.
   - Mark raw message as `PARSED` and link it to the existing transaction.
-- [ ] If no existing transaction matches: commit new transaction to the staging/ledger pipeline.
-- [ ] Comprehensive test suite in `backend/tests/test_deduplication.py` testing SMS-first then Email-second, and Email-first then SMS-second arrival sequences.
+- [x] If no existing transaction matches: commit new transaction to the staging/ledger pipeline.
+- [x] Comprehensive test suite in `backend/tests/test_deduplication.py` testing SMS-first then Email-second, and Email-first then SMS-second arrival sequences.
