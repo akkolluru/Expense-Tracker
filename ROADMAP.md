@@ -1,6 +1,10 @@
 # Expense Tracker: Future Planning & Roadmap
 
-This document outlines the planned improvements, known issues, and future direction for the next version of the Self-Hosted Expense Tracker.
+> [!IMPORTANT]
+> **Source of Truth Notice**: This document contains historical notes from the v1 prototype. The authoritative v2.0 specification and implementation roadmap are maintained in:
+> - **Roadmap & Milestones**: [docs/ROADMAP_AND_MILESTONES.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/ROADMAP_AND_MILESTONES.md)
+> - **Specification**: [docs/specs/0001-expense-tracker-v2-spec.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/specs/0001-expense-tracker-v2-spec.md)
+> - **Validation & Decisions**: [plans/PLAN_VALIDATION.md](file:///Users/kaushik/Projects/Expense%20Tracker/plans/PLAN_VALIDATION.md)
 
 ## 🟡 Known Advisories (To be fixed in upcoming iterations)
 

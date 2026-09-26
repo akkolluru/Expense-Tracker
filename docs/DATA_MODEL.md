@@ -73,11 +73,14 @@ erDiagram
         int destination_account_id FK
         int raw_message_id FK
         int category_id FK
+        int suggested_category_id FK
         int group_id FK
         decimal amount
         string currency
         boolean is_expense
         boolean is_transfer
+        boolean is_settlement
+        string idempotency_key UK
         string status
         string merchant_name
         string merchant_vpa
@@ -102,10 +105,12 @@ erDiagram
     PEER_SPLITS {
         int id PK
         int transaction_id FK
+        int settlement_transaction_id FK
         string member_name
         string upi_id
         decimal share_amount
         boolean is_paid
+        datetime settled_at
         datetime created_at
     }
 
@@ -229,11 +234,14 @@ The core ledger table recording all financial movements.
 | `destination_account_id` | `INTEGER` | `YES` | `NULL` | FK $\rightarrow$ `accounts.id` (`ON DELETE RESTRICT`) for transfers |
 | `raw_message_id` | `INTEGER` | `YES` | `NULL` | FK $\rightarrow$ `raw_messages.id` (`ON DELETE SET NULL`) |
 | `category_id` | `INTEGER` | `YES` | `NULL` | FK $\rightarrow$ `categories.id` (`ON DELETE RESTRICT`) |
+| `suggested_category_id` | `INTEGER` | `YES` | `NULL` | FK $\rightarrow$ `categories.id` (`ON DELETE SET NULL`) for unapproved AI suggestions |
 | `group_id` | `INTEGER` | `YES` | `NULL` | FK $\rightarrow$ `groups.id` (`ON DELETE SET NULL`) |
 | `amount` | `NUMERIC(14, 2)`| `NO` | - | Transaction amount (always positive decimal) |
 | `currency` | `VARCHAR(3)` | `NO` | `'INR'` | Currency code |
 | `is_expense` | `BOOLEAN` | `NO` | `TRUE` | `TRUE` = Outflow, `FALSE` = Inflow / Transfer |
 | `is_transfer` | `BOOLEAN` | `NO` | `FALSE` | `TRUE` = Intra-account transfer |
+| `is_settlement` | `BOOLEAN` | `NO` | `FALSE` | `TRUE` = Peer split reimbursement settlement |
+| `idempotency_key` | `VARCHAR(64)` | `YES` | `NULL` | Client-generated UUID for offline idempotency (`UNIQUE`) |
 | `status` | `VARCHAR(30)` | `NO` | `'POSTED'` | `POSTED`, `PENDING_REVIEW`, `DRAFT`, `RECONCILED` |
 | `merchant_name` | `VARCHAR(255)` | `NO` | - | Normalized payee/merchant name |
 | `merchant_vpa` | `VARCHAR(255)` | `YES` | `NULL` | UPI Virtual Payment Address (e.g. `swiggy@icici`) |
@@ -268,6 +276,7 @@ Allocation of transaction liability among peers (Split Members) for social bill 
 | :--- | :--- | :--- | :--- | :--- |
 | `id` | `INTEGER` | `NO` | `AUTOINCREMENT` | Primary Key |
 | `transaction_id` | `INTEGER` | `NO` | - | FK $\rightarrow$ `transactions.id` (`ON DELETE CASCADE`) |
+| `settlement_transaction_id` | `INTEGER` | `YES` | `NULL` | FK $\rightarrow$ `transactions.id` (`ON DELETE SET NULL`) linking repayment |
 | `member_name` | `VARCHAR(100)` | `NO` | - | Counterparty name (e.g. "Rahul", "Priya") |
 | `upi_id` | `VARCHAR(255)` | `YES` | `NULL` | Peer's UPI VPA (e.g. `rahul@oksbi`) |
 | `share_amount` | `NUMERIC(14, 2)`| `NO` | - | Counterparty's owed share amount |
@@ -368,6 +377,15 @@ WHERE reference_number IS NOT NULL;
 -- 8. Peer Split Lookup & Debt Status
 CREATE INDEX idx_peer_splits_tx 
 ON peer_splits(transaction_id, is_paid);
+
+-- 9. Peer Split Settlement Link
+CREATE INDEX idx_peer_splits_settlement 
+ON peer_splits(settlement_transaction_id);
+
+-- 10. Offline Queue Idempotency Lookup
+CREATE INDEX idx_transactions_idempotency 
+ON transactions(idempotency_key) 
+WHERE idempotency_key IS NOT NULL;
 ```
 
 ---
@@ -387,9 +405,12 @@ Where:
 - **Peer Split Sum Invariant**:
   $$\forall T \in \text{Transactions with Peer Splits}: \quad \sum_{m \in \text{PeerSplits}(T)} \text{share\_amount}(m) \le \text{amount}(T)$$
   The difference $\text{amount}(T) - \sum \text{share\_amount}$ represents the user's personal share.
+- **Peer Settlement Invariant**:
+  $$\forall S \in \text{Transactions with is\_settlement = TRUE}: \quad S \text{ is excluded from Monthly Income calculations.}$$
+  Account balance increases by $\text{amount}(S)$, while $\text{peer\_splits.is\_paid} \leftarrow \text{TRUE}$ and $\text{settled\_at} \leftarrow \text{timestamp}(S)$ without altering personal income metrics.
 
 ### 4.3 Cash Flow Equations
-- **Monthly Income**: $\sum \text{amount}(T)$ where $\text{month}(T) = M \land \text{is\_expense} = \text{FALSE} \land \text{is\_transfer} = \text{FALSE} \land \text{status} = \text{'POSTED'}$
+- **Monthly Income**: $\sum \text{amount}(T)$ where $\text{month}(T) = M \land \text{is\_expense} = \text{FALSE} \land \text{is\_transfer} = \text{FALSE} \land \text{is\_settlement} = \text{FALSE} \land \text{status} = \text{'POSTED'}$
 - **Monthly Gross Outflow**: $\sum \text{amount}(T)$ where $\text{month}(T) = M \land \text{is\_expense} = \text{TRUE} \land \text{is\_transfer} = \text{FALSE} \land \text{status} = \text{'POSTED'}$
 - **Personal Monthly Burn Rate (Adjusted for Peer Splits)**:
   $$\text{Monthly Burn} = \text{Monthly Gross Outflow} - \sum_{m \in \text{PeerSplits}(T), \text{month}(T)=M} \text{share\_amount}(m)$$

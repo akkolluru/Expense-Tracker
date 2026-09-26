@@ -1,37 +1,36 @@
 # Mobile App UI/UX Specification & Design System
-## Expense Tracker v2.0: React Native (Expo) Client
+## Expense Tracker v2.0: PaisaIQ React 19 PWA Client
 
 ---
 
 ## 1. Design System & Visual Tokens
 
-The mobile app is engineered for **ultra-fast mobile triage, low eye strain, and OLED battery efficiency** using a high-contrast dark theme.
+The mobile app is engineered as an offline-first Progressive Web Application (**PaisaIQ**) optimized for mobile viewports (`max-w-[430px]` center canvas), rapid review triage, and low eye strain using a custom **Forest / Jade Dark Theme**.
 
 ### 1.1 Color Palette
 
 ```
-Background (OLED Black) : #090A0F
-Card Surface            : #131620
-Card Surface Elev. 2    : #1B1F2D
-Border & Divider        : #232838
+Background (Deep Forest) : #051F20
+Card Surface (Dark Pine) : #0B2B26
+Card Surface Elev. 2     : #163832
+Border & Highlights      : #235347
 
-Text Primary            : #FFFFFF
-Text Secondary          : #94A3B8
-Text Muted              : #64748B
+Typography Primary       : #DAF1DE
+Typography Secondary     : #8EB69B
+Typography Muted         : #64748B
 
-Accent / Brand Purple   : #8B5CF6 (Primary Action FABs, Active Tabs)
-Accent Light Purple     : #A78BFA
-Success Emerald         : #10B981 (Income, Net Positive, Approved)
-Danger Rose             : #F43F5E (Expenses, Over-budget Alerts)
-Warning Amber           : #F59E0B (Pending Review Chips, MoM Spikes)
-Info Cyan               : #06B6D4 (Transfers, System Sync)
+Accent / Sage Green      : #8EB69B (Active Tabs, Metric Highlights)
+Success Emerald          : #10B981 (Income, Net Positive, Approved)
+Danger Rose              : #F43F5E (Expenses, Over-budget Alerts)
+Warning Amber            : #F59E0B (Pending Review Chips, MoM Spikes)
+Info Cyan                : #06B6D4 (Transfers, System Sync)
 ```
 
-### 1.2 Typography Hierarchy (System Sans-Serif / Inter)
+### 1.2 Typography Hierarchy (Inter / Modern Sans)
 - **Large Header / Balances**: `32px`, Bold (`700`), Letter Spacing `-0.5px`
 - **Card Titles / Section Headers**: `18px`, Semi-Bold (`600`)
 - **Body / Merchant Names**: `15px`, Medium (`500`)
-- **Metadata / Timestamps**: `13px`, Regular (`400`), `#94A3B8`
+- **Metadata / Timestamps**: `13px`, Regular (`400`), `#8EB69B`
 - **Micro Badges / Chips**: `11px`, Bold (`700`), Letter Spacing `+0.5px`, Uppercase
 
 ### 1.3 Layout & Spacing Tokens
@@ -39,16 +38,17 @@ Info Cyan               : #06B6D4 (Transfers, System Sync)
 - Content padding: `16px`
 - Card corner radius: `16px`
 - Pill chip corner radius: `20px`
-- Elevation / Shadow: Soft purple-tinted ambient glow on primary cards: `shadowColor: '#8B5CF6', shadowOpacity: 0.15, shadowRadius: 10`.
+- Elevation / Shadow: Ambient jade glow on cards: `box-shadow: 0 4px 20px -2px rgba(35, 83, 71, 0.25)`.
+- Viewport Envelope: `max-w-[430px] mx-auto min-h-screen bg-[#051F20] shadow-2xl` on desktop browsers.
 
 ---
 
 ## 2. Navigation Architecture
 
-The app employs a 5-tab bottom bar navigation structure with an elevated center Floating Action Button (FAB) for rapid manual entry:
+The app employs a 4-tab bottom bar navigation structure with quick action modals for transaction entry and SMS parsing:
 
 ```
-[ 🏠 Home ]   [ 📥 Inbox (Badge) ]   [ ➕ Add ]   [ 📊 Analytics ]   [ ⚙️ Settings ]
+[ 🏠 Home ]   [ 📥 Inbox (Badge) ]   [ 💳 Expenses ]   [ 📊 Analytics ]
 ```
 
 ---
@@ -90,7 +90,7 @@ Zero-friction human-in-the-loop review queue for ambiguous or new transactions.
 
 ---
 
-### 3.3 Full Ledger (`LedgerScreen`)
+### 3.3 Full Ledger & Expenses (`ExpensesView`)
 
 #### Components:
 1. **Search Bar**: Real-time debounce filter by merchant name, notes, or reference number.
@@ -99,18 +99,18 @@ Zero-friction human-in-the-loop review queue for ambiguous or new transactions.
    - Account filter dropdown.
    - Category filter multi-select.
    - Group filter (e.g. "Goa Trip 2026").
-3. **Transaction List**:
-   - Infinite scroll list powered by `FlatList` with `onEndReached` pagination.
-   - Tap on any transaction opens the **Transaction Detail Modal** to adjust splits, add notes, or reassign groups.
+3. **Transaction List & Drawer**:
+   - Reactive infinite scroll feed.
+   - Tap on any transaction opens the **`TransactionDetailDrawer`** to adjust category splits, inspect raw messages, or configure multi-member peer debt splits (`peer_splits`).
 
 ---
 
-### 3.4 Real-Time Analytics (`AnalyticsScreen`)
+### 3.4 Real-Time Analytics (`AnalyticsView`)
 
 #### Components:
 1. **Month Selector**: Header dropdown / arrows to toggle between calendar months.
 2. **Interactive Donut Chart**:
-   - Rendered using `react-native-gifted-charts` with smooth opening animation.
+   - Rendered using **`Recharts`** (`ResponsiveContainer`, `PieChart`, `Pie`, `Cell`) with smooth hover/tap transitions.
    - Slices colored by category palette.
    - Center text shows Total Monthly Spend (`₹68,450`).
 3. **Interactive Top-5 Drilldown Modal**:
@@ -125,12 +125,12 @@ Zero-friction human-in-the-loop review queue for ambiguous or new transactions.
 
 ---
 
-### 3.5 Settings & Tools (`SettingsScreen`)
+### 3.5 Settings & Tools (`SettingsModal`)
 
 #### Components:
 1. **Connection & Security**:
    - Tailscale Backend IP input (`http://100.x.y.z:8000`).
-   - Server `X-API-Key` entry (saved securely to Expo SecureStore).
+   - Server `X-API-Key` entry (persisted securely in browser storage / IndexedDB).
    - "Test Connection" button with latency ping.
 2. **Categorization & AI Configuration**:
    - Active AI Mode indicator (`Hybrid (Qwen2.5 Local + Gemini 2.0 Flash)`).

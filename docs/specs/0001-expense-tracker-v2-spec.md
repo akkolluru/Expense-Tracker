@@ -11,7 +11,7 @@ Users managing personal finances across multiple bank accounts (savings, credit 
 
 ## Solution
 
-A headless, self-hosted containerized personal finance backend paired with a native cross-platform mobile application (React Native / Expo). The system provides:
+A headless, self-hosted containerized personal finance backend paired with an offline-first Progressive Web Application (**PaisaIQ: React 19 + TypeScript + Tailwind CSS v4**). The system provides:
 1. **Multi-Account Ledger**: Full multi-account support with explicit `Expense`, `Income`, and `Transfer` semantics and line-item `Split` capability.
 2. **Immutable Raw Message Ingestion**: Decoupled staging of raw incoming communications (Gmail API, SMS, CSV) with cryptographic de-duplication and a pluggable bank parser registry.
 3. **Multi-Tiered Deterministic Categorization**: A strict categorization hierarchy prioritizing user-defined rules and auto-learning `Merchant Memory` to resolve 80-90% of transactions with zero latency, falling back to a structured JSON LLM schema only when needed.
@@ -88,7 +88,7 @@ A headless, self-hosted containerized personal finance backend paired with a nat
 
 5. **API & Client Interface**:
    - Headless FastAPI REST service with OpenAPI schema generation.
-   - Cross-platform React Native (Expo) client consuming typed endpoints via TanStack Query and rendering charts via `react-native-gifted-charts`.
+   - Offline-first PaisaIQ React 19 PWA client consuming typed endpoints via TanStack Query and rendering charts via `Recharts`.
 
 ---
 

@@ -25,9 +25,9 @@ gantt
     section Phase 4: Analytics & Groups
     Event Groups & Date Windows    :p4_1, after p3_3, 2d
     Indexed Analytics & Drilldown  :p4_2, after p4_1, 3d
-    section Phase 5: Mobile Foundation
-    Expo Setup & OLED Dark Theme   :p5_1, after p4_2, 3d
-    Navigation & API Client        :p5_2, after p5_1, 2d
+    section Phase 5: PaisaIQ PWA Foundation
+    React 19 & Forest Dark Theme   :p5_1, after p4_2, 3d
+    PWA Shell & TanStack Query     :p5_2, after p5_1, 2d
     section Phase 6: Mobile Features
     Dashboard & Recent Ledger      :p6_1, after p5_2, 3d
     Inbox Triage & Selective Modal :p6_2, after p6_1, 3d

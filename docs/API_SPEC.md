@@ -10,6 +10,7 @@ All API endpoints are protected using single-user API Key authentication.
 ### Headers:
 ```http
 X-API-Key: <configured-server-api-key>
+X-Idempotency-Key: <client-generated-uuid>  # Optional: for safe offline replay
 Content-Type: application/json
 Accept: application/json
 ```
@@ -121,6 +122,8 @@ Lists transactions with paginated filtering.
       "currency": "INR",
       "is_expense": true,
       "is_transfer": false,
+      "is_settlement": false,
+      "idempotency_key": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
       "status": "POSTED",
       "merchant_name": "Fisherman's Wharf",
       "merchant_vpa": "fishwharf@hdfcbank",
@@ -128,8 +131,10 @@ Lists transactions with paginated filtering.
       "description": "Lunch with friends",
       "categorization_strategy": "RULE",
       "categorization_confidence": 1.0,
+      "suggested_category_id": null,
       "timestamp": "2026-08-12T14:32:00Z",
-      "splits": []
+      "splits": [],
+      "peer_splits": []
     }
   ],
   "total": 1,
@@ -169,6 +174,90 @@ Splits an existing transaction across multiple categories.
     { "category_id": 4, "amount": "1200.00", "note": "Groceries" },
     { "category_id": 7, "amount": "800.00", "note": "Kitchenware" }
   ]
+}
+```
+
+#### `POST /api/v1/transactions/{id}/peer-splits`
+Allocates debt shares among friends/peers for a shared expense.
+
+**Request Body**:
+```json
+{
+  "peer_splits": [
+    {
+      "member_name": "Rahul",
+      "upi_id": "rahul@okhdfcbank",
+      "share_amount": "400.00"
+    },
+    {
+      "member_name": "Priya",
+      "upi_id": "priya@okaxis",
+      "share_amount": "400.00"
+    }
+  ]
+}
+```
+
+**Response `201 Created`**:
+```json
+[
+  {
+    "id": 1,
+    "transaction_id": 104,
+    "member_name": "Rahul",
+    "upi_id": "rahul@okhdfcbank",
+    "share_amount": "400.00",
+    "is_paid": false,
+    "settlement_transaction_id": null,
+    "settled_at": null,
+    "created_at": "2026-08-12T14:35:00Z"
+  }
+]
+```
+
+#### `GET /api/v1/peer-splits/receivables`
+Lists all outstanding unpaid peer splits owed to the user across transactions.
+
+**Response `200 OK`**:
+```json
+{
+  "total_receivables": "800.00",
+  "items": [
+    {
+      "id": 1,
+      "transaction_id": 104,
+      "transaction_description": "Lunch with friends",
+      "member_name": "Rahul",
+      "upi_id": "rahul@okhdfcbank",
+      "share_amount": "400.00",
+      "is_paid": false,
+      "created_at": "2026-08-12T14:35:00Z"
+    }
+  ]
+}
+```
+
+#### `PATCH /api/v1/peer-splits/{id}/settle`
+Marks a peer split as paid/settled, optionally linking the incoming settlement transaction.
+
+**Request Body**:
+```json
+{
+  "is_paid": true,
+  "settlement_transaction_id": 120
+}
+```
+
+**Response `200 OK`**:
+```json
+{
+  "id": 1,
+  "transaction_id": 104,
+  "member_name": "Rahul",
+  "share_amount": "400.00",
+  "is_paid": true,
+  "settlement_transaction_id": 120,
+  "settled_at": "2026-08-13T10:20:00Z"
 }
 ```
 
@@ -348,6 +437,55 @@ Triggers an immediate background Gmail polling run.
 {
   "status": "SYNC_STARTED",
   "message": "Gmail poller initiated in background"
+}
+```
+
+#### `POST /api/v1/sync/parse-text`
+Parses raw notification text (e.g. pasted bank SMS or clipboard text) on demand, executing bank parser dispatch, cross-channel UTR deduplication, and non-destructive enrichment merge.
+
+**Request Body**:
+```json
+{
+  "raw_text": "Rs.311.00 debited from a/c **4762 to ZEPTO UPI Ref 127377523812",
+  "source": "SMS",
+  "account_id": 1
+}
+```
+
+**Response `200 OK` (Merged or Created)**:
+```json
+{
+  "status": "MERGED",
+  "action": "ENRICHMENT_MERGE",
+  "transaction": {
+    "id": 105,
+    "account_id": 1,
+    "amount": "311.00",
+    "currency": "INR",
+    "is_expense": true,
+    "is_transfer": false,
+    "is_settlement": false,
+    "status": "POSTED",
+    "merchant_name": "ZEPTO",
+    "reference_number": "127377523812",
+    "categorization_strategy": "RULE",
+    "categorization_confidence": 1.0,
+    "timestamp": "2026-08-31T11:45:00Z"
+  }
+}
+```
+
+#### `GET /api/v1/system/health`
+Probes system availability, database connectivity, and LLM circuit breaker state. Used by the PWA service worker to verify server reconnection before flushing the offline mutation queue.
+
+**Response `200 OK`**:
+```json
+{
+  "status": "HEALTHY",
+  "database": "CONNECTED",
+  "llm_circuit_breaker": "CLOSED",
+  "active_parsers_count": 4,
+  "timestamp": "2026-09-26T12:00:00Z"
 }
 ```
 

@@ -1,12 +1,9 @@
 # Setup Guide: Self-Hosted Expense Tracker
 
-This guide covers running the Expense Tracker locally on your laptop (macOS/Linux) for testing, and deploying it on a Nothing Phone (Android) via Termux.
-
----
-
-## Part 1: Running on your PC (macOS/Linux)
-
-Since the app is built on Python, FastAPI, and Flet, it runs perfectly on any PC. This is recommended for testing and making code changes before deploying to your phone.
+> [!NOTE]
+> **Expense Tracker v2.0 Architecture Notice**:
+> Version 2.0 adopts a headless **FastAPI + SQLite WAL** async backend paired with an offline-first **PaisaIQ React 19 PWA** (`frontend/`) and Tailscale mesh networking.
+> See [plans/PLAN_VALIDATION.md](file:///Users/kaushik/Projects/Expense%20Tracker/plans/PLAN_VALIDATION.md) and [docs/ARCHITECTURE.md](file:///Users/kaushik/Projects/Expense%20Tracker/docs/ARCHITECTURE.md) for full deployment details. The instructions below contain legacy v1 setup commands.
 
 ### Step 1: Install Dependencies
 ```bash
