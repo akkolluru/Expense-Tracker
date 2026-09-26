@@ -1,0 +1,6 @@
+{
+  "name": "PaisaIQ Expense Tracker",
+  "description": "Mobile-first personal expense tracker & financial intelligence app optimized for Indian users, UPI payments, and bank alerts with interactive UI/UX design specification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

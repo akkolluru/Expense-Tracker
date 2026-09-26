@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-darkest: #051F20;
+    --surface-card: #0B2B26;
+    --surface-subtle: #163832;
+    --border-pine: #235347;
+    --text-sage: #8EB69B;
+    --text-celadon: #DAF1DE;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+    background-color: #051F20;
+    color: #DAF1DE;
+    overflow-x: hidden;
+  }
+  
+  .font-mono-num {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-feature-settings: 'tnum' on, 'zero' on;
+  }
+}
+
+/* Minimalist Forest/Sage Card & Surface styles */
+.clean-card {
+  background-color: #0B2B26;
+  border: 1px solid #235347;
+}
+
+.clean-card-subtle {
+  background-color: #163832;
+  border: 1px solid rgba(142, 182, 155, 0.15);
+}
+
+.clean-card-interactive {
+  background-color: #0B2B26;
+  border: 1px solid #235347;
+  transition: all 0.15s ease-in-out;
+}
+
+.clean-card-interactive:hover {
+  background-color: #163832;
+  border-color: #8EB69B;
+}
+
+/* Subtle clean scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(142, 182, 155, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(142, 182, 155, 0.45);
+}
+
+
