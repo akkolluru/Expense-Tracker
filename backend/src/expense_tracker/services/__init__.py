@@ -2,6 +2,9 @@ from expense_tracker.services.ledger import LedgerService, SplitItem, SplitMisma
 from expense_tracker.services.staging import StagingService
 from expense_tracker.services.account_resolver import AccountResolver
 from expense_tracker.services.reconciliation import ReconciliationService
+from expense_tracker.services.rules import RuleEngine
+from expense_tracker.services.merchant_memory import MerchantMemoryService
+from expense_tracker.services.categorization import CategorizationService, ClassificationResult
 
 __all__ = [
     "LedgerService",
@@ -10,4 +13,8 @@ __all__ = [
     "StagingService",
     "AccountResolver",
     "ReconciliationService",
+    "RuleEngine",
+    "MerchantMemoryService",
+    "CategorizationService",
+    "ClassificationResult",
 ]

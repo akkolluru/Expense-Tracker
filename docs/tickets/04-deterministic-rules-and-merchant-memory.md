@@ -8,10 +8,10 @@ The first two tiers of the automated categorization cascade. Tier 1 matches dete
 
 **Status:** ready-for-agent
 
-- [ ] `RuleEngine` evaluating active rules in order of `priority` (lower integer = higher priority).
-- [ ] Pattern matchers implemented: `VPA`, `MERCHANT_EXACT`, `MERCHANT_CONTAINS`, and `REGEX`.
-- [ ] `MerchantMemoryService` generating sanitized, normalized merchant keys (lowercase, stripped punctuation, normalized spaces).
-- [ ] Tier 2 lookup returning cached `category_id` with 1.0 confidence and incrementing `hit_count`.
-- [ ] Selective learning logic: `learn_merchant(draft, category_id)` creates or updates `merchant_memories` only when explicit approval is provided.
-- [ ] Classification precedence: Rule match (Tier 1) takes priority over Merchant Memory (Tier 2).
-- [ ] Test suite in `backend/tests/test_rules_and_memory.py` validating priority ordering and auto-learning persistence.
+- [x] `RuleEngine` evaluating active rules in order of `priority` (lower integer = higher priority).
+- [x] Pattern matchers implemented: `VPA`, `MERCHANT_EXACT`, `MERCHANT_CONTAINS`, and `REGEX`.
+- [x] `MerchantMemoryService` generating sanitized, normalized merchant keys (lowercase, stripped punctuation, normalized spaces).
+- [x] Tier 2 lookup returning cached `category_id` with 1.0 confidence and incrementing `hit_count`.
+- [x] Selective learning logic: `learn_merchant(draft, category_id)` creates or updates `merchant_memories` only when explicit approval is provided.
+- [x] Classification precedence: Rule match (Tier 1) takes priority over Merchant Memory (Tier 2).
+- [x] Test suite in `backend/tests/test_rules_and_memory.py` validating priority ordering and auto-learning persistence.
