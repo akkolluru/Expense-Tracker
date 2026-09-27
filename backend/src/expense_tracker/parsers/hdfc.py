@@ -1,14 +1,14 @@
-from datetime import datetime, timezone
-from decimal import Decimal
 import re
-from typing import Optional
+from decimal import Decimal
 
 from expense_tracker.models.raw_message import RawMessage
 from expense_tracker.parsers.base import DraftTransaction
 
+
 def _parse_amount(raw_str: str) -> Decimal:
     cleaned = raw_str.replace(",", "").strip()
     return Decimal(cleaned)
+
 
 class HdfcUpiParser:
     name: str = "HdfcUpiParser"
@@ -41,10 +41,9 @@ class HdfcUpiParser:
 
         # VPA and Merchant Name
         vpa_match = re.search(
-            r"(?i)towards\s+VPA\s+([a-zA-Z0-9.\-_]+@[a-zA-Z0-9]+)(?:\s*\(([^)]+)\))?",
-            body
+            r"(?i)towards\s+VPA\s+([a-zA-Z0-9.\-_]+@[a-zA-Z0-9]+)(?:\s*\(([^)]+)\))?", body
         )
-        merchant_vpa: Optional[str] = None
+        merchant_vpa: str | None = None
         merchant_name: str = "Unknown Merchant"
 
         if vpa_match:
@@ -61,15 +60,13 @@ class HdfcUpiParser:
 
         # UTR
         utr_match = re.search(
-            r"(?i)UPI\s+(?:transaction\s+)?ref(?:erence)?\s*(?:no\.?)?:?\s*([0-9]+)",
-            body
+            r"(?i)UPI\s+(?:transaction\s+)?ref(?:erence)?\s*(?:no\.?)?:?\s*([0-9]+)", body
         )
         reference_number = utr_match.group(1).strip() if utr_match else None
 
         # Closing balance if present
         balance_match = re.search(
-            r"(?i)Avail(?:able)?\s+bal(?:ance)?:?\s*Rs\.?\s*([0-9,]+(?:\.[0-9]{2})?)",
-            body
+            r"(?i)Avail(?:able)?\s+bal(?:ance)?:?\s*Rs\.?\s*([0-9,]+(?:\.[0-9]{2})?)", body
         )
         closing_balance = _parse_amount(balance_match.group(1)) if balance_match else None
 
@@ -86,9 +83,10 @@ class HdfcUpiParser:
             reference_number=reference_number,
             raw_timestamp=raw_message.received_at,
             closing_balance=closing_balance,
-            description="HDFC UPI alert"
+            description="HDFC UPI alert",
         )
         return [draft]
+
 
 class HdfcCardParser:
     name: str = "HdfcCardParser"
@@ -128,6 +126,6 @@ class HdfcCardParser:
             is_transfer=False,
             merchant_name=merchant_name,
             raw_timestamp=raw_message.received_at,
-            description="HDFC Card transaction"
+            description="HDFC Card transaction",
         )
         return [draft]

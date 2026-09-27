@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
+
 from expense_tracker.models.raw_message import RawMessage
+
 
 @dataclass
 class DraftTransaction:
@@ -13,20 +15,19 @@ class DraftTransaction:
     is_expense: bool = True
     is_transfer: bool = False
     merchant_name: str = ""
-    account_number_last4: Optional[str] = None
-    merchant_vpa: Optional[str] = None
-    reference_number: Optional[str] = None
-    raw_timestamp: Optional[datetime] = None
-    closing_balance: Optional[Decimal] = None
-    description: Optional[str] = None
+    account_number_last4: str | None = None
+    merchant_vpa: str | None = None
+    reference_number: str | None = None
+    raw_timestamp: datetime | None = None
+    closing_balance: Decimal | None = None
+    description: str | None = None
+
 
 @runtime_checkable
 class BankParser(Protocol):
     name: str
     institution: str
 
-    def can_handle(self, raw_message: RawMessage) -> bool:
-        ...
+    def can_handle(self, raw_message: RawMessage) -> bool: ...
 
-    def parse(self, raw_message: RawMessage) -> list[DraftTransaction]:
-        ...
+    def parse(self, raw_message: RawMessage) -> list[DraftTransaction]: ...

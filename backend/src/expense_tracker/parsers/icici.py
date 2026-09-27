@@ -1,13 +1,13 @@
-from datetime import datetime
-from decimal import Decimal
 import re
-from typing import Optional
+from decimal import Decimal
 
 from expense_tracker.models.raw_message import RawMessage
 from expense_tracker.parsers.base import DraftTransaction
 
+
 def _parse_amount(raw_str: str) -> Decimal:
     return Decimal(raw_str.replace(",", "").strip())
+
 
 class IciciAlertParser:
     name: str = "IciciAlertParser"
@@ -47,6 +47,6 @@ class IciciAlertParser:
             merchant_name=merchant_name,
             reference_number=ref_no,
             raw_timestamp=raw_message.received_at,
-            description="ICICI Bank alert"
+            description="ICICI Bank alert",
         )
         return [draft]

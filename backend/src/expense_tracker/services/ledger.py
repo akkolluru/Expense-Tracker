@@ -1,22 +1,24 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Optional, Sequence
-from sqlalchemy import select
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expense_tracker.models.account import Account
-from expense_tracker.models.transaction import Transaction, Split
+from expense_tracker.models.transaction import Split, Transaction
+
 
 class SplitMismatchError(ValueError):
     """Raised when the sum of category split lines does not equal transaction amount."""
-    pass
+
 
 @dataclass
 class SplitItem:
     category_id: int
     amount: Decimal
-    note: Optional[str] = None
+    note: str | None = None
+
 
 class LedgerService:
     @staticmethod
@@ -27,7 +29,7 @@ class LedgerService:
         account_type: str = "SAVINGS",
         currency: str = "INR",
         initial_balance: Decimal = Decimal("0.00"),
-        account_number_last4: Optional[str] = None,
+        account_number_last4: str | None = None,
     ) -> Account:
         account = Account(
             name=name,
@@ -54,7 +56,7 @@ class LedgerService:
                 description="Initial account balance",
                 categorization_strategy="MANUAL",
                 categorization_confidence=1.0,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
             session.add(audit_tx)
             await session.flush()
@@ -72,18 +74,18 @@ class LedgerService:
         timestamp: datetime,
         is_expense: bool = True,
         is_transfer: bool = False,
-        destination_account_id: Optional[int] = None,
-        category_id: Optional[int] = None,
-        suggested_category_id: Optional[int] = None,
-        group_id: Optional[int] = None,
-        raw_message_id: Optional[int] = None,
+        destination_account_id: int | None = None,
+        category_id: int | None = None,
+        suggested_category_id: int | None = None,
+        group_id: int | None = None,
+        raw_message_id: int | None = None,
         currency: str = "INR",
         is_settlement: bool = False,
-        idempotency_key: Optional[str] = None,
+        idempotency_key: str | None = None,
         status: str = "POSTED",
-        merchant_vpa: Optional[str] = None,
-        reference_number: Optional[str] = None,
-        description: Optional[str] = None,
+        merchant_vpa: str | None = None,
+        reference_number: str | None = None,
+        description: str | None = None,
         categorization_strategy: str = "MANUAL",
         categorization_confidence: float = 1.0,
     ) -> Transaction:

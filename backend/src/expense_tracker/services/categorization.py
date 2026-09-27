@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,16 +9,18 @@ from expense_tracker.models.rule import CategorizationLog
 from expense_tracker.models.transaction import Transaction
 from expense_tracker.parsers.base import DraftTransaction
 from expense_tracker.services.ledger import LedgerService
-from expense_tracker.services.rules import RuleEngine
-from expense_tracker.services.merchant_memory import MerchantMemoryService
 from expense_tracker.services.llm_client import HybridLLMClient
+from expense_tracker.services.merchant_memory import MerchantMemoryService
+from expense_tracker.services.rules import RuleEngine
+
 
 @dataclass
 class ClassificationResult:
     category_id: int
-    group_id: Optional[int] = None
+    group_id: int | None = None
     strategy: str = "MANUAL"
     confidence: float = 1.0
+
 
 class CategorizationService:
     llm_client: HybridLLMClient = HybridLLMClient()
@@ -28,7 +30,7 @@ class CategorizationService:
         cls,
         session: AsyncSession,
         draft: DraftTransaction,
-    ) -> Optional[ClassificationResult]:
+    ) -> ClassificationResult | None:
         # Tier 1: Deterministic Rule Engine
         rule_match = await RuleEngine.evaluate(session, draft)
         if rule_match:
@@ -65,13 +67,13 @@ class CategorizationService:
         # Check Tier 1 & 2
         match = await cls.classify(session, draft)
 
-        category_id: Optional[int] = None
-        suggested_category_id: Optional[int] = None
+        category_id: int | None = None
+        suggested_category_id: int | None = None
         status: str = "POSTED"
         strategy: str = "MANUAL"
         confidence: float = 1.0
-        reasoning: Optional[str] = None
-        raw_llm: Optional[str] = None
+        reasoning: str | None = None
+        raw_llm: str | None = None
 
         if match:
             category_id = match.category_id
@@ -87,7 +89,9 @@ class CategorizationService:
             valid_ids = {c["id"] for c in categories}
 
             try:
-                llm_resp, llm_strategy, raw_text = await cls.llm_client.categorize(draft, categories)
+                llm_resp, llm_strategy, raw_text = await cls.llm_client.categorize(
+                    draft, categories
+                )
                 strategy = llm_strategy
                 confidence = llm_resp.confidence
                 reasoning = llm_resp.reasoning
@@ -102,15 +106,15 @@ class CategorizationService:
                     category_id = None
                     suggested_category_id = llm_resp.category_id
                     status = "PENDING_REVIEW"
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 category_id = None
                 suggested_category_id = None
                 status = "PENDING_REVIEW"
                 strategy = "MANUAL"
                 confidence = 0.0
-                reasoning = f"LLM error: {str(e)}"
+                reasoning = f"LLM error: {e!s}"
 
-        timestamp = draft.raw_timestamp or datetime.now(timezone.utc)
+        timestamp = draft.raw_timestamp or datetime.now(UTC)
         tx = await LedgerService.record_transaction(
             session=session,
             account_id=account_id,

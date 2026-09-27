@@ -1,14 +1,15 @@
-from datetime import datetime, timezone
 import re
-from typing import Optional
+from datetime import UTC, datetime
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expense_tracker.models.rule import MerchantMemory
 
+
 class MerchantMemoryService:
     @staticmethod
-    def normalize_key(merchant_name: str, merchant_vpa: Optional[str] = None) -> str:
+    def normalize_key(merchant_name: str, merchant_vpa: str | None = None) -> str:
         if merchant_vpa and merchant_vpa.strip():
             return merchant_vpa.strip().lower()
 
@@ -32,8 +33,8 @@ class MerchantMemoryService:
         cls,
         session: AsyncSession,
         merchant_name: str,
-        merchant_vpa: Optional[str] = None,
-    ) -> Optional[MerchantMemory]:
+        merchant_vpa: str | None = None,
+    ) -> MerchantMemory | None:
         key = cls.normalize_key(merchant_name, merchant_vpa)
         stmt = select(MerchantMemory).where(MerchantMemory.merchant_key == key)
         res = await session.execute(stmt)
@@ -41,7 +42,7 @@ class MerchantMemoryService:
 
         if memory:
             memory.hit_count += 1
-            memory.last_used_at = datetime.now(timezone.utc)
+            memory.last_used_at = datetime.now(UTC)
             await session.commit()
             await session.refresh(memory)
             return memory
@@ -54,14 +55,14 @@ class MerchantMemoryService:
         session: AsyncSession,
         category_id: int,
         merchant_name: str,
-        merchant_vpa: Optional[str] = None,
+        merchant_vpa: str | None = None,
     ) -> MerchantMemory:
         key = cls.normalize_key(merchant_name, merchant_vpa)
         stmt = select(MerchantMemory).where(MerchantMemory.merchant_key == key)
         res = await session.execute(stmt)
         memory = res.scalar_one_or_none()
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if memory:
             memory.category_id = category_id
             memory.hit_count += 1

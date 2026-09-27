@@ -1,17 +1,18 @@
 import fnmatch
 import re
-from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expense_tracker.models.rule import Rule
 from expense_tracker.parsers.base import DraftTransaction
 
+
 class RuleEngine:
     @classmethod
-    async def evaluate(cls, session: AsyncSession, draft: DraftTransaction) -> Optional[Rule]:
+    async def evaluate(cls, session: AsyncSession, draft: DraftTransaction) -> Rule | None:
         """Evaluates active rules in ascending priority order."""
-        stmt = select(Rule).where(Rule.is_active == True).order_by(Rule.priority.asc())  # noqa: E712
+        stmt = select(Rule).where(Rule.is_active == True).order_by(Rule.priority.asc())
         res = await session.execute(stmt)
         rules = res.scalars().all()
 
@@ -27,9 +28,7 @@ class RuleEngine:
     def _matches_amount(rule: Rule, draft: DraftTransaction) -> bool:
         if rule.min_amount is not None and draft.amount < rule.min_amount:
             return False
-        if rule.max_amount is not None and draft.amount > rule.max_amount:
-            return False
-        return True
+        return not (rule.max_amount is not None and draft.amount > rule.max_amount)
 
     @staticmethod
     def _matches_pattern(rule: Rule, draft: DraftTransaction) -> bool:

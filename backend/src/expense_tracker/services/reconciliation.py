@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta, timezone
-from typing import Optional, Tuple
+from datetime import UTC, datetime, timedelta
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,15 +10,16 @@ from expense_tracker.parsers.base import DraftTransaction
 from expense_tracker.services.account_resolver import AccountResolver
 from expense_tracker.services.ledger import LedgerService
 
+
 class ReconciliationService:
     @classmethod
     async def find_matching_transaction(
         cls,
         session: AsyncSession,
         draft: DraftTransaction,
-        resolved_account_id: Optional[int] = None,
-    ) -> Optional[Transaction]:
-        timestamp = draft.raw_timestamp or datetime.now(timezone.utc)
+        resolved_account_id: int | None = None,
+    ) -> Transaction | None:
+        timestamp = draft.raw_timestamp or datetime.now(UTC)
 
         # 1. 7-day sliding window UTR lookup
         if draft.reference_number:
@@ -54,8 +55,8 @@ class ReconciliationService:
         cls,
         session: AsyncSession,
         draft: DraftTransaction,
-        fallback_account_id: Optional[int] = None,
-    ) -> Tuple[Transaction, bool]:
+        fallback_account_id: int | None = None,
+    ) -> tuple[Transaction, bool]:
         account = await AccountResolver.resolve(session, draft)
         resolved_account_id = account.id if account else fallback_account_id
 
@@ -101,7 +102,7 @@ class ReconciliationService:
                 f"last4={draft.account_number_last4} and no fallback_account_id provided"
             )
 
-        timestamp = draft.raw_timestamp or datetime.now(timezone.utc)
+        timestamp = draft.raw_timestamp or datetime.now(UTC)
         tx = await LedgerService.record_transaction(
             session=session,
             account_id=resolved_account_id,

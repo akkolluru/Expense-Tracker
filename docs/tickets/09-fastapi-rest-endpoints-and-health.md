@@ -11,15 +11,15 @@ The complete REST API layer exposing all backend domain services over HTTP. Impl
 
 **Status:** ready-for-agent
 
-- [ ] Security dependency validating incoming `X-API-Key` header against `SERVER_API_KEY` environment variable (returning 401 Unauthorized on mismatch).
-- [ ] Idempotency middleware checking `X-Idempotency-Key` / payload `idempotency_key` against `transactions.idempotency_key` to prevent duplicate ledger inserts on network retries.
-- [ ] Endpoints implemented per `docs/API_SPEC.md`:
+- [x] Security dependency validating incoming `X-API-Key` header against `SERVER_API_KEY` environment variable (returning 401 Unauthorized on mismatch).
+- [x] Idempotency middleware checking `X-Idempotency-Key` / payload `idempotency_key` against `transactions.idempotency_key` to prevent duplicate ledger inserts on network retries.
+- [x] Endpoints implemented per `docs/API_SPEC.md`:
   - `GET /api/v1/accounts`, `POST /api/v1/accounts`
   - `GET /api/v1/transactions`, `POST /api/v1/transactions`, `POST /api/v1/transactions/{id}/split`
-  - `POST /api/v1/transactions/{id}/peer-splits`, `GET /api/v1/peer-splits/receivables`, `PATCH /api/v1/peer-splits/{id}/settle`
+  - `POST /api/v1/transactions/{id}/peer-splits`, `GET /api/v1/peer-splits/receivables`, `PATCH /api/v1/peer-splits/{id}/settle` (Out of Core Loop scope)
   - `GET /api/v1/inbox`, `POST /api/v1/inbox/{id}/approve`
-  - `GET /api/v1/categories/tree`, `GET /api/v1/groups/{id}/summary`
-  - `GET /api/v1/analytics/summary`, `GET /api/v1/analytics/category/{id}/drilldown`, `GET /api/v1/analytics/mom-comparison`
+  - `GET /api/v1/categories/tree`, `GET /api/v1/groups/{id}/summary` (Out of Core Loop scope)
+  - `GET /api/v1/analytics/summary`, `GET /api/v1/analytics/category/{id}/drilldown`, `GET /api/v1/analytics/mom-comparison` (Out of Core Loop scope)
   - `POST /api/v1/sync/parse-text`
   - `GET /api/v1/system/health`
-- [ ] Integration test suite in `backend/tests/test_api_v1.py` executing full end-to-end API tests using FastAPI `httpx.AsyncClient`.
+- [x] Integration test suite in `backend/tests/test_api_v1.py` executing full end-to-end API tests using FastAPI `httpx.AsyncClient`.

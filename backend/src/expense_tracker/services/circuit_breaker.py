@@ -1,12 +1,14 @@
-from enum import Enum
 import time
-from typing import Optional
+from enum import Enum
+
 import httpx
+
 
 class CircuitState(str, Enum):
     CLOSED = "CLOSED"
     OPEN = "OPEN"
     HALF_OPEN = "HALF_OPEN"
+
 
 class CircuitBreaker:
     def __init__(self, failure_threshold: int = 2, recovery_timeout: float = 60.0) -> None:
@@ -14,7 +16,7 @@ class CircuitBreaker:
         self.recovery_timeout = recovery_timeout
         self.state: CircuitState = CircuitState.CLOSED
         self.failure_count: int = 0
-        self.last_failure_time: Optional[float] = None
+        self.last_failure_time: float | None = None
 
     def record_success(self) -> None:
         self.failure_count = 0
@@ -31,7 +33,10 @@ class CircuitBreaker:
         if self.state == CircuitState.CLOSED:
             return True
         if self.state == CircuitState.OPEN:
-            if self.last_failure_time and (time.time() - self.last_failure_time) > self.recovery_timeout:
+            if (
+                self.last_failure_time
+                and (time.time() - self.last_failure_time) > self.recovery_timeout
+            ):
                 self.state = CircuitState.HALF_OPEN
                 return True
             return False
@@ -44,6 +49,6 @@ class CircuitBreaker:
             if resp.status_code == 200:
                 self.record_success()
                 return True
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
         return False

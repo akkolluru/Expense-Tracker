@@ -1,24 +1,27 @@
 import json
 import os
 import re
-from typing import Any, Optional, Tuple
+from typing import Any
+
 import httpx
 from pydantic import BaseModel, Field
 
 from expense_tracker.parsers.base import DraftTransaction
 from expense_tracker.services.circuit_breaker import CircuitBreaker
 
+
 class LLMCategorizationResponse(BaseModel):
     category_id: int
     confidence: float = Field(ge=0.0, le=1.0)
     reasoning: str
+
 
 class HybridLLMClient:
     def __init__(
         self,
         local_url: str = "http://127.0.0.1:8080/v1/chat/completions",
         health_url: str = "http://127.0.0.1:8080/health",
-        gemini_api_key: Optional[str] = None,
+        gemini_api_key: str | None = None,
         local_timeout: float = 3.0,
         gemini_timeout: float = 5.0,
     ) -> None:
@@ -33,8 +36,7 @@ class HybridLLMClient:
         self, draft: DraftTransaction, available_categories: list[dict[str, Any]]
     ) -> str:
         cat_json = json.dumps(
-            [{"id": c["id"], "name": c["name"]} for c in available_categories],
-            indent=2
+            [{"id": c["id"], "name": c["name"]} for c in available_categories], indent=2
         )
         return (
             "You are an expert personal finance categorizer.\n"
@@ -61,7 +63,7 @@ class HybridLLMClient:
 
     async def categorize(
         self, draft: DraftTransaction, available_categories: list[dict[str, Any]]
-    ) -> Tuple[LLMCategorizationResponse, str, str]:
+    ) -> tuple[LLMCategorizationResponse, str, str]:
         prompt = self._build_prompt(draft, available_categories)
 
         # 1. Attempt Local llama.cpp if circuit allows
@@ -73,12 +75,12 @@ class HybridLLMClient:
                         json={
                             "messages": [
                                 {"role": "system", "content": prompt},
-                                {"role": "user", "content": "Categorize this transaction."}
+                                {"role": "user", "content": "Categorize this transaction."},
                             ],
                             "temperature": 0.1,
-                            "max_tokens": 150
+                            "max_tokens": 150,
                         },
-                        timeout=self.local_timeout
+                        timeout=self.local_timeout,
                     )
                     if resp.status_code == 200:
                         data = resp.json()
@@ -89,7 +91,7 @@ class HybridLLMClient:
                         return (parsed, "LOCAL_LLM", content)
                     else:
                         self.circuit_breaker.record_failure()
-            except Exception:
+            except Exception:  # noqa: BLE001
                 self.circuit_breaker.record_failure()
 
         # 2. Fallback to Gemini 2.0 Flash
@@ -104,10 +106,10 @@ class HybridLLMClient:
                     "contents": [{"parts": [{"text": prompt + "\nCategorize this transaction."}]}],
                     "generationConfig": {
                         "temperature": 0.1,
-                        "responseMimeType": "application/json"
-                    }
+                        "responseMimeType": "application/json",
+                    },
                 },
-                timeout=self.gemini_timeout
+                timeout=self.gemini_timeout,
             )
             data = resp.json()
             raw_text = data["candidates"][0]["content"]["parts"][0]["text"]

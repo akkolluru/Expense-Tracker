@@ -1,9 +1,9 @@
-from typing import Optional
 from expense_tracker.models.raw_message import RawMessage
 from expense_tracker.parsers.base import BankParser, DraftTransaction
-from expense_tracker.parsers.hdfc import HdfcUpiParser, HdfcCardParser
-from expense_tracker.parsers.icici import IciciAlertParser
 from expense_tracker.parsers.generic import GenericUpiParser
+from expense_tracker.parsers.hdfc import HdfcCardParser, HdfcUpiParser
+from expense_tracker.parsers.icici import IciciAlertParser
+
 
 class BankParserRegistry:
     def __init__(self) -> None:
@@ -12,7 +12,7 @@ class BankParserRegistry:
     def register(self, parser: BankParser) -> None:
         self._parsers.append(parser)
 
-    def find_parser(self, raw_message: RawMessage) -> Optional[BankParser]:
+    def find_parser(self, raw_message: RawMessage) -> BankParser | None:
         for parser in self._parsers:
             if parser.can_handle(raw_message):
                 return parser
