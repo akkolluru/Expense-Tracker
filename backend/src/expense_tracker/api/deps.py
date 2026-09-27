@@ -2,7 +2,7 @@ import os
 from collections.abc import AsyncGenerator
 
 from fastapi import Header, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from expense_tracker.database import get_engine, get_session_factory
 
@@ -10,7 +10,7 @@ _engine = None
 _session_factory = None
 
 
-def get_session_maker():
+def get_session_maker() -> async_sessionmaker[AsyncSession]:
     global _engine, _session_factory
     if _session_factory is None:
         db_url = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///expense_tracker.db")
