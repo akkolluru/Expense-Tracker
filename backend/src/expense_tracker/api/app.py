@@ -6,6 +6,7 @@ from expense_tracker.api.routes.inbox import router as inbox_router
 from expense_tracker.api.routes.sync import router as sync_router
 from expense_tracker.api.routes.system import router as system_router
 from expense_tracker.api.routes.transactions import router as transactions_router
+from expense_tracker.api.routes.analytics import router as analytics_router
 
 
 def create_app() -> FastAPI:
@@ -29,5 +30,6 @@ def create_app() -> FastAPI:
     app.include_router(sync_router, prefix="/api/v1")
     app.include_router(inbox_router, prefix="/api/v1")
     app.include_router(system_router, prefix="/api/v1")
+    app.include_router(analytics_router, prefix="/api/v1")
 
     return app
