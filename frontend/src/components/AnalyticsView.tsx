@@ -151,17 +151,17 @@ interface BarTooltipPayload {
   };
 
   return (
-    <div id="analytics-view" className="space-y-4 pb-20 animate-in fade-in duration-200">
+    <div id="analytics-view" className="space-y-4 pb-6 animate-in fade-in duration-200">
       {/* 1. View Header */}
       <div className="flex items-center justify-between pt-1">
         <div>
           <span className="text-[11px] font-medium tracking-wide uppercase text-[#8EB69B]">
             Insights & Mandates
           </span>
-          <h1 className="text-lg font-bold text-[#DAF1DE] tracking-tight">Financial Intelligence</h1>
+          <h1 className="text-xl font-bold text-[#DAF1DE] tracking-tight">Financial Intelligence</h1>
         </div>
-        <div className="text-xs text-[#8EB69B] font-mono">
-          August 2026
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0B2B26] border border-[#235347] text-xs text-[#8EB69B] font-mono shadow-sm">
+          <span>August 2026</span>
         </div>
       </div>
 
@@ -170,12 +170,12 @@ interface BarTooltipPayload {
 
       {/* 3. Month-over-Month Variance Card */}
       <div 
-        className="rounded-2xl bg-[#0B2B26] border border-[#235347] p-4 shadow-sm space-y-2.5"
+        className="rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border border-[#235347] p-5 shadow-[0_4px_24px_-4px_rgba(35,83,71,0.35)] space-y-3"
         data-testid="mom-variance-card"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <TrendingUp size={15} className="text-[#8EB69B]" />
+            <TrendingUp size={15} className="text-emerald-400" />
             <span className="text-xs font-semibold uppercase tracking-wider text-[#8EB69B]">
               Month-over-Month Variance
             </span>
@@ -184,27 +184,27 @@ interface BarTooltipPayload {
         </div>
 
         {momQuery.isLoading ? (
-          <div className="text-xs text-[#8EB69B] animate-pulse">Calculating variance...</div>
+          <div className="text-xs text-[#8EB69B] animate-pulse py-2">Calculating variance metrics...</div>
         ) : momQuery.data ? (
-          <div className="flex items-center justify-between pt-1 text-xs">
+          <div className="flex items-center justify-between pt-1 text-xs gap-2">
             <div>
-              <span className="text-[10px] text-[#8EB69B] block">Current Daily Burn</span>
+              <span className="text-[10px] text-[#8EB69B] uppercase font-mono block">Current Burn</span>
               <span className="text-sm font-bold text-[#DAF1DE] font-mono-num">
                 {formatINR(momQuery.data.current_burn, false)}/day
               </span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-[#8EB69B] block">Previous Daily Burn</span>
+              <span className="text-[10px] text-[#8EB69B] uppercase font-mono block">Previous Burn</span>
               <span className="text-xs font-mono-num text-[#8EB69B]">
                 {formatINR(momQuery.data.prev_burn, false)}/day
               </span>
             </div>
-            <div className="pl-2">
+            <div className="pl-1">
               <span
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold font-mono-num border ${
+                className={`px-2.5 py-1 rounded-xl text-xs font-bold font-mono-num border shadow-sm ${
                   momQuery.data.variance_percentage <= 0
-                    ? 'bg-[#163832] text-[#8EB69B] border-[#235347]'
-                    : 'bg-rose-950/40 text-rose-300 border-rose-800/40'
+                    ? 'bg-emerald-950/60 text-emerald-300 border-emerald-600/40'
+                    : 'bg-rose-950/60 text-rose-300 border-rose-600/40'
                 }`}
                 data-testid="variance-percentage"
               >
@@ -214,7 +214,7 @@ interface BarTooltipPayload {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-between text-xs text-[#8EB69B]">
+          <div className="flex items-center justify-between text-xs text-[#8EB69B] pt-1">
             <span>Burn rate pacing steady against baseline targets</span>
             <span className="text-[10px] font-mono bg-[#163832] px-2 py-0.5 rounded border border-[#235347] text-[#DAF1DE]">
               Stable
@@ -224,24 +224,24 @@ interface BarTooltipPayload {
       </div>
 
       {/* 4. Category Donut Breakdown Card */}
-      <div className="rounded-2xl bg-[#0B2B26] border border-[#235347] p-5 space-y-4 shadow-sm">
+      <div className="rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border border-[#235347] p-5 space-y-4 shadow-[0_4px_24px_-4px_rgba(35,83,71,0.35)]">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8EB69B]">Category Share</h2>
-          <span className="text-xs text-[#DAF1DE] font-mono-num font-semibold">
+          <span className="text-xs text-[#DAF1DE] font-mono-num font-bold">
             {formatINR(totalMonthSpend, false)} Total
           </span>
         </div>
 
         {/* Chart Container with Dynamic Center Readout */}
-        <div className="h-48 w-full relative flex items-center justify-center">
+        <div className="h-52 w-full relative flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={categoryBreakdown}
                 cx="50%"
                 cy="50%"
-                innerRadius={58}
-                outerRadius={82}
+                innerRadius={60}
+                outerRadius={85}
                 paddingAngle={3}
                 dataKey="amount"
                 nameKey="category"
@@ -277,17 +277,17 @@ interface BarTooltipPayload {
 
           {/* Centered category label or total spend */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-4">
-            <span className="text-[10px] text-[#8EB69B] uppercase font-mono tracking-wider truncate max-w-[110px]">
+            <span className="text-[10px] text-[#8EB69B] uppercase font-mono tracking-wider truncate max-w-[120px]">
               {activeBreakdown ? activeBreakdown.category : 'Top Spend'}
             </span>
-            <span className="text-sm font-bold text-[#DAF1DE] font-mono-num mt-0.5">
+            <span className="text-base sm:text-lg font-bold text-[#DAF1DE] font-mono-num mt-0.5">
               {activeBreakdown 
                 ? formatINR(activeBreakdown.amount, false)
                 : formatINR(totalMonthSpend, false)
               }
             </span>
-            <span className="text-[10px] text-[#8EB69B] font-mono">
-              {activeBreakdown ? `${activeBreakdown.percentage}%` : 'August'}
+            <span className="text-[10px] text-emerald-400 font-mono font-semibold">
+              {activeBreakdown ? `${activeBreakdown.percentage}% of total` : 'August 2026'}
             </span>
           </div>
         </div>
@@ -301,9 +301,9 @@ interface BarTooltipPayload {
               <div
                 key={item.category}
                 onClick={() => setSelectedCategory(isSelected ? null : item.category)}
-                className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${
+                className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer touch-press ${
                   isSelected 
-                    ? 'bg-[#163832] border-[#8EB69B]' 
+                    ? 'bg-[#163832] border-[#8EB69B] shadow-sm' 
                     : 'bg-[#163832]/40 border-transparent hover:border-[#235347] hover:bg-[#163832]/70'
                 }`}
                 data-testid={`category-card-${item.category.replace(/\s+/g, '-').toLowerCase()}`}
