@@ -11,6 +11,7 @@ from expense_tracker.parsers.base import DraftTransaction
 from expense_tracker.services.ledger import LedgerService
 from expense_tracker.services.llm_client import HybridLLMClient
 from expense_tracker.services.merchant_memory import MerchantMemoryService
+from expense_tracker.services.notifications import NotificationService
 from expense_tracker.services.rules import RuleEngine
 
 
@@ -159,4 +160,14 @@ class CategorizationService:
         session.add(log)
         await session.commit()
         await session.refresh(tx)
+
+        if tx.status == "PENDING_REVIEW":
+            await NotificationService.notify_pending_review(
+                amount=tx.amount,
+                merchant_name=tx.merchant_name,
+                tx_id=tx.id,
+                vpa=tx.merchant_vpa,
+            )
+
         return tx
+
