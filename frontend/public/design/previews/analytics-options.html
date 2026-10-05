@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics & Insights Options — PaisaIQ UI Studio</title>
+  <title>Analytics & Financial Avatar Persona — PaisaIQ UI Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
@@ -12,7 +12,7 @@
     .font-mono-num { font-family: 'JetBrains Mono', monospace; }
     .phone-mockup {
       width: 390px;
-      height: 780px;
+      height: 820px;
       border-radius: 46px;
       box-shadow: 0 0 0 10px #181D2A, 0 0 0 12px #2A334A, 0 30px 60px -15px rgba(0,0,0,0.85);
       position: relative;
@@ -33,10 +33,17 @@
     }
     .mockup-scroll::-webkit-scrollbar { display: none; }
     .mockup-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Avatar transitions */
+    .avatar-glow-rich { box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.45); }
+    .avatar-glow-pro { box-shadow: 0 0 35px -5px rgba(20, 184, 166, 0.40); }
+    .avatar-glow-hustle { box-shadow: 0 0 35px -5px rgba(245, 158, 11, 0.40); }
+    .avatar-glow-boxers { box-shadow: 0 0 35px -5px rgba(239, 68, 68, 0.50); }
   </style>
 </head>
-<body class="bg-[#08090D] text-[#E2E8F0] min-h-screen">
+<body class="bg-[#08090D] text-[#E2E8F0] min-h-screen selection:bg-indigo-600 selection:text-white">
 
+  <!-- Header -->
   <header class="sticky top-0 z-50 bg-[#0C0E14]/95 backdrop-blur-xl border-b border-[#1A1F2C] px-4 lg:px-8 py-3">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div class="flex items-center gap-3">
@@ -46,240 +53,378 @@
         </a>
         <div class="h-4 w-px bg-slate-800"></div>
         <h1 class="text-sm font-bold text-white flex items-center gap-2">
-          <span>Screen 04: Insights & Analytics Options</span>
-          <span class="text-[10px] font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">3 Contenders</span>
+          <span>Screen 04: Analytics & The Financial Avatar Persona</span>
+          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Finalized + New Feature</span>
         </h1>
       </div>
 
       <div class="flex items-center gap-2">
-        <div class="flex bg-[#121622] p-1 rounded-xl border border-[#1E2538] text-xs font-semibold">
-          <button id="btn-side" onclick="switchView('side')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white">Side-by-Side</button>
-          <button id="btn-donut" onclick="switchView('donut')" class="px-3 py-1.5 rounded-lg text-slate-400">Interactive Donut</button>
-          <button id="btn-bars" onclick="switchView('bars')" class="px-3 py-1.5 rounded-lg text-slate-400">Ranked Bars</button>
-          <button id="btn-subs" onclick="switchView('subs')" class="px-3 py-1.5 rounded-lg text-slate-400">Monout Subs</button>
-        </div>
+        <span class="px-2.5 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          <span>Option A Finalized</span>
+        </span>
       </div>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
-    <div id="decision-banner" class="p-4 rounded-2xl bg-[#0F131D] border border-[#1C2333] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
-          <i data-lucide="pie-chart" class="w-4 h-4"></i>
-        </div>
+
+    <!-- ======================================================== -->
+    <!-- INTERACTIVE AVATAR MASCOT SIMULATOR SECTION -->
+    <!-- ======================================================== -->
+    <div class="p-6 rounded-3xl bg-gradient-to-br from-[#111726] via-[#0E121B] to-[#0A0C14] border border-[#1E273B] space-y-6 shadow-2xl relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span class="text-xs font-bold text-white block">Analytics Visualizer: How should charts & burn velocity look?</span>
-          <span class="text-xs text-slate-400" id="decision-text">Explore Option A (Interactive Recharts Donut), Option B (Ranked Category Bars), and Option C (Subscriptions Mandates).</span>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold uppercase font-mono">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>Interactive Concept Simulation</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1.5">
+            The Financial Avatar Persona ("PaisaIQ Mascot")
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Drag the budget slider below or tap any stage to see how the character's clothing and mood transforms based on your projected month-end balance!
+          </p>
+        </div>
+
+        <!-- 4 Quick State Buttons -->
+        <div class="flex items-center gap-1.5 bg-[#080A0F] p-1.5 rounded-2xl border border-[#1A2131] flex-wrap">
+          <button onclick="setAvatarStage(1)" class="px-3 py-1.5 rounded-xl bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span>🎩</span> The Mogul
+          </button>
+          <button onclick="setAvatarStage(2)" class="px-3 py-1.5 rounded-xl bg-teal-600/20 text-teal-300 hover:bg-teal-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span>👔</span> The Pro
+          </button>
+          <button onclick="setAvatarStage(3)" class="px-3 py-1.5 rounded-xl bg-amber-600/20 text-amber-300 hover:bg-amber-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span>👕</span> The Hustler
+          </button>
+          <button onclick="setAvatarStage(4)" class="px-3 py-1.5 rounded-xl bg-rose-600/20 text-rose-300 hover:bg-rose-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span>🩳</span> In Boxers
+          </button>
         </div>
       </div>
-      <div id="decision-badge" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono font-bold flex-shrink-0">
-        Status: Exploring
+
+      <!-- Live Budget Slider -->
+      <div class="p-4 rounded-2xl bg-[#080A0F]/80 border border-[#161D2B] space-y-2 max-w-xl">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-slate-400 font-medium">Projected Month-End Variance vs Target:</span>
+          <span id="slider-readout" class="font-mono-num font-bold text-emerald-400 text-sm">+₹35,000.00 (Surplus)</span>
+        </div>
+        <input 
+          id="budget-slider" 
+          type="range" 
+          min="-40000" 
+          max="40000" 
+          step="2500" 
+          value="35000" 
+          oninput="handleSliderChange(this.value)"
+          class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+        />
+        <div class="flex justify-between text-[10px] font-mono text-slate-500">
+          <span class="text-rose-400 font-bold">-₹40k (Deep Deficit)</span>
+          <span class="text-teal-400">₹0 (Target Met)</span>
+          <span class="text-emerald-400 font-bold">+₹40k (Huge Surplus)</span>
+        </div>
       </div>
     </div>
 
-    <div id="mockups-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center">
+    <!-- SIDE BY SIDE: AVATAR CARD PREVIEW & LIVE ANALYTICS VIEW -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start justify-items-center">
 
-      <!-- OPTION A: INTERACTIVE DONUT + DRILLDOWN (Current) -->
-      <div id="card-donut" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
-        <div class="w-full flex items-center justify-between px-2">
-          <div>
-            <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold font-mono">Option A</span>
-            <h3 class="text-sm font-bold text-white mt-1">Interactive Donut & Sheet</h3>
+      <!-- LEFT: DYNAMIC AVATAR CARD INSPECTION -->
+      <div class="w-full max-w-[440px] space-y-4">
+        <div class="flex items-center justify-between px-2">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>Mascot Card Widget</span>
+            <span class="text-[10px] font-mono text-slate-400">Dynamic Card</span>
+          </h3>
+          <span id="card-stage-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            Stage 1: The Mogul
+          </span>
+        </div>
+
+        <!-- The Mascot Card -->
+        <div id="mascot-display-card" class="p-6 rounded-3xl bg-gradient-to-b from-[#0F1E19] to-[#0A1210] border border-emerald-500/40 space-y-5 avatar-glow-rich transition-all duration-300">
+          
+          <!-- Character Stage Graphic Container -->
+          <div class="relative w-full h-56 rounded-2xl bg-[#06100E] border border-emerald-900/40 flex flex-col items-center justify-center overflow-hidden p-4">
+            
+            <!-- Dynamic Character SVG & Emoji Composition -->
+            <div id="character-graphic" class="text-center space-y-2 transform transition-all duration-300 scale-100">
+              <div id="character-icon" class="text-7xl filter drop-shadow-xl animate-bounce" style="animation-duration: 2s;">
+                🎩
+              </div>
+              <div class="text-5xl">
+                🤵🏻‍♂️
+              </div>
+            </div>
+
+            <!-- Glowing Ambient Badge -->
+            <div class="absolute bottom-3 left-4 right-4 flex justify-between items-center text-xs font-mono">
+              <span id="outfit-tag" class="px-2.5 py-1 rounded-xl bg-black/60 backdrop-blur-md text-emerald-300 border border-emerald-500/30 font-bold">
+                Tailored Tuxedo & Bow Tie
+              </span>
+              <span id="mood-tag" class="text-emerald-400 font-bold flex items-center gap-1">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Wealth Wizard
+              </span>
+            </div>
           </div>
-          <button onclick="choose('Option A: Interactive Donut & Drilldown')" class="px-3 py-1 rounded-xl bg-[#163832] text-[#DAF1DE] text-xs font-bold border border-[#235347]">Select Option A</button>
+
+          <!-- Quip & Financial Context -->
+          <div class="space-y-1.5">
+            <h4 id="mascot-title" class="text-base font-extrabold text-white">
+              "Looking lavish, financial wizard!"
+            </h4>
+            <p id="mascot-desc" class="text-xs text-slate-300 leading-relaxed">
+              Your projected month-end balance is tracking <strong class="text-emerald-300">+₹35,000 above your savings threshold</strong>. You have full license to enjoy dinner at that fine dining place tonight.
+            </p>
+          </div>
+
+          <!-- Micro Progress Bar -->
+          <div class="pt-3 border-t border-emerald-900/30 space-y-1">
+            <div class="flex justify-between text-[11px] font-mono">
+              <span class="text-slate-400">Budget Health Index:</span>
+              <span id="health-index-val" class="text-emerald-300 font-bold">142% of Goal</span>
+            </div>
+            <div class="w-full h-2 bg-[#06100E] rounded-full overflow-hidden border border-emerald-900/30">
+              <div id="health-bar-fill" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Design Spec Notes -->
+        <div class="p-4 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2 text-xs text-slate-400">
+          <span class="font-bold text-white block">How This Integrates with Version 2.0:</span>
+          <p>• Powered by <code>app/services/analytics.py</code> projected month-end velocity endpoint.</p>
+          <p>• Relocated <code>TimeTravelCard.tsx</code> sliders immediately below this mascot, allowing users to play "what if" simulations and see the mascot dress up or strip down in real-time!</p>
+        </div>
+      </div>
+
+
+      <!-- RIGHT: LIVE PHONE MOCKUP SHOWING PLACEMENT IN ANALYTICS -->
+      <div class="w-full max-w-[390px] space-y-4">
+        <div class="flex items-center justify-between px-2">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>In-App Mobile View</span>
+            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Final Option A Layout</span>
+          </h3>
+          <span class="text-xs text-slate-500 font-mono">iPhone 15 Pro</span>
         </div>
 
         <div class="phone-mockup bg-[#051F20] text-[#DAF1DE] border border-[#235347]/40">
           <div class="dynamic-island"></div>
           <div class="pt-3 px-6 flex justify-between text-[10px] font-mono text-[#8EB69B]"><span>9:41</span><i data-lucide="battery" class="w-3.5 h-3.5"></i></div>
 
-          <div class="flex-1 overflow-y-auto mockup-scroll p-4 pt-6 space-y-3">
-            <h2 class="text-base font-bold text-white">Monthly Analytics</h2>
-
-            <!-- Donut Container -->
-            <div class="p-4 rounded-2xl bg-[#0B2B26] border border-[#235347] flex flex-col items-center relative">
-              <span class="text-[10px] uppercase font-bold text-[#8EB69B]">August Outflow</span>
-              
-              <!-- Simulated Donut SVG -->
-              <div class="relative w-40 h-40 flex items-center justify-center my-2">
-                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="38" stroke="#163832" stroke-width="12" fill="none" />
-                  <circle cx="50" cy="50" r="38" stroke="#10B981" stroke-width="12" fill="none" stroke-dasharray="238.7" stroke-dashoffset="95" stroke-linecap="round" />
-                  <circle cx="50" cy="50" r="38" stroke="#F59E0B" stroke-width="12" fill="none" stroke-dasharray="238.7" stroke-dashoffset="190" stroke-linecap="round" />
-                  <circle cx="50" cy="50" r="38" stroke="#EC4899" stroke-width="12" fill="none" stroke-dasharray="238.7" stroke-dashoffset="220" stroke-linecap="round" />
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="text-[10px] text-[#8EB69B]">Food & Dining</span>
-                  <span class="text-base font-extrabold text-white font-mono-num">₹14,500</span>
-                  <span class="text-[9px] text-emerald-400 font-bold">38% of total</span>
-                </div>
+          <div class="flex-1 overflow-y-auto mockup-scroll p-4 pt-6 space-y-3.5">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] uppercase font-bold text-[#8EB69B]">Intelligence</span>
+                <h2 class="text-base font-bold text-white">August Analytics</h2>
               </div>
-              <p class="text-[9px] text-[#8EB69B]">Tap any slice to inspect top-5 largest transactions</p>
+              <span class="px-2 py-0.5 rounded-lg bg-[#0B2B26] border border-[#235347] text-[10px] text-emerald-400 font-mono">August 2026</span>
             </div>
 
-            <!-- MoM Variance Card -->
-            <div class="p-3 rounded-2xl bg-[#0B2B26] border border-[#235347] flex items-center justify-between">
-              <div>
-                <span class="text-[10px] uppercase font-bold text-[#8EB69B] block">MoM Burn Velocity</span>
-                <span class="text-xs font-bold text-white">₹1,556.00 / day</span>
+            <!-- 1. The Mascot Persona Widget Embedded In Feed -->
+            <div id="phone-mascot-widget" class="p-3.5 rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border border-emerald-500/30 flex items-center gap-3 shadow-md">
+              <div id="phone-mascot-avatar" class="w-12 h-12 rounded-xl bg-[#163832] border border-emerald-500/40 flex items-center justify-center text-2xl flex-shrink-0">
+                🤵🏻‍♂️
               </div>
-              <span class="px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-[10px] font-mono font-bold">
+              <div class="space-y-0.5 flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <span id="phone-mascot-label" class="text-xs font-bold text-emerald-300 truncate">The Mogul (+₹35k)</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600/40 font-mono">Surplus</span>
+                </div>
+                <p id="phone-mascot-quip" class="text-[10px] text-[#8EB69B] line-clamp-2">
+                  "Suit and tie active. You are beating your monthly budget with ease."
+                </p>
+              </div>
+            </div>
+
+            <!-- 2. Finalized Option A Recharts Donut -->
+            <div class="p-4 rounded-2xl bg-[#0B2B26] border border-[#235347] flex flex-col items-center relative shadow-sm">
+              <span class="text-[10px] uppercase font-bold text-[#8EB69B]">Category Breakdown</span>
+              <div class="relative w-36 h-36 flex items-center justify-center my-2">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" stroke="#163832" stroke-width="11" fill="none" />
+                  <circle cx="50" cy="50" r="38" stroke="#10B981" stroke-width="11" fill="none" stroke-dasharray="238.7" stroke-dashoffset="95" stroke-linecap="round" />
+                  <circle cx="50" cy="50" r="38" stroke="#F59E0B" stroke-width="11" fill="none" stroke-dasharray="238.7" stroke-dashoffset="190" stroke-linecap="round" />
+                  <circle cx="50" cy="50" r="38" stroke="#EC4899" stroke-width="11" fill="none" stroke-dasharray="238.7" stroke-dashoffset="220" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-[9px] text-[#8EB69B]">Food & Dining</span>
+                  <span class="text-sm font-extrabold text-white font-mono-num">₹14,500</span>
+                  <span class="text-[8px] text-emerald-400 font-bold">38% total</span>
+                </div>
+              </div>
+              <p class="text-[9px] text-[#8EB69B]">Tap slice to open Top-5 Largest Spends</p>
+            </div>
+
+            <!-- 3. Relocated Time-Travel Burn Simulator (Moved from Home per Decision 3A) -->
+            <div class="p-3.5 rounded-2xl bg-[#0B2B26] border border-[#235347] space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                  Predictive Burn Simulator
+                </span>
+                <span class="text-[10px] font-mono text-[#8EB69B]">Time-Travel</span>
+              </div>
+              <p class="text-[10px] text-[#8EB69B]">Forecast balance at month end based on current ₹1,556/day burn velocity.</p>
+            </div>
+
+            <!-- 4. Month-over-Month Velocity Card -->
+            <div class="p-3 rounded-2xl bg-[#0B2B26] border border-[#163832] flex items-center justify-between">
+              <div>
+                <span class="text-[10px] uppercase font-bold text-[#8EB69B] block">Daily Burn Velocity</span>
+                <span class="text-xs font-bold text-white font-mono-num">₹1,556.00 / day</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-[10px] font-mono font-bold">
                 -12% vs July
               </span>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- OPTION B: RANKED HORIZONTAL PROGRESS BARS -->
-      <div id="card-bars" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
-        <div class="w-full flex items-center justify-between px-2">
-          <div>
-            <span class="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold font-mono">Option B</span>
-            <h3 class="text-sm font-bold text-white mt-1">Ranked Category Bars</h3>
-          </div>
-          <button onclick="choose('Option B: Ranked Category Bars')" class="px-3 py-1 rounded-xl bg-indigo-600 text-white text-xs font-bold">Select Option B</button>
-        </div>
-
-        <div class="phone-mockup bg-[#090A0D] text-white border border-[#1A1F2C]">
-          <div class="dynamic-island"></div>
-          <div class="pt-3 px-6 flex justify-between text-[10px] font-mono text-slate-500"><span>9:41</span><i data-lucide="battery" class="w-3.5 h-3.5"></i></div>
-
-          <div class="flex-1 overflow-y-auto mockup-scroll p-4 pt-6 space-y-3">
-            <h2 class="text-base font-bold text-white">Spend by Category</h2>
-
-            <!-- Bar 1 -->
-            <div class="p-3.5 rounded-2xl bg-[#141720] border border-[#1F2536] space-y-2">
-              <div class="flex justify-between items-center text-xs">
-                <span class="font-bold text-white flex items-center gap-1.5">🍔 Food & Dining</span>
-                <span class="font-mono-num font-bold text-white">₹18,400 (42%)</span>
-              </div>
-              <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                <div class="h-full bg-emerald-500 rounded-full" style="width: 42%;"></div>
-              </div>
-            </div>
-
-            <!-- Bar 2 -->
-            <div class="p-3.5 rounded-2xl bg-[#141720] border border-[#1F2536] space-y-2">
-              <div class="flex justify-between items-center text-xs">
-                <span class="font-bold text-white flex items-center gap-1.5">🛒 Groceries</span>
-                <span class="font-mono-num font-bold text-white">₹9,200 (21%)</span>
-              </div>
-              <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                <div class="h-full bg-indigo-500 rounded-full" style="width: 21%;"></div>
-              </div>
-            </div>
-
-            <!-- Bar 3 -->
-            <div class="p-3.5 rounded-2xl bg-[#141720] border border-[#1F2536] space-y-2">
-              <div class="flex justify-between items-center text-xs">
-                <span class="font-bold text-white flex items-center gap-1.5">🚗 Transport</span>
-                <span class="font-mono-num font-bold text-white">₹4,800 (11%)</span>
-              </div>
-              <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                <div class="h-full bg-amber-500 rounded-full" style="width: 11%;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- OPTION C: MONOUT SUBSCRIPTIONS & MANDATES -->
-      <div id="card-subs" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
-        <div class="w-full flex items-center justify-between px-2">
-          <div>
-            <span class="px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-400 border border-violet-500/20 text-[10px] font-bold font-mono">Option C</span>
-            <h3 class="text-sm font-bold text-white mt-1">Monout Mandates Panel</h3>
-          </div>
-          <button onclick="choose('Option C: Monout Mandates Panel (from Analytic design.webp)')" class="px-3 py-1 rounded-xl bg-violet-600 text-white text-xs font-bold">Select Option C</button>
-        </div>
-
-        <div class="phone-mockup bg-[#090A0D] text-white border border-[#1A1F2C]">
-          <div class="dynamic-island"></div>
-          <div class="pt-3 px-6 flex justify-between text-[10px] font-mono text-slate-500"><span>9:41</span><i data-lucide="battery" class="w-3.5 h-3.5"></i></div>
-
-          <div class="flex-1 overflow-y-auto mockup-scroll p-4 pt-6 space-y-3">
-            <h2 class="text-base font-bold text-white">Recurring Mandates</h2>
-
-            <div class="p-4 rounded-2xl bg-[#12151E] border border-[#1E2538] space-y-3">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-slate-300">All Subscriptions</span>
-                <span class="text-[10px] font-mono text-emerald-400">4 Active</span>
-              </div>
-
-              <div class="space-y-2.5 text-xs">
-                <div class="p-2.5 rounded-xl bg-[#181D2A] flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">✓</span>
-                    <div>
-                      <span class="font-bold text-white block">Netflix</span>
-                      <span class="text-[10px] text-slate-400">Renews on 12th</span>
-                    </div>
-                  </div>
-                  <span class="font-mono text-white font-bold">9.99 USD</span>
-                </div>
-
-                <div class="p-2.5 rounded-xl bg-[#181D2A] flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">✓</span>
-                    <div>
-                      <span class="font-bold text-white block">Spotify Duo</span>
-                      <span class="text-[10px] text-slate-400">Renews on 18th</span>
-                    </div>
-                  </div>
-                  <span class="font-mono text-white font-bold">9.99 EUR</span>
-                </div>
-
-                <div class="p-2.5 rounded-xl bg-[#181D2A] flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">✓</span>
-                    <div>
-                      <span class="font-bold text-white block">Disney Plus</span>
-                      <span class="text-[10px] text-slate-400">Renews on 22nd</span>
-                    </div>
-                  </div>
-                  <span class="font-mono text-white font-bold">15 EUR</span>
-                </div>
-              </div>
-            </div>
+          <!-- Bottom Navigation Bar -->
+          <div class="h-16 bg-[#051F20]/95 border-t border-[#235347] flex items-center justify-around px-4 z-50">
+            <div class="flex flex-col items-center text-[#8EB69B]"><i data-lucide="home" class="w-4 h-4"></i><span class="text-[9px] mt-0.5">Overview</span></div>
+            <div class="flex flex-col items-center text-[#8EB69B]"><i data-lucide="inbox" class="w-4 h-4"></i><span class="text-[9px] mt-0.5">Review</span></div>
+            <div class="flex flex-col items-center text-[#8EB69B]"><i data-lucide="list-filter" class="w-4 h-4"></i><span class="text-[9px] mt-0.5">Ledger</span></div>
+            <div class="flex flex-col items-center text-[#DAF1DE]"><i data-lucide="pie-chart" class="w-4 h-4"></i><span class="text-[9px] font-bold mt-0.5">Insights</span></div>
           </div>
         </div>
       </div>
 
     </div>
+
   </main>
 
   <script>
     lucide.createIcons();
-    function switchView(mode) {
-      const container = document.getElementById('mockups-container');
-      const d = document.getElementById('card-donut');
-      const b = document.getElementById('card-bars');
-      const s = document.getElementById('card-subs');
 
-      if (mode === 'side') {
-        d.style.display = 'flex'; b.style.display = 'flex'; s.style.display = 'flex';
-        container.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center";
-      } else if (mode === 'donut') {
-        d.style.display = 'flex'; b.style.display = 'none'; s.style.display = 'none';
-        container.className = "flex justify-center";
-      } else if (mode === 'bars') {
-        d.style.display = 'none'; b.style.display = 'flex'; s.style.display = 'none';
-        container.className = "flex justify-center";
-      } else if (mode === 'subs') {
-        d.style.display = 'none'; b.style.display = 'none'; s.style.display = 'flex';
-        container.className = "flex justify-center";
+    const STAGES = {
+      1: {
+        name: "The Mogul",
+        outfit: "Tailored Tuxedo & Bow Tie",
+        icon: "🎩",
+        avatar: "🤵🏻‍♂️",
+        title: '"Looking lavish, financial wizard!"',
+        desc: "Your projected month-end balance is tracking +₹35,000 above your savings threshold. You have full license to enjoy dinner at that fine dining place tonight.",
+        mood: "Wealth Wizard",
+        glow: "avatar-glow-rich",
+        cardBg: "from-[#0F1E19] to-[#0A1210]",
+        border: "border-emerald-500/40",
+        badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        barColor: "from-emerald-500 to-teal-400",
+        barWidth: "100%",
+        healthText: "142% of Goal",
+        phoneQuip: '"Suit and tie active. You are beating your monthly budget with ease."'
+      },
+      2: {
+        name: "The Pro",
+        outfit: "Crisp Oxford Shirt & Chinos",
+        icon: "☕",
+        avatar: "👨🏻‍💼",
+        title: '"Steady, balanced, and sharp."',
+        desc: "Projected month-end balance is right on track with your target budget (+₹4,500 buffer). Perfectly poised.",
+        mood: "On Track",
+        glow: "avatar-glow-pro",
+        cardBg: "from-[#0B1A1E] to-[#081114]",
+        border: "border-teal-500/40",
+        badgeColor: "bg-teal-500/20 text-teal-300 border-teal-500/30",
+        barColor: "from-teal-500 to-cyan-400",
+        barWidth: "95%",
+        healthText: "98% of Goal",
+        phoneQuip: '"Looking sharp in shirt and pants. Budget is well disciplined."'
+      },
+      3: {
+        name: "The Hustler",
+        outfit: "Grey T-Shirt & Joggers",
+        icon: "👟",
+        avatar: "🧍🏻‍♂️",
+        title: '"Comfort mode active — budget tightening."',
+        desc: "Spending velocity is tracking -₹8,500 over your planned allowance. Time to swap food delivery apps for home cooking!",
+        mood: "Elevated Burn",
+        glow: "avatar-glow-hustle",
+        cardBg: "from-[#1E170A] to-[#120E06]",
+        border: "border-amber-500/40",
+        badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        barColor: "from-amber-500 to-orange-400",
+        barWidth: "72%",
+        healthText: "72% of Goal",
+        phoneQuip: '"Down to T-shirt and track pants. Moderate burn warning."'
+      },
+      4: {
+        name: "In Boxers (Broke)",
+        outfit: "Heart-Patterned Boxers & Bare Chest",
+        icon: "🩳",
+        avatar: "🧎🏻‍♂️",
+        title: '"RED ALERT: Down to your boxers!"',
+        desc: "Catastrophic burn rate! Projected month-end deficit of -₹32,000. All discretionary entertainment & dining must be frozen immediately.",
+        mood: "Discretionary Freeze",
+        glow: "avatar-glow-boxers",
+        cardBg: "from-[#1F0D0D] to-[#140808]",
+        border: "border-rose-500/50",
+        badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+        barColor: "from-rose-500 to-red-600",
+        barWidth: "25%",
+        healthText: "25% (Critical)",
+        phoneQuip: '"Down to boxers! Cease all Swiggy orders and discretionary spends."'
       }
+    };
+
+    function setAvatarStage(stageNum) {
+      const s = STAGES[stageNum];
+      if (!s) return;
+
+      // Update main card
+      const card = document.getElementById('mascot-display-card');
+      card.className = `p-6 rounded-3xl bg-gradient-to-b ${s.cardBg} border ${s.border} space-y-5 ${s.glow} transition-all duration-300`;
+      
+      document.getElementById('card-stage-pill').textContent = `Stage ${stageNum}: ${s.name}`;
+      document.getElementById('card-stage-pill').className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${s.badgeColor}`;
+      
+      document.getElementById('character-icon').textContent = s.icon;
+      document.getElementById('character-graphic').children[1].textContent = s.avatar;
+      document.getElementById('outfit-tag').textContent = s.outfit;
+      document.getElementById('mood-tag').innerHTML = `<i data-lucide="sparkles" class="w-3.5 h-3.5"></i> ${s.mood}`;
+      
+      document.getElementById('mascot-title').textContent = s.title;
+      document.getElementById('mascot-desc').innerHTML = s.desc;
+      document.getElementById('health-index-val').textContent = s.healthText;
+      
+      const bar = document.getElementById('health-bar-fill');
+      bar.className = `h-full bg-gradient-to-r ${s.barColor} rounded-full transition-all duration-500`;
+      bar.style.width = s.barWidth;
+
+      // Update phone mockup widget
+      document.getElementById('phone-mascot-avatar').textContent = s.avatar;
+      document.getElementById('phone-mascot-label').textContent = `${s.name}`;
+      document.getElementById('phone-mascot-quip').textContent = s.phoneQuip;
+
+      lucide.createIcons();
     }
-    function choose(name) {
-      const banner = document.getElementById('decision-banner');
-      const text = document.getElementById('decision-text');
-      const badge = document.getElementById('decision-badge');
-      banner.className = "p-4 rounded-2xl bg-emerald-950/40 border border-emerald-600/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
-      text.innerHTML = `<strong class="text-emerald-300">You picked: ${name}</strong>. Tell me in the chat, and we will finalize it in the catalog!`;
-      badge.textContent = "Candidate Picked";
-      badge.className = "px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold";
+
+    function handleSliderChange(val) {
+      const num = parseInt(val, 10);
+      const readout = document.getElementById('slider-readout');
+      
+      if (num >= 15000) {
+        readout.className = "font-mono-num font-bold text-emerald-400 text-sm";
+        readout.textContent = `+₹${num.toLocaleString('en-IN')} (Surplus)`;
+        setAvatarStage(1);
+      } else if (num >= 0) {
+        readout.className = "font-mono-num font-bold text-teal-400 text-sm";
+        readout.textContent = `+₹${num.toLocaleString('en-IN')} (On Target)`;
+        setAvatarStage(2);
+      } else if (num >= -15000) {
+        readout.className = "font-mono-num font-bold text-amber-400 text-sm";
+        readout.textContent = `-₹${Math.abs(num).toLocaleString('en-IN')} (Over Budget)`;
+        setAvatarStage(3);
+      } else {
+        readout.className = "font-mono-num font-bold text-rose-400 text-sm animate-pulse";
+        readout.textContent = `-₹${Math.abs(num).toLocaleString('en-IN')} (Severe Deficit)`;
+        setAvatarStage(4);
+      }
     }
   </script>
 </body>
