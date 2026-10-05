@@ -52,7 +52,7 @@ describe('InboxView Component', () => {
     });
   };
 
-  it('renders selective learning checkbox with default true and passes it on confirm', () => {
+  it('renders 3 learning options and default selects "remember" passing learnMerchant=true, neverAutoClassify=false', () => {
     const handleVerify = vi.fn();
     const handleSplit = vi.fn();
     const handleReset = vi.fn();
@@ -64,9 +64,17 @@ describe('InboxView Component', () => {
       onResetInbox: handleReset,
     });
 
-    const checkbox = container.querySelector<HTMLInputElement>('#checkbox-learn-merchant');
-    expect(checkbox).not.toBeNull();
-    expect(checkbox?.checked).toBe(true);
+    const rememberRadio = container.querySelector<HTMLInputElement>('#radio-learn-remember');
+    const onceRadio = container.querySelector<HTMLInputElement>('#radio-learn-once');
+    const neverRadio = container.querySelector<HTMLInputElement>('#radio-learn-never');
+
+    expect(rememberRadio).not.toBeNull();
+    expect(onceRadio).not.toBeNull();
+    expect(neverRadio).not.toBeNull();
+
+    expect(rememberRadio?.checked).toBe(true);
+    expect(onceRadio?.checked).toBe(false);
+    expect(neverRadio?.checked).toBe(false);
 
     const confirmBtn = container.querySelector<HTMLButtonElement>('#btn-confirm-verify');
     expect(confirmBtn).not.toBeNull();
@@ -75,10 +83,10 @@ describe('InboxView Component', () => {
       confirmBtn?.click();
     });
 
-    expect(handleVerify).toHaveBeenCalledWith('tx-unverified-1', 'Food & Dining', true);
+    expect(handleVerify).toHaveBeenCalledWith('tx-unverified-1', 'Food & Dining', true, false);
   });
 
-  it('allows unchecking selective learning and passes false on confirm', () => {
+  it('allows selecting "Just this once" option and passes learnMerchant=false, neverAutoClassify=false on confirm', () => {
     const handleVerify = vi.fn();
     const handleSplit = vi.fn();
     const handleReset = vi.fn();
@@ -90,8 +98,65 @@ describe('InboxView Component', () => {
       onResetInbox: handleReset,
     });
 
+    const onceRadio = container.querySelector<HTMLInputElement>('#radio-learn-once');
+    expect(onceRadio).not.toBeNull();
+
+    act(() => {
+      onceRadio?.click();
+    });
+
+    expect(onceRadio?.checked).toBe(true);
+
+    const confirmBtn = container.querySelector<HTMLButtonElement>('#btn-confirm-verify');
+    act(() => {
+      confirmBtn?.click();
+    });
+
+    expect(handleVerify).toHaveBeenCalledWith('tx-unverified-1', 'Food & Dining', false, false);
+  });
+
+  it('allows selecting "Always ask (Never auto-classify)" option and passes learnMerchant=false, neverAutoClassify=true on confirm', () => {
+    const handleVerify = vi.fn();
+    const handleSplit = vi.fn();
+    const handleReset = vi.fn();
+
+    renderComponent({
+      unverifiedTransactions: [mockTransaction],
+      onVerifyTransaction: handleVerify,
+      onOpenSplitDrawer: handleSplit,
+      onResetInbox: handleReset,
+    });
+
+    const neverRadio = container.querySelector<HTMLInputElement>('#radio-learn-never');
+    expect(neverRadio).not.toBeNull();
+
+    act(() => {
+      neverRadio?.click();
+    });
+
+    expect(neverRadio?.checked).toBe(true);
+
+    const confirmBtn = container.querySelector<HTMLButtonElement>('#btn-confirm-verify');
+    act(() => {
+      confirmBtn?.click();
+    });
+
+    expect(handleVerify).toHaveBeenCalledWith('tx-unverified-1', 'Food & Dining', false, true);
+  });
+
+  it('retains backward compatibility with #checkbox-learn-merchant', () => {
+    const handleVerify = vi.fn();
+
+    renderComponent({
+      unverifiedTransactions: [mockTransaction],
+      onVerifyTransaction: handleVerify,
+      onOpenSplitDrawer: vi.fn(),
+      onResetInbox: vi.fn(),
+    });
+
     const checkbox = container.querySelector<HTMLInputElement>('#checkbox-learn-merchant');
     expect(checkbox).not.toBeNull();
+    expect(checkbox?.checked).toBe(true);
 
     act(() => {
       checkbox?.click();
@@ -104,7 +169,7 @@ describe('InboxView Component', () => {
       confirmBtn?.click();
     });
 
-    expect(handleVerify).toHaveBeenCalledWith('tx-unverified-1', 'Food & Dining', false);
+    expect(handleVerify).toHaveBeenCalledWith('tx-unverified-1', 'Food & Dining', false, false);
   });
 
   it('renders 3 minimal tactile symbol action buttons without text labels', () => {
@@ -183,7 +248,7 @@ describe('InboxView Component', () => {
       confirmBtn?.click();
     });
 
-    expect(handleVerify).toHaveBeenCalledWith('tx-unverified-1', 'Groceries & Quick-Commerce', true);
+    expect(handleVerify).toHaveBeenCalledWith('tx-unverified-1', 'Groceries & Quick-Commerce', true, false);
   });
 
   it('renders celebratory zero-inbox state when queue is empty and triggers reset', () => {

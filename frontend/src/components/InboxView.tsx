@@ -18,9 +18,16 @@ import { formatINR } from '../utils/formatters';
 import { CategoryIcon } from './CategoryIcon';
 import { CATEGORIES_CONFIG } from '../data/mockData';
 
-interface InboxViewProps {
+export type LearningPreference = 'remember' | 'once' | 'never';
+
+export interface InboxViewProps {
   unverifiedTransactions: Transaction[];
-  onVerifyTransaction: (txId: string, assignedCategory: ExpenseCategory, learnMerchant?: boolean) => void;
+  onVerifyTransaction: (
+    txId: string,
+    assignedCategory: ExpenseCategory,
+    learnMerchant?: boolean,
+    neverAutoClassify?: boolean
+  ) => void;
   onOpenSplitDrawer: (tx: Transaction) => void;
   onResetInbox: () => void;
 }
@@ -33,7 +40,7 @@ export const InboxView: React.FC<InboxViewProps> = ({
 }) => {
   const [selectedCategoryOverride, setSelectedCategoryOverride] = useState<ExpenseCategory | null>(null);
   const [showRawSms, setShowRawSms] = useState<boolean>(false);
-  const [learnMerchant, setLearnMerchant] = useState<boolean>(true);
+  const [learningPreference, setLearningPreference] = useState<LearningPreference>('remember');
   const [showCategorySelector, setShowCategorySelector] = useState<boolean>(false);
 
   const currentTx = unverifiedTransactions[0];
@@ -51,12 +58,25 @@ export const InboxView: React.FC<InboxViewProps> = ({
     setSelectedCategoryOverride(null);
     setShowRawSms(false);
     setShowCategorySelector(false);
+    setLearningPreference('remember');
   }, [currentTx?.id, x]);
 
   const handleQuickConfirm = (categoryToUse?: ExpenseCategory) => {
     if (!currentTx) return;
     const finalCategory = categoryToUse || selectedCategoryOverride || currentTx.aiSuggestedCategory || 'Uncategorized';
-    onVerifyTransaction(currentTx.id, finalCategory, learnMerchant);
+    
+    let learnMerchant = true;
+    let neverAutoClassify = false;
+
+    if (learningPreference === 'once') {
+      learnMerchant = false;
+      neverAutoClassify = false;
+    } else if (learningPreference === 'never') {
+      learnMerchant = false;
+      neverAutoClassify = true;
+    }
+
+    onVerifyTransaction(currentTx.id, finalCategory, learnMerchant, neverAutoClassify);
     setSelectedCategoryOverride(null);
     setShowRawSms(false);
     setShowCategorySelector(false);
@@ -271,27 +291,121 @@ export const InboxView: React.FC<InboxViewProps> = ({
                   </div>
                 )}
 
-                {/* Selective Learning Option */}
-                <label 
-                  htmlFor="checkbox-learn-merchant"
-                  className="flex items-center gap-3 p-3 rounded-xl bg-[#163832]/60 hover:bg-[#163832] border border-[#235347] transition-colors cursor-pointer select-none touch-press"
-                >
-                  <input
-                    id="checkbox-learn-merchant"
-                    type="checkbox"
-                    checked={learnMerchant}
-                    onChange={(e) => setLearnMerchant(e.target.checked)}
-                    className="rounded border-[#235347] bg-[#051F20] text-emerald-500 focus:ring-0 w-4 h-4 cursor-pointer"
-                  />
-                  <div className="flex-1">
-                    <span className="text-xs font-semibold text-[#DAF1DE] block">
-                      Remember for future transactions (Selective Learning)
+                {/* Learning Preference Selector (Tier-2 Memory & P2P Friends Guard) */}
+                <div className="space-y-2 pt-1 text-left">
+                  <div className="flex items-center justify-between px-1">
+                    <span className="text-[11px] font-semibold text-[#8EB69B] uppercase tracking-wider">
+                      Classification Memory
                     </span>
-                    <span className="text-[10px] text-[#8EB69B] block mt-0.5">
-                      Saves pattern into Tier-2 merchant memory for 100% instant auto-categorization
+                    <span className="text-[10px] font-medium text-[#8EB69B]">
+                      {learningPreference === 'remember' && 'Rule will be saved'}
+                      {learningPreference === 'once' && 'One-time only'}
+                      {learningPreference === 'never' && 'Always route to review'}
                     </span>
                   </div>
-                </label>
+
+                  <div className="grid grid-cols-1 gap-2" role="radiogroup" aria-label="Learning preference">
+                    {/* 1. Remember Option */}
+                    <label
+                      htmlFor="radio-learn-remember"
+                      className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none touch-press ${
+                        learningPreference === 'remember'
+                          ? 'bg-[#163832] border-emerald-500/60 shadow-sm'
+                          : 'bg-[#163832]/40 hover:bg-[#163832]/60 border-[#235347]'
+                      }`}
+                    >
+                      <input
+                        id="radio-learn-remember"
+                        name="learningPreference"
+                        type="radio"
+                        value="remember"
+                        checked={learningPreference === 'remember'}
+                        onChange={() => setLearningPreference('remember')}
+                        className="mt-0.5 text-emerald-500 border-[#235347] bg-[#051F20] focus:ring-0 w-4 h-4 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <span className="text-xs font-semibold text-[#DAF1DE] block">
+                          Remember category
+                        </span>
+                        <span className="text-[10px] text-[#8EB69B] block mt-0.5 leading-normal">
+                          Auto-classify future transactions for this merchant
+                        </span>
+                      </div>
+                    </label>
+
+                    {/* 2. Just this once Option */}
+                    <label
+                      htmlFor="radio-learn-once"
+                      className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none touch-press ${
+                        learningPreference === 'once'
+                          ? 'bg-[#163832] border-emerald-500/60 shadow-sm'
+                          : 'bg-[#163832]/40 hover:bg-[#163832]/60 border-[#235347]'
+                      }`}
+                    >
+                      <input
+                        id="radio-learn-once"
+                        name="learningPreference"
+                        type="radio"
+                        value="once"
+                        checked={learningPreference === 'once'}
+                        onChange={() => setLearningPreference('once')}
+                        className="mt-0.5 text-emerald-500 border-[#235347] bg-[#051F20] focus:ring-0 w-4 h-4 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <span className="text-xs font-semibold text-[#DAF1DE] block">
+                          Just this once
+                        </span>
+                        <span className="text-[10px] text-[#8EB69B] block mt-0.5 leading-normal">
+                          Don't save pattern to memory
+                        </span>
+                      </div>
+                    </label>
+
+                    {/* 3. Always ask (Never auto-classify) Option */}
+                    <label
+                      htmlFor="radio-learn-never"
+                      className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none touch-press ${
+                        learningPreference === 'never'
+                          ? 'bg-[#163832] border-amber-500/60 shadow-sm ring-1 ring-amber-500/30'
+                          : 'bg-[#163832]/40 hover:bg-[#163832]/60 border-[#235347]'
+                      }`}
+                    >
+                      <input
+                        id="radio-learn-never"
+                        name="learningPreference"
+                        type="radio"
+                        value="never"
+                        checked={learningPreference === 'never'}
+                        onChange={() => setLearningPreference('never')}
+                        className="mt-0.5 text-amber-500 border-[#235347] bg-[#051F20] focus:ring-0 w-4 h-4 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-semibold text-amber-300 block">
+                            Always ask (Never auto-classify)
+                          </span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-medium">
+                            For Friends
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-[#8EB69B] block mt-0.5 leading-normal">
+                          Always route this contact to review queue (e.g. friends where expense varies between food and travel)
+                        </span>
+                      </div>
+                    </label>
+
+                    {/* Backward-compatibility toggle mapped to 'remember' vs 'once' */}
+                    <input
+                      id="checkbox-learn-merchant"
+                      type="checkbox"
+                      aria-hidden="true"
+                      tabIndex={-1}
+                      className="sr-only"
+                      checked={learningPreference === 'remember'}
+                      onChange={(e) => setLearningPreference(e.target.checked ? 'remember' : 'once')}
+                    />
+                  </div>
+                </div>
               </motion.div>
             </div>
 

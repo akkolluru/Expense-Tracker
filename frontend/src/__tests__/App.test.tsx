@@ -4,6 +4,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from '../App';
 
+import { api } from '../services/api';
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock('motion/react', () => ({
@@ -13,17 +15,23 @@ vi.mock('motion/react', () => ({
     )),
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
-  useMotionValue: (initial: any) => ({
-    get: () => initial,
-    set: vi.fn(),
-    on: vi.fn(),
-    destroy: vi.fn(),
-  }),
-  useTransform: () => ({
-    get: () => 0,
-    on: vi.fn(),
-    destroy: vi.fn(),
-  }),
+  useMotionValue: (initial: any) => {
+    const ref = React.useRef({
+      get: () => initial,
+      set: vi.fn(),
+      on: vi.fn(),
+      destroy: vi.fn(),
+    });
+    return ref.current;
+  },
+  useTransform: () => {
+    const ref = React.useRef({
+      get: () => 0,
+      on: vi.fn(),
+      destroy: vi.fn(),
+    });
+    return ref.current;
+  },
 }));
 
 // Mock API module
@@ -118,6 +126,135 @@ describe('App Integration', () => {
 
     await act(async () => {
       confirmBtn?.click();
+    });
+  });
+
+  it('calls approveInboxItem with never_auto_classify payload when "Always ask" is selected', async () => {
+    vi.mocked(api.listInbox).mockResolvedValueOnce([
+      {
+        id: 42,
+        amount: 550,
+        merchant_name: 'Rahul Friend UPI',
+        merchant_vpa: 'rahul@oksbi',
+        timestamp: '2026-10-05T12:00:00Z',
+        confidence: 0.5,
+        suggested_category: { id: 1, name: 'Food & Dining' },
+      },
+    ]);
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
+
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      );
+    });
+
+    // Wait for queries to settle and DOM to update with mock inbox transaction
+    await act(async () => {
+      for (let i = 0; i < 20; i++) {
+        await new Promise(r => setTimeout(r, 20));
+        if (container.textContent?.includes('Rahul Friend UPI')) break;
+      }
+    });
+
+    // Navigate to Inbox tab
+    const inboxTab = container.querySelector<HTMLButtonElement>('#tab-inbox');
+    await act(async () => {
+      inboxTab?.click();
+    });
+
+    // Verify the mock transaction is active in inbox
+    expect(container.textContent).toContain('Rahul Friend UPI');
+
+    // Select "Always ask (Never auto-classify)" radio
+    const neverRadio = container.querySelector<HTMLInputElement>('#radio-learn-never');
+    expect(neverRadio).not.toBeNull();
+
+    await act(async () => {
+      neverRadio?.click();
+    });
+    expect(neverRadio?.checked).toBe(true);
+
+    // Confirm verification
+    const confirmBtn = container.querySelector<HTMLButtonElement>('#btn-confirm-verify');
+    expect(confirmBtn).not.toBeNull();
+
+    await act(async () => {
+      confirmBtn?.click();
+    });
+
+    // Assert approveInboxItem was called with never_auto_classify: true and learn_merchant: false
+    expect(api.approveInboxItem).toHaveBeenCalledWith(42, {
+      category_id: 1,
+      learn_merchant: false,
+      never_auto_classify: true,
+    });
+  });
+
+  it('calls approveInboxItem with default payload (learn_merchant: true, never_auto_classify: false)', async () => {
+    vi.mocked(api.listInbox).mockResolvedValueOnce([
+      {
+        id: 99,
+        amount: 320,
+        merchant_name: 'Swiggy Instamart',
+        merchant_vpa: 'swiggy@icici',
+        timestamp: '2026-10-05T14:00:00Z',
+        confidence: 0.95,
+        suggested_category: { id: 2, name: 'Groceries & Quick-Commerce' },
+      },
+    ]);
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
+
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      );
+    });
+
+    // Wait for queries to settle
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 20));
+    });
+
+    // Navigate to Inbox tab
+    const inboxTab = container.querySelector<HTMLButtonElement>('#tab-inbox');
+    await act(async () => {
+      inboxTab?.click();
+    });
+
+    // Verify default radio is checked
+    const rememberRadio = container.querySelector<HTMLInputElement>('#radio-learn-remember');
+    expect(rememberRadio?.checked).toBe(true);
+
+    // Confirm verification
+    const confirmBtn = container.querySelector<HTMLButtonElement>('#btn-confirm-verify');
+    expect(confirmBtn).not.toBeNull();
+
+    await act(async () => {
+      confirmBtn?.click();
+    });
+
+    // Assert approveInboxItem was called with learn_merchant: true, never_auto_classify: false
+    expect(api.approveInboxItem).toHaveBeenCalledWith(99, {
+      category_id: 2,
+      learn_merchant: true,
+      never_auto_classify: false,
     });
   });
 });

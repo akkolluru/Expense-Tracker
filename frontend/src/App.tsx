@@ -152,7 +152,8 @@ export default function App() {
   const handleVerifyTransaction = (
     txId: string,
     assignedCategory: ExpenseCategory,
-    learnMerchant: boolean = true
+    learnMerchant: boolean = true,
+    neverAutoClassify: boolean = false
   ) => {
     // 1. Immediate optimistic UI feedback
     setTransactions(prev => prev.map(tx => {
@@ -176,13 +177,18 @@ export default function App() {
         payload: {
           category_id: catId,
           learn_merchant: learnMerchant,
+          never_auto_classify: neverAutoClassify,
         },
       }).catch(err => {
         console.error('Failed to approve inbox item:', err);
       });
     }
 
-    showToast(`Categorized as ${assignedCategory}`);
+    if (neverAutoClassify) {
+      showToast(`Categorized as ${assignedCategory} • Contact set to Always Ask`);
+    } else {
+      showToast(`Categorized as ${assignedCategory}`);
+    }
   };
 
   const handleUpdateCategory = (txId: string, category: ExpenseCategory) => {

@@ -341,6 +341,27 @@ describe('PaisaIQApiClient', () => {
     expect(res.id).toBe(77);
   });
 
+  it('approves inbox item with never_auto_classify via POST /inbox/:id/approve', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 78, status: 'POSTED', category_id: 3 }),
+    });
+
+    const res = await client.approveInboxItem(78, {
+      category_id: 3,
+      learn_merchant: false,
+      never_auto_classify: true,
+    });
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/v1/inbox/78/approve',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ category_id: 3, learn_merchant: false, never_auto_classify: true }),
+      })
+    );
+    expect(res.id).toBe(78);
+  });
+
   it('parses sync text via POST /sync/parse-text', async () => {
     const payload = {
       raw_text: 'Sent Rs 450 to Starbucks on 05-Oct-2026 via UPI',

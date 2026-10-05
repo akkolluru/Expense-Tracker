@@ -164,6 +164,7 @@ export interface InboxItemResponse {
 export interface InboxApproveRequest {
   category_id: number;
   learn_merchant?: boolean;
+  never_auto_classify?: boolean;
 }
 
 export interface SyncParseTextRequest {
