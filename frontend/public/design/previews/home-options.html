@@ -656,18 +656,34 @@
       }
     }
 
-    function chooseOption(optionName) {
+    function chooseOption(optionName, btnElement) {
+      localStorage.setItem('paisa_decision_screen_1', optionName);
       const banner = document.getElementById('decision-banner');
       const text = document.getElementById('current-decision-text');
       const badge = document.getElementById('decision-action-badge');
 
-      banner.className = "p-4 rounded-2xl bg-emerald-950/40 border border-emerald-600/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in";
-      text.innerHTML = `<strong class="text-emerald-300">You selected: ${optionName}</strong>. Tell me in the chat, and we will update the permanent catalog to 'Finalized'!`;
-      badge.className = "px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold flex-shrink-0";
-      badge.textContent = "Status: Candidate Selected";
+      if (banner && text && badge) {
+        banner.className = "p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in ring-2 ring-emerald-500/30";
+        text.innerHTML = `<strong class="text-emerald-300 text-sm">✓ You locked in: ${optionName}</strong><span class="block text-slate-300 text-xs mt-0.5">Recorded in your local session & catalog!</span>`;
+        badge.className = "px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold flex-shrink-0";
+        badge.textContent = "Status: Locked";
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Update button state visually
+      if (btnElement) {
+        btnElement.textContent = '✓ Selected';
+        btnElement.className = 'px-3 py-1 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-lg ring-2 ring-emerald-400';
+      }
     }
 
-    // Check URL parameters (e.g. ?option=ring)
+    // Check URL parameters or saved preference
+    const saved = localStorage.getItem('paisa_decision_screen_1');
+    if (saved) {
+      const text = document.getElementById('current-decision-text');
+      if (text) text.innerHTML = `<strong class="text-emerald-300">Previous Selection: ${saved}</strong>`;
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const optParam = urlParams.get('option');
     if (optParam === 'bento' || optParam === 'ring' || optParam === 'monout') {

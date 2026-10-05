@@ -14,21 +14,9 @@
     .font-mono-num {
       font-family: 'JetBrains Mono', monospace;
     }
-    /* Smooth custom scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #090A0F;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1F2430;
-      border-radius: 999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #2E364A;
-    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090A0F; }
+    ::-webkit-scrollbar-thumb { background: #1F2430; border-radius: 999px; }
   </style>
 </head>
 <body class="bg-[#08090D] text-[#E2E8F0] min-h-screen selection:bg-indigo-600 selection:text-white">
@@ -37,7 +25,7 @@
   <header class="sticky top-0 z-50 bg-[#0C0E14]/90 backdrop-blur-xl border-b border-[#1A1F2C] px-4 lg:px-8 py-3.5">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-black text-base shadow-lg shadow-indigo-500/20">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black text-base shadow-lg shadow-emerald-500/20">
           ₹
         </div>
         <div>
@@ -45,7 +33,7 @@
             <h1 class="text-base font-extrabold tracking-tight text-white">
               PaisaIQ Design System Studio
             </h1>
-            <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-bold">
+            <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
               Permanent Decision Catalog
             </span>
           </div>
@@ -58,9 +46,9 @@
       <!-- Quick Stats & Navigation Actions -->
       <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
         <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#121622] border border-[#1F2639] text-xs font-mono">
-          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-slate-400">Decision Progress:</span>
-          <span class="text-amber-400 font-bold" id="progress-stat">0 / 6 Screens Decided</span>
+          <span class="text-emerald-400 font-bold" id="progress-stat">5 / 6 Screens Finalized</span>
         </div>
 
         <a 
@@ -68,7 +56,7 @@
           class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/30 transition-all"
         >
           <i data-lucide="play" class="w-3.5 h-3.5"></i>
-          <span>Launch Home Preview</span>
+          <span>Launch Previews</span>
         </a>
       </div>
     </div>
@@ -77,338 +65,143 @@
   <!-- Main Studio Workspace -->
   <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-10">
 
-    <!-- Hero / Guidance Banner -->
-    <div class="p-6 rounded-3xl bg-gradient-to-br from-[#121624] via-[#0E121B] to-[#0A0C12] border border-[#1F273B] relative overflow-hidden shadow-2xl">
-      <div class="absolute -right-12 -top-12 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- Hero Decision Summary Banner -->
+    <div class="p-6 rounded-3xl bg-gradient-to-br from-[#0F1722] via-[#0E121B] to-[#0A0C12] border border-[#1F273B] relative overflow-hidden shadow-2xl">
+      <div class="absolute -right-12 -top-12 w-64 h-64 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
       <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="space-y-2 max-w-2xl">
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
             <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-            <span>Interactive Decision Workflow Active</span>
+            <span>5 Major Screen Decisions Recorded</span>
           </div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-            Design First, Verify Visually, Then Implement
+            Design Direction Selected by User
           </h2>
           <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            This catalog is your permanent source of truth. For each screen, you can open standalone interactive HTML previews side-by-side on your desktop and phone (<code class="text-indigo-300 font-mono text-xs bg-indigo-950/40 px-1 py-0.5 rounded">http://192.168.0.102:3000/design/</code>). Once you select your favorite option, we mark it <strong class="text-emerald-400">Finalized</strong> here and bind the production code to match.
+            You selected the primary contender for all 5 screens: <strong class="text-emerald-300">Forest Bento</strong> for Home, <strong class="text-emerald-300">Swipeable Deck</strong> for Inbox, <strong class="text-emerald-300">FinTech Pill</strong> for Ledger, <strong class="text-emerald-300">Interactive Donut</strong> for Analytics, and <strong class="text-emerald-300">Keypad-First Entry</strong> for Add Modal.
           </p>
         </div>
 
-        <div class="p-4 rounded-2xl bg-[#090B10]/80 border border-[#1A2133] space-y-2.5 flex-shrink-0 min-w-[260px]">
+        <!-- Quick Summary Card -->
+        <div class="p-4 rounded-2xl bg-[#090B10]/90 border border-[#1A2133] space-y-2 flex-shrink-0 min-w-[280px]">
           <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-            Reference Mockups in Repo
+            Your Decision Roster
           </span>
-          <div class="space-y-1.5 text-xs">
-            <div class="flex items-center justify-between text-slate-300">
-              <span class="flex items-center gap-1.5 font-medium">
-                <i data-lucide="image" class="w-3.5 h-3.5 text-indigo-400"></i>
-                Home Screen (Ring Gauge)
-              </span>
-              <span class="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">Mobile</span>
-            </div>
-            <div class="flex items-center justify-between text-slate-300">
-              <span class="flex items-center gap-1.5 font-medium">
-                <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-violet-400"></i>
-                Analytic / Monout
-              </span>
-              <span class="text-[10px] font-mono text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded">Desktop</span>
-            </div>
+          <div class="space-y-1 text-xs font-mono">
+            <div class="flex justify-between"><span class="text-slate-400">1. Home</span><span class="text-emerald-400 font-bold">Option A (Bento) ✓</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">2. Inbox</span><span class="text-emerald-400 font-bold">Option B (Swipe) ✓</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">3. Ledger</span><span class="text-emerald-400 font-bold">Option A (Pill) ✓</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">4. Analytics</span><span class="text-emerald-400 font-bold">Option A (Donut) ✓</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">5. Modals</span><span class="text-emerald-400 font-bold">Option B (Keypad) ✓</span></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Quick Navigation Anchor Bar -->
-    <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#1A1F2C] text-xs font-semibold text-slate-400">
-      <span class="text-[11px] uppercase tracking-wider text-slate-500 font-bold pr-2 flex items-center gap-1">
-        <i data-lucide="layers" class="w-3.5 h-3.5"></i> Screens:
-      </span>
-      <a href="#screen-shell" class="px-3 py-1.5 rounded-xl hover:text-white hover:bg-[#121622] transition-colors whitespace-nowrap">0. Global Shell & Theme</a>
-      <a href="#screen-home" class="px-3 py-1.5 rounded-xl hover:text-white hover:bg-[#121622] transition-colors whitespace-nowrap">1. Home Dashboard</a>
-      <a href="#screen-inbox" class="px-3 py-1.5 rounded-xl hover:text-white hover:bg-[#121622] transition-colors whitespace-nowrap">2. Review Inbox</a>
-      <a href="#screen-ledger" class="px-3 py-1.5 rounded-xl hover:text-white hover:bg-[#121622] transition-colors whitespace-nowrap">3. Transaction Ledger</a>
-      <a href="#screen-analytics" class="px-3 py-1.5 rounded-xl hover:text-white hover:bg-[#121622] transition-colors whitespace-nowrap">4. Insights & Analytics</a>
-      <a href="#screen-modals" class="px-3 py-1.5 rounded-xl hover:text-white hover:bg-[#121622] transition-colors whitespace-nowrap">5. Modals & Drawers</a>
+    <!-- REMAINING DECISIONS CALLOUT BANNER -->
+    <div class="p-6 rounded-3xl bg-[#131622] border border-amber-600/30 space-y-3 shadow-lg">
+      <div class="flex items-center gap-2.5 text-amber-400">
+        <i data-lucide="help-circle" class="w-5 h-5"></i>
+        <h3 class="text-base font-bold text-white">Remaining Fine-Tuning Decisions For You</h3>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        With the high-level screens locked, there are <strong>3 practical ergonomics decisions</strong> to iron out before we implement:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
+        <div class="p-3.5 rounded-2xl bg-[#0C0E14] border border-[#1E2536] space-y-1.5">
+          <span class="font-bold text-amber-300 block">1. Keypad + SMS Parser Integration</span>
+          <p class="text-slate-400 text-[11px]">Since you picked Keypad (Option B), should we keep a 1-tap "Paste Bank SMS" pill at the top of the keypad, so you can still auto-parse SMS alerts when needed?</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-[#0C0E14] border border-[#1E2536] space-y-1.5">
+          <span class="font-bold text-amber-300 block">2. Time-Travel Simulator Placement</span>
+          <p class="text-slate-400 text-[11px]">Should the interactive predictive burn simulator card stay on the <strong>Home Dashboard</strong>, or move to the <strong>Insights / Analytics</strong> tab to keep Home short?</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-[#0C0E14] border border-[#1E2536] space-y-1.5">
+          <span class="font-bold text-amber-300 block">3. Global Palette Accent</span>
+          <p class="text-slate-400 text-[11px]">Keep the full <strong>Deep Forest Dark</strong> (#051F20) across all views, or use <strong>OLED Pitch Black</strong> (#090A0D) with emerald green & mint accents?</p>
+        </div>
+      </div>
     </div>
 
-    <!-- Section 0: App Shell & Global Theme -->
-    <section id="screen-shell" class="space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <span class="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center font-mono font-bold text-xs">
-            00
-          </span>
-          <div>
-            <h3 class="text-lg font-bold text-white tracking-tight">
-              Global Shell, Typography & Color Palette
-            </h3>
-            <p class="text-xs text-slate-400">
-              The foundational design tokens, viewport boundaries, navigation bar, and color harmony.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            Under Exploration
-          </span>
-        </div>
-      </div>
-
-      <!-- Component Decision Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Card 1: Theme Palette -->
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-3.5 hover:border-slate-700 transition-all flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span class="font-mono text-[11px] text-indigo-400">Component 0.1</span>
-              <span class="text-amber-400 font-medium">3 Options Ready</span>
-            </div>
-            <h4 class="text-sm font-bold text-white">Color Palette & Mood</h4>
-            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-              Decide between the implemented Forest Dark Green, Monout Pitch Black, or the Two-Tone High Contrast theme.
-            </p>
-            <div class="mt-3 space-y-1.5 text-[11px]">
-              <div class="flex items-center gap-2 text-slate-300">
-                <span class="w-3 h-3 rounded-full bg-[#051F20] border border-[#235347]"></span>
-                <span><strong>Option 1</strong>: Forest Dark (#051F20)</span>
-              </div>
-              <div class="flex items-center gap-2 text-slate-300">
-                <span class="w-3 h-3 rounded-full bg-[#0A0A0C] border border-slate-700"></span>
-                <span><strong>Option 2</strong>: Pitch Black Monout (#0A0A0C)</span>
-              </div>
-              <div class="flex items-center gap-2 text-slate-300">
-                <span class="w-3 h-3 rounded-full bg-gradient-to-r from-black to-white border border-slate-600"></span>
-                <span><strong>Option 3</strong>: Two-Tone Dark Top + White Sheet</span>
-              </div>
-            </div>
-          </div>
-
-          <a 
-            href="previews/home-options.html#theme-selector" 
-            class="mt-2 block w-full text-center py-2 px-3 rounded-xl bg-[#141926] hover:bg-[#1E2538] border border-[#242E46] text-xs font-semibold text-slate-200 transition-all"
-          >
-            Compare Color Palettes &rarr;
-          </a>
-        </div>
-
-        <!-- Card 2: Navigation Bar Ergonomics -->
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-3.5 hover:border-slate-700 transition-all flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span class="font-mono text-[11px] text-indigo-400">Component 0.2</span>
-              <span class="text-amber-400 font-medium">2 Options Ready</span>
-            </div>
-            <h4 class="text-sm font-bold text-white">Navigation Architecture</h4>
-            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-              Floating bottom glass tab bar with pulse review badge vs minimal bottom dock vs desktop left-sidebar.
-            </p>
-            <div class="mt-3 space-y-1 text-[11px] text-slate-300">
-              <p>• <strong>Option A</strong>: Mobile Bottom Tab Bar (4 Tabs + Floating Add Modal)</p>
-              <p>• <strong>Option B</strong>: Left Sidebar Navigation (Desktop Monout Layout)</p>
-            </div>
-          </div>
-
-          <a 
-            href="previews/home-options.html" 
-            class="mt-2 block w-full text-center py-2 px-3 rounded-xl bg-[#141926] hover:bg-[#1E2538] border border-[#242E46] text-xs font-semibold text-slate-200 transition-all"
-          >
-            Inspect Nav In Action &rarr;
-          </a>
-        </div>
-
-        <!-- Card 3: In-App Feedback & Toasts -->
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-3.5 hover:border-slate-700 transition-all flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
-              <span class="font-mono text-[11px] text-indigo-400">Component 0.3</span>
-              <span class="text-emerald-400 font-medium">Implemented</span>
-            </div>
-            <h4 class="text-sm font-bold text-white">Toasts & Micro-Feedback</h4>
-            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-              Transient notifications for quick categorization, peer settlement updates, and network buffering feedback.
-            </p>
-            <div class="mt-3 space-y-1 text-[11px] text-slate-300">
-              <p>• Lightweight 3.2s auto-dismiss stack</p>
-              <p>• Safe area clearance above bottom navigation</p>
-            </div>
-          </div>
-
-          <div class="mt-2 py-2 px-3 rounded-xl bg-[#101726]/40 border border-emerald-900/30 text-center text-xs font-semibold text-emerald-400">
-            Current: Functional (Can be restyled)
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 1: Home Dashboard Screen -->
+    <!-- Section 1: Home Dashboard Screen (FINALIZED) -->
     <section id="screen-home" class="space-y-4 pt-4 border-t border-[#161B26]">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
-          <span class="w-7 h-7 rounded-lg bg-indigo-950 text-indigo-300 border border-indigo-700/40 flex items-center justify-center font-mono font-bold text-xs">
+          <span class="w-7 h-7 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-700/40 flex items-center justify-center font-mono font-bold text-xs">
             01
           </span>
           <div>
-            <h3 class="text-lg font-bold text-white tracking-tight">
-              Home / Overview Dashboard Screen
+            <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+              <span>Home / Overview Dashboard</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                FINALIZED: Option A (Forest Bento)
+              </span>
             </h3>
             <p class="text-xs text-slate-400">
-              Primary cockpit: Available balance, burn rate, account cards, action shortcuts & recent feed.
+              Hero Available Balance with savings pill, dynamic gradient burn bar, connected accounts carousel, dopamine queue alert, and recent activity.
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            Decision Pending
-          </span>
-          <a 
-            href="previews/home-options.html" 
-            class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm"
-          >
-            Launch Interactive Comparison &rarr;
-          </a>
-        </div>
+        <a 
+          href="previews/home-options.html?option=bento" 
+          class="px-3.5 py-1.5 rounded-xl bg-[#163832] hover:bg-[#235347] border border-[#235347] text-[#DAF1DE] text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+        >
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>View Finalized Mockup</span>
+        </a>
       </div>
 
-      <!-- Comparison Matrix Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Option A -->
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-3 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase">
-                Option A
-              </span>
-              <span class="text-[10px] text-slate-500 font-mono">Current Code</span>
-            </div>
-            <h4 class="text-sm font-bold text-white mt-1">Forest Bento Dashboard</h4>
-            <p class="text-xs text-slate-400 mt-1">
-              Large Available Balance card with stonks quote, horizontal spend bar, side-by-side action tiles ("Parse SMS", "Record Expense"), and horizontal account carousel.
-            </p>
-            <ul class="mt-3 space-y-1 text-[11px] text-slate-300">
-              <li>• Available Balance Hero with +XX% saved pill</li>
-              <li>• Dynamic gradient spend bar (Green &rarr; Amber &rarr; Red)</li>
-              <li>• Floating "Clean Slate" Dopamine Queue banner</li>
-            </ul>
-          </div>
-          <a 
-            href="previews/home-options.html?option=bento" 
-            class="py-2 px-3 rounded-xl bg-[#141926] hover:bg-[#1E2538] border border-[#242E46] text-center text-xs font-semibold text-slate-200 transition-all"
-          >
-            Preview Option A &rarr;
-          </a>
+      <!-- Decision Record Box -->
+      <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-600/30 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 text-emerald-300">
+          <i data-lucide="check-check" class="w-4 h-4 text-emerald-400"></i>
+          <span><strong>Decision Locked</strong>: Option A (Forest Bento Grid) chosen over Ring Gauge and Monout Cards.</span>
         </div>
-
-        <!-- Option B -->
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-3 flex flex-col justify-between ring-1 ring-indigo-500/30">
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold uppercase">
-                Option B
-              </span>
-              <span class="text-[10px] text-indigo-400 font-mono">From Mockup</span>
-            </div>
-            <h4 class="text-sm font-bold text-white mt-1">Minimal Circular Ring Gauge</h4>
-            <p class="text-xs text-slate-400 mt-1">
-              Direct implementation of <code>Home Screen design.webp</code>: Dark upper canvas, central segmented ring chart with Rs 4,29,785 balance, and clean white card sheet below.
-            </p>
-            <ul class="mt-3 space-y-1 text-[11px] text-slate-300">
-              <li>• Centered donut ring with category color slices</li>
-              <li>• Minimal hamburger & period title</li>
-              <li>• Crisp white bottom card for daily expenses</li>
-            </ul>
-          </div>
-          <a 
-            href="previews/home-options.html?option=ring" 
-            class="py-2 px-3 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-center text-xs font-semibold text-indigo-300 transition-all"
-          >
-            Preview Option B &rarr;
-          </a>
-        </div>
-
-        <!-- Option C -->
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-3 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-400 border border-violet-500/20 text-[10px] font-bold uppercase">
-                Option C
-              </span>
-              <span class="text-[10px] text-violet-400 font-mono">From Mockup</span>
-            </div>
-            <h4 class="text-sm font-bold text-white mt-1">Monout Multi-Wallet Cards</h4>
-            <p class="text-xs text-slate-400 mt-1">
-              Direct implementation of <code>Analytic design.webp</code>: Pitch black canvas with separate wallet cards (HDFC, ICICI, Cash), total balances, and subscription widgets.
-            </p>
-            <ul class="mt-3 space-y-1 text-[11px] text-slate-300">
-              <li>• Dual wallet cards (Revolut / Bank of America style)</li>
-              <li>• Dark rounded card rows for transactions</li>
-              <li>• Dedicated "All Subscriptions" recurring mandate card</li>
-            </ul>
-          </div>
-          <a 
-            href="previews/home-options.html?option=monout" 
-            class="py-2 px-3 rounded-xl bg-[#141926] hover:bg-[#1E2538] border border-[#242E46] text-center text-xs font-semibold text-slate-200 transition-all"
-          >
-            Preview Option C &rarr;
-          </a>
-        </div>
+        <span class="text-[10px] font-mono text-emerald-400">File: HomeView.tsx</span>
       </div>
     </section>
 
-    <!-- Section 2: Review Inbox Screen -->
+    <!-- Section 2: Review Inbox Screen (FINALIZED) -->
     <section id="screen-inbox" class="space-y-4 pt-4 border-t border-[#161B26]">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
-          <span class="w-7 h-7 rounded-lg bg-amber-950 text-amber-300 border border-amber-700/40 flex items-center justify-center font-mono font-bold text-xs">
+          <span class="w-7 h-7 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-700/40 flex items-center justify-center font-mono font-bold text-xs">
             02
           </span>
           <div>
-            <h3 class="text-lg font-bold text-white tracking-tight">
-              AI Review & Auto-Parser Inbox Screen
+            <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+              <span>AI Review & Auto-Parser Inbox</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                FINALIZED: Option B (Tinder Swipe Deck)
+              </span>
             </h3>
             <p class="text-xs text-slate-400">
-              Human-in-the-loop review queue for heuristic-extracted bank SMS transactions with confidence meters.
+              Gesture-driven verification: Swipe right to accept AI categorization, swipe left to re-categorize, tap center to split with friends.
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            Ready for Decision
-          </span>
-          <a 
-            href="previews/inbox-options.html" 
-            class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm"
-          >
-            Launch Inbox Preview &rarr;
-          </a>
-        </div>
+        <a 
+          href="previews/inbox-options.html" 
+          class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+        >
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>View Swipeable Mockup</span>
+        </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Concept 1</span>
-          <h4 class="text-sm font-bold text-white">Focus Card Deck</h4>
-          <p class="text-xs text-slate-400">One unverified transaction at a time. Displays confidence score chip, selective learning toggle, raw SMS accordion, and 8-category quick matrix.</p>
+      <!-- Decision Record Box -->
+      <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-600/30 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 text-emerald-300">
+          <i data-lucide="check-check" class="w-4 h-4 text-emerald-400"></i>
+          <span><strong>Decision Locked</strong>: Option B (Swipeable Deck / Tinder-Style) selected for high-speed mobile dopamine triage.</span>
         </div>
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Concept 2</span>
-          <h4 class="text-sm font-bold text-white">Swipeable Cards (Tinder Style)</h4>
-          <p class="text-xs text-slate-400">Gesture-driven verification: Swipe right to accept AI classification, swipe left to re-categorize, tap to split with friends.</p>
-        </div>
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Concept 3</span>
-          <h4 class="text-sm font-bold text-white">Rapid Triage Stream</h4>
-          <p class="text-xs text-slate-400">Compact vertical list with inline 1-tap checkmark approvals for clearing 10+ transactions in seconds without full-screen cards.</p>
-        </div>
+        <span class="text-[10px] font-mono text-emerald-400">File: InboxView.tsx</span>
       </div>
     </section>
 
-    <!-- Section 3: Transaction Ledger Screen -->
+    <!-- Section 3: Transaction Ledger Screen (FINALIZED) -->
     <section id="screen-ledger" class="space-y-4 pt-4 border-t border-[#161B26]">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
@@ -416,135 +209,112 @@
             03
           </span>
           <div>
-            <h3 class="text-lg font-bold text-white tracking-tight">
-              Transaction Ledger & Search Screen
+            <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+              <span>Transaction Ledger & Search</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                FINALIZED: Option A (FinTech Pill with Avatars)
+              </span>
             </h3>
             <p class="text-xs text-slate-400">
-              Journal with search bar, clear button, horizontal filter pills (UPI, Cards, Debits, Credits, Split), and daily grouped subtotals.
+              Tactile row items with category avatars, merchant title, UPI/account subtitle, amount with color coding, and daily outflow totals.
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            Ready for Decision
-          </span>
-          <a 
-            href="previews/ledger-options.html" 
-            class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm"
-          >
-            Launch Ledger Preview &rarr;
-          </a>
-        </div>
+        <a 
+          href="previews/ledger-options.html" 
+          class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+        >
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>View Ledger Mockup</span>
+        </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Row Style A</span>
-          <h4 class="text-sm font-bold text-white">Modern FinTech Pill</h4>
-          <p class="text-xs text-slate-400">Category icon avatar on left, merchant bold name, UPI ID / masked account subtitle, amount in monospace INR on right with category badge.</p>
+      <!-- Decision Record Box -->
+      <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-600/30 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 text-emerald-300">
+          <i data-lucide="check-check" class="w-4 h-4 text-emerald-400"></i>
+          <span><strong>Decision Locked</strong>: Option A (FinTech Pill with Avatars) chosen for superior category scanning readability.</span>
         </div>
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Row Style B</span>
-          <h4 class="text-sm font-bold text-white">Monout Dark Card</h4>
-          <p class="text-xs text-slate-400">Rounded dark container for each transaction, merchant logo, amount in main title, 3-dots action menu, compact vertical spacing.</p>
-        </div>
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Row Style C</span>
-          <h4 class="text-sm font-bold text-white">Two-Tone Sheet Row</h4>
-          <p class="text-xs text-slate-400">White background surface, colored rounded square indicator (green, yellow, red), clean title, and right pill with amount (from Home Screen mockup).</p>
-        </div>
+        <span class="text-[10px] font-mono text-emerald-400">File: ExpensesView.tsx</span>
       </div>
     </section>
 
-    <!-- Section 4: Analytics Screen -->
+    <!-- Section 4: Analytics Screen (FINALIZED) -->
     <section id="screen-analytics" class="space-y-4 pt-4 border-t border-[#161B26]">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
-          <span class="w-7 h-7 rounded-lg bg-purple-950 text-purple-300 border border-purple-700/40 flex items-center justify-center font-mono font-bold text-xs">
+          <span class="w-7 h-7 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-700/40 flex items-center justify-center font-mono font-bold text-xs">
             04
           </span>
           <div>
-            <h3 class="text-lg font-bold text-white tracking-tight">
-              Spend Analytics & Insights Screen
+            <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+              <span>Insights & Spend Analytics</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                FINALIZED: Option A (Interactive Donut & Top-5 Drilldown)
+              </span>
             </h3>
             <p class="text-xs text-slate-400">
-              Interactive Recharts category donut, dynamic centered readout, drilldown modal for top-5 spends, MoM burn rate, and subscription mandates.
+              Interactive SVG donut with centered total/slice readout, tap-to-inspect Top-5 Largest Spends bottom sheet, and MoM velocity card.
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            Ready for Decision
-          </span>
-          <a 
-            href="previews/analytics-options.html" 
-            class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm"
-          >
-            Launch Analytics Preview &rarr;
-          </a>
-        </div>
+        <a 
+          href="previews/analytics-options.html" 
+          class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+        >
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>View Donut Mockup</span>
+        </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Visualization 1</span>
-          <h4 class="text-sm font-bold text-white">Interactive Category Donut Chart</h4>
-          <p class="text-xs text-slate-400">SVG Donut with tap-to-drilldown bottom sheet showing Top 5 largest expenses in that category, plus Month-over-Month burn rate card.</p>
+      <!-- Decision Record Box -->
+      <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-600/30 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 text-emerald-300">
+          <i data-lucide="check-check" class="w-4 h-4 text-emerald-400"></i>
+          <span><strong>Decision Locked</strong>: Option A (Interactive Donut with Top-5 Drilldown Modal) chosen.</span>
         </div>
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Visualization 2</span>
-          <h4 class="text-sm font-bold text-white">Monout Subscriptions Tracker</h4>
-          <p class="text-xs text-slate-400">Directly from <code>Analytic design.webp</code>: Dark panel listing recurring mandates (Netflix, Spotify, AWS, Gym) with active verification badges.</p>
-        </div>
+        <span class="text-[10px] font-mono text-emerald-400">File: AnalyticsView.tsx</span>
       </div>
     </section>
 
-    <!-- Section 5: Modals & Drawers -->
+    <!-- Section 5: Modals & Drawers (FINALIZED) -->
     <section id="screen-modals" class="space-y-4 pt-4 border-t border-[#161B26]">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
-          <span class="w-7 h-7 rounded-lg bg-blue-950 text-blue-300 border border-blue-700/40 flex items-center justify-center font-mono font-bold text-xs">
+          <span class="w-7 h-7 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-700/40 flex items-center justify-center font-mono font-bold text-xs">
             05
           </span>
           <div>
-            <h3 class="text-lg font-bold text-white tracking-tight">
-              Modals & Drawers (Add Transaction & Peer Split)
+            <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+              <span>Modals & Entry Drawers</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                FINALIZED: Option B (Keypad-First Entry)
+              </span>
             </h3>
             <p class="text-xs text-slate-400">
-              Add Transaction modal (SMS regex extractor vs manual entry) & Transaction Detail bottom-sheet drawer with peer debt split calculator.
+              Clean financial calculator interface with big numeral display, instant notes, account selector, and rapid category pills.
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            Ready for Decision
-          </span>
-          <a 
-            href="previews/modal-options.html" 
-            class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm"
-          >
-            Launch Modals Preview &rarr;
-          </a>
-        </div>
+        <a 
+          href="previews/modal-options.html" 
+          class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+        >
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>View Keypad Mockup</span>
+        </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Modal Flow 1</span>
-          <h4 class="text-sm font-bold text-white">Dual-Mode Add Modal</h4>
-          <p class="text-xs text-slate-400">SMS auto-parser tab with sample bank alerts and UTR cross-channel deduplication badge + manual entry with keypad-friendly decimal input.</p>
+      <!-- Decision Record Box -->
+      <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-600/30 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 text-emerald-300">
+          <i data-lucide="check-check" class="w-4 h-4 text-emerald-400"></i>
+          <span><strong>Decision Locked</strong>: Option B (Keypad-First Quick Entry) selected for one-handed mobile entry speed.</span>
         </div>
-        <div class="p-5 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Drawer Flow 2</span>
-          <h4 class="text-sm font-bold text-white">Peer Debt Splitter Drawer</h4>
-          <p class="text-xs text-slate-400">Mobile bottom sheet with drag handle, copyable UPI VPA, personal share vs peer share math, and 1-tap "Mark Paid" toggle.</p>
-        </div>
+        <span class="text-[10px] font-mono text-emerald-400">File: AddTransactionModal.tsx</span>
       </div>
     </section>
 
