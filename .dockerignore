@@ -1,0 +1,36 @@
+# Git and tooling
+.git
+.gitignore
+.DS_Store
+.agents
+.venv
+venv
+*.egg-info
+__pycache__
+*.py[cod]
+
+# Caches and tests
+.pytest_cache
+.mypy_cache
+.ruff_cache
+htmlcov
+.coverage
+
+# Heavy GGUF model files
+*.gguf
+qwen2.5-1.5b-instruct-q4_k_m.gguf
+PaisaIQ Expense Tracker.zip
+
+# Node and frontend artifacts
+frontend/node_modules
+frontend/dist
+frontend/.vite
+
+# Local credentials and runtime files
+credentials/
+backups/
+data/
+*.db
+*.db-wal
+*.db-shm
+.env

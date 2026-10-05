@@ -1,0 +1,39 @@
+services:
+  expense-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expense-tracker
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - SERVER_API_KEY=${SERVER_API_KEY:-change-this-secret-key}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - NTFY_TOPIC=${NTFY_TOPIC:-}
+      - NTFY_SERVER_URL=${NTFY_SERVER_URL:-https://ntfy.sh}
+      - DATABASE_URL=sqlite+aiosqlite:////data/expense_tracker.db
+      - BACKUP_DIR=/backups
+      - FRONTEND_DIST_DIR=/app/frontend/dist
+      - EMAIL_POLL_INTERVAL_MINUTES=15
+      - BACKUP_CRON_HOUR=2
+      - BACKUP_CRON_MINUTE=0
+      - SUMMARY_CRON_HOUR=21
+      - SUMMARY_CRON_MINUTE=0
+      - CORS_ORIGINS=http://localhost:8000,http://127.0.0.1:8000,http://localhost:5173
+    volumes:
+      - expense-tracker-data:/data
+      - expense-tracker-backups:/backups
+      - ./credentials:/app/credentials:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/v1/system/health -H \"X-API-Key: $${SERVER_API_KEY}\" || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  expense-tracker-data:
+    name: expense-tracker-data
+  expense-tracker-backups:
+    name: expense-tracker-backups
