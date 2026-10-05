@@ -34,6 +34,7 @@ import {
   mapUiSplitsToPeerSplitDto,
   parseNumericId,
 } from './utils/adapters';
+import { formatINR } from './utils/formatters';
 
 export default function App() {
   const networkStatus = useNetworkStatus();
