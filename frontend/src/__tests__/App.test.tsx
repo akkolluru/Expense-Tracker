@@ -8,11 +8,22 @@ import App from '../App';
 
 vi.mock('motion/react', () => ({
   motion: {
-    div: React.forwardRef(({ children, ...props }: any, ref: any) => (
+    div: React.forwardRef(({ children, drag, dragConstraints, dragElastic, onDragEnd, ...props }: any, ref: any) => (
       <div ref={ref} {...props}>{children}</div>
     )),
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
+  useMotionValue: (initial: any) => ({
+    get: () => initial,
+    set: vi.fn(),
+    on: vi.fn(),
+    destroy: vi.fn(),
+  }),
+  useTransform: () => ({
+    get: () => 0,
+    on: vi.fn(),
+    destroy: vi.fn(),
+  }),
 }));
 
 // Mock API module
