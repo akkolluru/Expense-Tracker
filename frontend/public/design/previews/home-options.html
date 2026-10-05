@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Dashboard & Theme Comparison — PaisaIQ UI Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Simulated Mobile Phone Bezel */
+    .phone-mockup {
+      width: 390px;
+      height: 780px;
+      border-radius: 46px;
+      box-shadow: 0 0 0 10px #181D2A, 0 0 0 12px #2A334A, 0 30px 60px -15px rgba(0,0,0,0.85);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Phone Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 105px;
+      height: 26px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 60;
+    }
+    /* Custom scrollbars inside mockups */
+    .mockup-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .mockup-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#08090D] text-[#E2E8F0] min-h-screen selection:bg-indigo-600 selection:text-white">
+
+  <!-- Control Header Bar -->
+  <header class="sticky top-0 z-50 bg-[#0C0E14]/95 backdrop-blur-xl border-b border-[#1A1F2C] px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a 
+          href="../index.html" 
+          class="flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl bg-[#141824] border border-[#20273B] transition-colors"
+        >
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span>Master Catalog</span>
+        </a>
+        <div class="h-4 w-px bg-slate-800"></div>
+        <div>
+          <h1 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>Screen 01: Home Dashboard Visual Options</span>
+            <span class="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">3 Contenders</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Interactive Viewport & Mode Toggles -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="flex bg-[#121622] p-1 rounded-xl border border-[#1E2538] text-xs font-semibold">
+          <button 
+            id="view-tab-side" 
+            onclick="switchView('side')" 
+            class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition-all"
+          >
+            <i data-lucide="columns-3" class="w-3.5 h-3.5"></i>
+            <span>Side-by-Side</span>
+          </button>
+          <button 
+            id="view-tab-bento" 
+            onclick="switchView('bento')" 
+            class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 transition-all"
+          >
+            <span>Option A (Bento)</span>
+          </button>
+          <button 
+            id="view-tab-ring" 
+            onclick="switchView('ring')" 
+            class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 transition-all"
+          >
+            <span>Option B (Ring Gauge)</span>
+          </button>
+          <button 
+            id="view-tab-monout" 
+            onclick="switchView('monout')" 
+            class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 transition-all"
+          >
+            <span>Option C (Monout Cards)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Comparison Canvas -->
+  <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
+
+    <!-- Active Decision Status Banner -->
+    <div id="decision-banner" class="p-4 rounded-2xl bg-[#0F131D] border border-[#1C2333] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+          <i data-lucide="help-circle" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-white block">Decision Status: Which Home Screen layout feels best to you?</span>
+          <span class="text-xs text-slate-400" id="current-decision-text">Review the 3 interactive mockups below on your screen or phone. Tap "Choose This Option" on the winner.</span>
+        </div>
+      </div>
+      <div id="decision-action-badge" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono font-bold flex-shrink-0">
+        Status: Exploring
+      </div>
+    </div>
+
+    <!-- MOCKUPS WRAPPER (Side-by-side or Single View) -->
+    <div id="mockups-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center">
+
+      <!-- ========================================== -->
+      <!-- OPTION A: FOREST BENTO DASHBOARD (Current) -->
+      <!-- ========================================== -->
+      <div id="card-option-a" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
+        <div class="w-full flex items-center justify-between px-2">
+          <div>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase font-mono">
+              Option A
+            </span>
+            <h3 class="text-sm font-bold text-white mt-1">Forest Bento Grid</h3>
+          </div>
+          <button 
+            onclick="chooseOption('Option A: Forest Bento Grid')" 
+            class="px-3 py-1 rounded-xl bg-[#163832] hover:bg-[#235347] border border-[#235347] text-[#DAF1DE] text-xs font-bold transition-all shadow-sm"
+          >
+            Select Option A
+          </button>
+        </div>
+
+        <!-- Phone Envelope -->
+        <div class="phone-mockup bg-[#051F20] text-[#DAF1DE] border border-[#235347]/40">
+          <div class="dynamic-island"></div>
+
+          <!-- Top Status Bar Simulation -->
+          <div class="pt-3 px-6 flex justify-between items-center text-[10px] font-mono text-[#8EB69B] z-50">
+            <span>9:41</span>
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="wifi" class="w-3 h-3"></i>
+              <i data-lucide="battery" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Scrollable Phone Body -->
+          <div class="flex-1 overflow-y-auto mockup-scroll p-4 pt-6 space-y-4">
+            <!-- App Bar -->
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-medium tracking-wide uppercase text-[#8EB69B]">Overview</span>
+                <h2 class="text-lg font-bold text-[#DAF1DE]">August 2026</h2>
+              </div>
+              <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#0B2B26] border border-[#235347] text-[10px] text-[#DAF1DE] font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Live Sync</span>
+              </div>
+            </div>
+
+            <!-- Bento Balance Card -->
+            <div class="rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border border-[#235347] p-4 space-y-3 shadow-lg">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-[10px] text-[#8EB69B] uppercase tracking-wider font-semibold">Available Balance</p>
+                  <h3 class="text-2xl font-black text-[#DAF1DE] font-mono-num mt-0.5">₹1,85,000.00</h3>
+                  <p class="text-[10px] text-[#8EB69B] mt-0.5">Stonks looking promising, wizard.</p>
+                </div>
+                <span class="px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-[10px] font-mono font-bold">
+                  +73% saved
+                </span>
+              </div>
+
+              <!-- Spending Progress Bar -->
+              <div class="pt-2 border-t border-[#163832] space-y-1.5">
+                <div class="flex justify-between text-[11px]">
+                  <span class="text-[#8EB69B]">Spent: <strong class="text-[#DAF1DE] font-mono-num">₹48,250</strong></span>
+                  <span class="text-[#8EB69B]">Income: <strong class="text-[#DAF1DE] font-mono-num">₹1,80,000</strong></span>
+                </div>
+                <div class="w-full h-1.5 bg-[#051F20] rounded-full overflow-hidden border border-[#163832]">
+                  <div class="h-full bg-gradient-to-r from-emerald-500 to-[#8EB69B] rounded-full" style="width: 27%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action Bento Tiles -->
+            <div class="grid grid-cols-2 gap-2">
+              <button class="p-3 rounded-xl bg-[#0B2B26] border border-[#235347] text-left space-y-1">
+                <div class="w-7 h-7 rounded-lg bg-[#163832] flex items-center justify-center text-[#DAF1DE]">
+                  <i data-lucide="scan" class="w-3.5 h-3.5"></i>
+                </div>
+                <span class="block text-xs font-bold text-[#DAF1DE]">Parse SMS</span>
+                <span class="text-[9px] text-[#8EB69B] block">Auto-extract alert</span>
+              </button>
+
+              <button class="p-3 rounded-xl bg-[#163832] border border-[#235347] text-left space-y-1">
+                <div class="w-7 h-7 rounded-lg bg-[#0B2B26] flex items-center justify-center text-[#DAF1DE]">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                </div>
+                <span class="block text-xs font-bold text-[#DAF1DE]">Record</span>
+                <span class="text-[9px] text-[#8EB69B] block">Manual entry</span>
+              </button>
+            </div>
+
+            <!-- Clean Slate Protocol Banner -->
+            <div class="p-3 rounded-xl bg-gradient-to-r from-amber-950/50 via-[#163832] to-[#0B2B26] border border-amber-600/40 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <span class="text-xs font-bold text-[#DAF1DE] block">The 'Clean Slate' Protocol</span>
+                  <span class="text-[10px] text-amber-200/90 font-mono">3 unreviewed transactions</span>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-amber-300">Review &rarr;</span>
+            </div>
+
+            <!-- Connected Accounts Carousel -->
+            <div class="space-y-1.5">
+              <span class="text-[10px] font-semibold text-[#8EB69B] uppercase tracking-wider block">Active Accounts</span>
+              <div class="flex gap-2 overflow-x-auto mockup-scroll pb-1">
+                <div class="min-w-[130px] p-2.5 rounded-xl bg-[#0B2B26] border border-[#235347] space-y-1 flex-shrink-0">
+                  <div class="flex justify-between text-[10px]">
+                    <span class="font-bold text-[#DAF1DE]">HDFC Bank</span>
+                    <span class="text-[#8EB69B] font-mono">••4590</span>
+                  </div>
+                  <span class="text-xs font-bold font-mono-num text-[#DAF1DE] block">₹1,85,000</span>
+                </div>
+                <div class="min-w-[130px] p-2.5 rounded-xl bg-[#0B2B26] border border-[#235347] space-y-1 flex-shrink-0">
+                  <div class="flex justify-between text-[10px]">
+                    <span class="font-bold text-[#DAF1DE]">ICICI Coral</span>
+                    <span class="text-[#8EB69B] font-mono">••8421</span>
+                  </div>
+                  <span class="text-xs font-bold font-mono-num text-rose-300 block">₹38,200</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Activity List -->
+            <div class="space-y-1.5 pb-6">
+              <span class="text-[10px] font-semibold text-[#8EB69B] uppercase tracking-wider block">Recent Activity</span>
+              <div class="space-y-1.5">
+                <div class="p-2.5 rounded-xl bg-[#0B2B26] border border-[#163832] flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-[#163832] flex items-center justify-center text-xs">🍔</div>
+                    <div>
+                      <span class="text-xs font-bold text-[#DAF1DE] block">Swiggy</span>
+                      <span class="text-[9px] text-[#8EB69B]">Today, 1:45 PM • UPI</span>
+                    </div>
+                  </div>
+                  <span class="text-xs font-bold font-mono-num text-rose-300">-₹420.00</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-[#0B2B26] border border-[#163832] flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-[#163832] flex items-center justify-center text-xs">☕</div>
+                    <div>
+                      <span class="text-xs font-bold text-[#DAF1DE] block">Blue Tokai</span>
+                      <span class="text-[9px] text-[#8EB69B]">Yesterday, 5:30 PM • HDFC</span>
+                    </div>
+                  </div>
+                  <span class="text-xs font-bold font-mono-num text-rose-300">-₹340.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Navigation Bar -->
+          <div class="h-16 bg-[#051F20]/95 border-t border-[#235347] flex items-center justify-around px-4 z-50">
+            <div class="flex flex-col items-center text-[#DAF1DE]">
+              <i data-lucide="home" class="w-4 h-4"></i>
+              <span class="text-[9px] font-bold mt-0.5">Overview</span>
+            </div>
+            <div class="flex flex-col items-center text-[#8EB69B]">
+              <i data-lucide="inbox" class="w-4 h-4"></i>
+              <span class="text-[9px] mt-0.5">Review</span>
+            </div>
+            <div class="flex flex-col items-center text-[#8EB69B]">
+              <i data-lucide="list-filter" class="w-4 h-4"></i>
+              <span class="text-[9px] mt-0.5">Ledger</span>
+            </div>
+            <div class="flex flex-col items-center text-[#8EB69B]">
+              <i data-lucide="pie-chart" class="w-4 h-4"></i>
+              <span class="text-[9px] mt-0.5">Insights</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ======================================================== -->
+      <!-- OPTION B: MINIMAL CIRCULAR RING GAUGE (Inspiration Mockup) -->
+      <!-- ======================================================== -->
+      <div id="card-option-b" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
+        <div class="w-full flex items-center justify-between px-2">
+          <div>
+            <span class="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold uppercase font-mono">
+              Option B
+            </span>
+            <h3 class="text-sm font-bold text-white mt-1">Minimal Ring & Sheet</h3>
+          </div>
+          <button 
+            onclick="chooseOption('Option B: Minimal Ring & Sheet (from Home Screen design.webp)')" 
+            class="px-3 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm"
+          >
+            Select Option B
+          </button>
+        </div>
+
+        <!-- Phone Envelope: Matches Home Screen design.webp -->
+        <div class="phone-mockup bg-[#0D0F12] text-white border border-slate-800">
+          <div class="dynamic-island"></div>
+
+          <!-- Top Status Bar -->
+          <div class="pt-3 px-6 flex justify-between items-center text-[10px] font-mono text-slate-400 z-50">
+            <span>9:41</span>
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="wifi" class="w-3 h-3"></i>
+              <i data-lucide="battery" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Phone Inner Content -->
+          <div class="flex-1 flex flex-col justify-between overflow-hidden">
+            <!-- Top Dark Section: Title & Large Ring Chart -->
+            <div class="pt-6 px-6 pb-4 space-y-4 flex flex-col items-center">
+              <div class="w-full flex items-center justify-start">
+                <button class="text-slate-400 hover:text-white">
+                  <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <div class="text-center space-y-0.5">
+                <h3 class="text-lg font-bold text-white tracking-tight">Monthly</h3>
+                <h2 class="text-xl font-extrabold text-amber-400 tracking-tight">Expenses</h2>
+              </div>
+
+              <!-- Centered Circular Ring Gauge (SVG) -->
+              <div class="relative w-48 h-48 flex items-center justify-center my-1">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  <!-- Background subtle circle -->
+                  <circle cx="50" cy="50" r="40" stroke="#1A202C" stroke-width="7" fill="none" />
+                  <!-- Green Segment: Major Category -->
+                  <circle cx="50" cy="50" r="40" stroke="#22C55E" stroke-width="7" fill="none"
+                    stroke-dasharray="251.2" stroke-dashoffset="65" stroke-linecap="round" />
+                  <!-- Yellow Segment -->
+                  <circle cx="50" cy="50" r="40" stroke="#EAB308" stroke-width="7" fill="none"
+                    stroke-dasharray="251.2" stroke-dashoffset="210" stroke-linecap="round" />
+                  <!-- Red Segment -->
+                  <circle cx="50" cy="50" r="40" stroke="#EF4444" stroke-width="7" fill="none"
+                    stroke-dasharray="251.2" stroke-dashoffset="238" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-sm font-semibold text-slate-400">Total</span>
+                  <span class="text-xl font-extrabold text-white font-mono-num tracking-tight">Rs 4,29,785</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Half: Clean White Rounded Sheet Card -->
+            <div class="bg-white text-slate-900 rounded-t-[36px] p-5 pt-6 space-y-3.5 shadow-2xl flex-1 flex flex-col justify-between">
+              <div class="space-y-3 overflow-y-auto mockup-scroll flex-1 pr-1">
+                <!-- Item 1 -->
+                <div class="flex items-center justify-between text-xs py-1">
+                  <div class="flex items-center gap-3">
+                    <span class="w-3.5 h-3.5 rounded-md bg-[#22C55E] flex-shrink-0"></span>
+                    <span class="font-semibold text-slate-800">University registration fees</span>
+                  </div>
+                  <span class="text-[11px] font-mono-num font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">
+                    Rs. 3,98,000
+                  </span>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="flex items-center justify-between text-xs py-1">
+                  <div class="flex items-center gap-3">
+                    <span class="w-3.5 h-3.5 rounded-md bg-[#EF4444] flex-shrink-0"></span>
+                    <span class="font-semibold text-slate-800">Charity Donation</span>
+                  </div>
+                  <span class="text-[11px] font-mono-num font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">
+                    + Rs. 20,000
+                  </span>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="flex items-center justify-between text-xs py-1">
+                  <div class="flex items-center gap-3">
+                    <span class="w-3.5 h-3.5 rounded-md bg-[#EAB308] flex-shrink-0"></span>
+                    <span class="font-semibold text-slate-800">MackDc Burger House</span>
+                  </div>
+                  <span class="text-[11px] font-mono-num font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">
+                    + Rs. 7,000
+                  </span>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="flex items-center justify-between text-xs py-1">
+                  <div class="flex items-center gap-3">
+                    <span class="w-3.5 h-3.5 rounded-md bg-slate-800 flex-shrink-0"></span>
+                    <span class="font-semibold text-slate-800">Hoyabella.np Cloth</span>
+                  </div>
+                  <span class="text-[11px] font-mono-num font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">
+                    + Rs. 4,785
+                  </span>
+                </div>
+              </div>
+
+              <!-- Show Dates / Filter Button -->
+              <button class="w-full py-3 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white text-xs font-bold tracking-wide shadow-md transition-all">
+                Show Dates
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ======================================================== -->
+      <!-- OPTION C: MONOUT PITCH BLACK MULTI-WALLET (Inspiration) -->
+      <!-- ======================================================== -->
+      <div id="card-option-c" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
+        <div class="w-full flex items-center justify-between px-2">
+          <div>
+            <span class="px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-400 border border-violet-500/20 text-[10px] font-bold uppercase font-mono">
+              Option C
+            </span>
+            <h3 class="text-sm font-bold text-white mt-1">Monout Multi-Wallet</h3>
+          </div>
+          <button 
+            onclick="chooseOption('Option C: Monout Pitch Black (from Analytic design.webp)')" 
+            class="px-3 py-1 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all shadow-sm"
+          >
+            Select Option C
+          </button>
+        </div>
+
+        <!-- Phone Envelope: Matches Analytic design.webp aesthetic -->
+        <div class="phone-mockup bg-[#090A0D] text-[#E2E8F0] border border-[#1A1F2C]">
+          <div class="dynamic-island"></div>
+
+          <!-- Status Bar -->
+          <div class="pt-3 px-6 flex justify-between items-center text-[10px] font-mono text-slate-500 z-50">
+            <span>9:41</span>
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="wifi" class="w-3 h-3"></i>
+              <i data-lucide="battery" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Scrollable Body -->
+          <div class="flex-1 overflow-y-auto mockup-scroll p-4 pt-6 space-y-4">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Dashboard</span>
+                <h2 class="text-lg font-black text-white">MONOUT</h2>
+              </div>
+              <button class="px-2.5 py-1 rounded-xl bg-white text-slate-900 text-xs font-bold">
+                + Add Wallet
+              </button>
+            </div>
+
+            <!-- Modular Wallet Cards Grid -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="p-3.5 rounded-2xl bg-[#141720] border border-[#1F2536] space-y-1">
+                <span class="text-[10px] font-medium text-slate-400 block">HDFC Bank</span>
+                <span class="text-sm font-extrabold text-white font-mono-num block">₹1,85,000</span>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-[#141720] border border-[#1F2536] space-y-1">
+                <span class="text-[10px] font-medium text-slate-400 block">ICICI Coral</span>
+                <span class="text-sm font-extrabold text-rose-400 font-mono-num block">₹38,200</span>
+              </div>
+            </div>
+
+            <!-- Total Money Section -->
+            <div class="p-3.5 rounded-2xl bg-[#10131B] border border-[#1A2030] flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-400">Total Net Worth</span>
+              <span class="text-base font-extrabold text-white font-mono-num">₹2,45,210.00</span>
+            </div>
+
+            <!-- Last Transactions (Monout Style Cards) -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-300">Last Transactions</span>
+                <span class="text-[10px] text-slate-500">View all</span>
+              </div>
+
+              <div class="space-y-1.5">
+                <div class="p-3 rounded-2xl bg-[#141720] border border-[#1E2536] flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-xs">🎬</div>
+                    <div>
+                      <span class="text-xs font-bold text-white block">Disney Plus</span>
+                      <span class="text-[10px] text-slate-400 font-mono">15 EUR</span>
+                    </div>
+                  </div>
+                  <i data-lucide="more-vertical" class="w-4 h-4 text-slate-500"></i>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-[#141720] border border-[#1E2536] flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-xs">🍕</div>
+                    <div>
+                      <span class="text-xs font-bold text-white block">Pizza Hut</span>
+                      <span class="text-[10px] text-slate-400 font-mono">25 USD</span>
+                    </div>
+                  </div>
+                  <i data-lucide="more-vertical" class="w-4 h-4 text-slate-500"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subscriptions Panel (from Monout Mockup) -->
+            <div class="p-3.5 rounded-2xl bg-[#12151E] border border-[#1E2538] space-y-2.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-300">All Subscriptions</span>
+                <span class="text-[10px] font-mono text-emerald-400">4 Active</span>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center gap-1.5 text-slate-300">
+                    <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">✓</span>
+                    Netflix Premium
+                  </span>
+                  <span class="font-mono text-slate-400">₹649 / mo</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center gap-1.5 text-slate-300">
+                    <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">✓</span>
+                    Spotify Duo
+                  </span>
+                  <span class="font-mono text-slate-400">₹149 / mo</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Bar -->
+          <div class="h-16 bg-[#090A0D]/95 border-t border-[#1A1F2C] flex items-center justify-around px-4 z-50">
+            <i data-lucide="layout-grid" class="w-5 h-5 text-white"></i>
+            <i data-lucide="wallet" class="w-5 h-5 text-slate-500"></i>
+            <i data-lucide="pie-chart" class="w-5 h-5 text-slate-500"></i>
+            <i data-lucide="settings" class="w-5 h-5 text-slate-500"></i>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Comparison Summary Matrix Table -->
+    <div class="mt-12 p-6 rounded-3xl bg-[#0C0E14] border border-[#1A1F2C] space-y-4">
+      <h3 class="text-base font-bold text-white">Visual Breakdown & Differences</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs text-left text-slate-300">
+          <thead class="text-[10px] uppercase font-mono text-slate-500 bg-[#121622] border-b border-[#1A1F2C]">
+            <tr>
+              <th class="py-3 px-4">Feature Axis</th>
+              <th class="py-3 px-4 text-emerald-400">Option A: Forest Bento</th>
+              <th class="py-3 px-4 text-indigo-400">Option B: Minimal Ring</th>
+              <th class="py-3 px-4 text-violet-400">Option C: Monout Cards</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#161B26]">
+            <tr>
+              <td class="py-3 px-4 font-bold text-white">Color Mood</td>
+              <td class="py-3 px-4">Deep emerald forest (#051F20) + Mint</td>
+              <td class="py-3 px-4">Dark pitch top + Clean white bottom sheet</td>
+              <td class="py-3 px-4">OLED pitch black (#090A0D) + neutral gray</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-bold text-white">Hero Component</td>
+              <td class="py-3 px-4">Large Bento card with linear burn bar</td>
+              <td class="py-3 px-4">Centered multi-color donut ring with Rs total</td>
+              <td class="py-3 px-4">Multi-account cards (HDFC, ICICI) side-by-side</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-bold text-white">Information Density</td>
+              <td class="py-3 px-4">High (Stonks quote, live sync, carousel, queue)</td>
+              <td class="py-3 px-4">Minimalist & Focused (Ring + 4 items + button)</td>
+              <td class="py-3 px-4">Medium (Wallets, Net worth, Subscriptions)</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-bold text-white">Ergonomics</td>
+              <td class="py-3 px-4">Bottom tab bar + 48px touch targets</td>
+              <td class="py-3 px-4">Thumb-friendly bottom sheet + top menu</td>
+              <td class="py-3 px-4">Card tap gestures + compact height</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Script for Viewport Switcher & Decision Recorder -->
+  <script>
+    lucide.createIcons();
+
+    function switchView(mode) {
+      const container = document.getElementById('mockups-container');
+      const cardA = document.getElementById('card-option-a');
+      const cardB = document.getElementById('card-option-b');
+      const cardC = document.getElementById('card-option-c');
+
+      const btnSide = document.getElementById('view-tab-side');
+      const btnA = document.getElementById('view-tab-bento');
+      const btnB = document.getElementById('view-tab-ring');
+      const btnC = document.getElementById('view-tab-monout');
+
+      // Reset active button styling
+      [btnSide, btnA, btnB, btnC].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 transition-all";
+      });
+
+      if (mode === 'side') {
+        btnSide.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition-all";
+        cardA.style.display = 'flex';
+        cardB.style.display = 'flex';
+        cardC.style.display = 'flex';
+        container.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center";
+      } else if (mode === 'bento') {
+        btnA.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition-all";
+        cardA.style.display = 'flex';
+        cardB.style.display = 'none';
+        cardC.style.display = 'none';
+        container.className = "flex justify-center";
+      } else if (mode === 'ring') {
+        btnB.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition-all";
+        cardA.style.display = 'none';
+        cardB.style.display = 'flex';
+        cardC.style.display = 'none';
+        container.className = "flex justify-center";
+      } else if (mode === 'monout') {
+        btnC.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition-all";
+        cardA.style.display = 'none';
+        cardB.style.display = 'none';
+        cardC.style.display = 'flex';
+        container.className = "flex justify-center";
+      }
+    }
+
+    function chooseOption(optionName) {
+      const banner = document.getElementById('decision-banner');
+      const text = document.getElementById('current-decision-text');
+      const badge = document.getElementById('decision-action-badge');
+
+      banner.className = "p-4 rounded-2xl bg-emerald-950/40 border border-emerald-600/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in";
+      text.innerHTML = `<strong class="text-emerald-300">You selected: ${optionName}</strong>. Tell me in the chat, and we will update the permanent catalog to 'Finalized'!`;
+      badge.className = "px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold flex-shrink-0";
+      badge.textContent = "Status: Candidate Selected";
+    }
+
+    // Check URL parameters (e.g. ?option=ring)
+    const urlParams = new URLSearchParams(window.location.search);
+    const optParam = urlParams.get('option');
+    if (optParam === 'bento' || optParam === 'ring' || optParam === 'monout') {
+      switchView(optParam);
+    }
+  </script>
+</body>
+</html>

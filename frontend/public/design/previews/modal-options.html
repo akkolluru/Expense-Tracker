@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modals & Drawers Options — PaisaIQ UI Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
+    .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+    .phone-mockup {
+      width: 390px;
+      height: 780px;
+      border-radius: 46px;
+      box-shadow: 0 0 0 10px #181D2A, 0 0 0 12px #2A334A, 0 30px 60px -15px rgba(0,0,0,0.85);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .dynamic-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 105px;
+      height: 26px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 60;
+    }
+    .mockup-scroll::-webkit-scrollbar { display: none; }
+    .mockup-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-[#08090D] text-[#E2E8F0] min-h-screen">
+
+  <header class="sticky top-0 z-50 bg-[#0C0E14]/95 backdrop-blur-xl border-b border-[#1A1F2C] px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a href="../index.html" class="flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl bg-[#141824] border border-[#20273B]">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span>Master Catalog</span>
+        </a>
+        <div class="h-4 w-px bg-slate-800"></div>
+        <h1 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>Screen 05: Modals & Drawers Options</span>
+          <span class="text-[10px] font-mono text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">3 Contenders</span>
+        </h1>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="flex bg-[#121622] p-1 rounded-xl border border-[#1E2538] text-xs font-semibold">
+          <button id="btn-side" onclick="switchView('side')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white">Side-by-Side</button>
+          <button id="btn-dual" onclick="switchView('dual')" class="px-3 py-1.5 rounded-lg text-slate-400">Dual Add Modal</button>
+          <button id="btn-calc" onclick="switchView('calc')" class="px-3 py-1.5 rounded-lg text-slate-400">Keypad Fast Entry</button>
+          <button id="btn-split" onclick="switchView('split')" class="px-3 py-1.5 rounded-lg text-slate-400">Peer Split Drawer</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
+    <div id="decision-banner" class="p-4 rounded-2xl bg-[#0F131D] border border-[#1C2333] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-white block">Modal Interaction: How do you want transaction entry and split sheets?</span>
+          <span class="text-xs text-slate-400" id="decision-text">Explore Option A (Dual SMS/Manual Sheet), Option B (Keypad Calculator), and Option C (Peer Debt Split Drawer).</span>
+        </div>
+      </div>
+      <div id="decision-badge" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono font-bold flex-shrink-0">
+        Status: Exploring
+      </div>
+    </div>
+
+    <div id="mockups-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center">
+
+      <!-- OPTION A: DUAL-MODE ADD MODAL (Current) -->
+      <div id="card-dual" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
+        <div class="w-full flex items-center justify-between px-2">
+          <div>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold font-mono">Option A</span>
+            <h3 class="text-sm font-bold text-white mt-1">Dual-Mode Add Modal</h3>
+          </div>
+          <button onclick="choose('Option A: Dual-Mode Add Modal')" class="px-3 py-1 rounded-xl bg-[#163832] text-[#DAF1DE] text-xs font-bold border border-[#235347]">Select Option A</button>
+        </div>
+
+        <div class="phone-mockup bg-[#051F20] text-[#DAF1DE] border border-[#235347]/40">
+          <div class="dynamic-island"></div>
+          <div class="pt-3 px-6 flex justify-between text-[10px] font-mono text-[#8EB69B]"><span>9:41</span><i data-lucide="battery" class="w-3.5 h-3.5"></i></div>
+
+          <div class="flex-1 overflow-y-auto mockup-scroll p-4 pt-6 space-y-3">
+            <h2 class="text-base font-bold text-white">Add Transaction</h2>
+
+            <!-- Dual Tabs -->
+            <div class="flex p-1 rounded-xl bg-[#0B2B26] border border-[#235347] text-xs font-bold">
+              <button class="flex-1 py-1.5 rounded-lg bg-[#163832] text-white">Paste Bank SMS</button>
+              <button class="flex-1 py-1.5 rounded-lg text-[#8EB69B]">Manual Entry</button>
+            </div>
+
+            <!-- SMS Input Box -->
+            <div class="p-3 rounded-2xl bg-[#0B2B26] border border-[#235347] space-y-2">
+              <span class="text-[10px] font-bold uppercase text-[#8EB69B]">Paste alert SMS text</span>
+              <div class="p-2.5 rounded-xl bg-[#051F20] border border-[#163832] text-xs text-slate-300 font-mono">
+                Rs 420.00 debited from HDFC Bank **4590 to Swiggy on 25-AUG...
+              </div>
+
+              <!-- Live Parsed Preview -->
+              <div class="p-2.5 rounded-xl bg-[#163832]/60 border border-emerald-600/30 space-y-1">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-white">Extracted: Swiggy</span>
+                  <span class="font-mono-num font-bold text-rose-300">₹420.00</span>
+                </div>
+                <div class="flex gap-2 text-[10px] text-[#8EB69B]">
+                  <span>HDFC ••4590</span>
+                  <span>• UPI</span>
+                  <span class="text-emerald-400 font-bold">95% Conf</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs">Record Parsed Transaction</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTION B: KEYPAD-FIRST QUICK ADD -->
+      <div id="card-calc" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
+        <div class="w-full flex items-center justify-between px-2">
+          <div>
+            <span class="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold font-mono">Option B</span>
+            <h3 class="text-sm font-bold text-white mt-1">Keypad-First Entry</h3>
+          </div>
+          <button onclick="choose('Option B: Keypad-First Entry')" class="px-3 py-1 rounded-xl bg-indigo-600 text-white text-xs font-bold">Select Option B</button>
+        </div>
+
+        <div class="phone-mockup bg-[#090A0D] text-white border border-[#1A1F2C]">
+          <div class="dynamic-island"></div>
+          <div class="pt-3 px-6 flex justify-between text-[10px] font-mono text-slate-500"><span>9:41</span><i data-lucide="battery" class="w-3.5 h-3.5"></i></div>
+
+          <div class="flex-1 flex flex-col justify-between p-4 pt-6">
+            <div class="space-y-4">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-slate-400">Enter Amount</span>
+                <span class="text-xs text-indigo-400 font-bold">HDFC Bank</span>
+              </div>
+
+              <!-- Big Display -->
+              <div class="text-center py-4">
+                <span class="text-4xl font-black font-mono-num text-white">₹ 350.00</span>
+                <input type="text" placeholder="What's this for?" class="mt-2 text-center text-xs bg-transparent text-slate-400 outline-none w-full border-b border-slate-800 pb-1" value="Coffee with Rahul" />
+              </div>
+            </div>
+
+            <!-- Virtual Keypad -->
+            <div class="grid grid-cols-3 gap-2 text-base font-bold text-slate-200">
+              <button class="py-3 rounded-2xl bg-[#141720]">1</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">2</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">3</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">4</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">5</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">6</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">7</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">8</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">9</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">.</button>
+              <button class="py-3 rounded-2xl bg-[#141720]">0</button>
+              <button class="py-3 rounded-2xl bg-indigo-600 text-white">✓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTION C: PEER DEBT SPLIT DRAWER -->
+      <div id="card-split" class="flex flex-col items-center space-y-4 w-full max-w-[390px]">
+        <div class="w-full flex items-center justify-between px-2">
+          <div>
+            <span class="px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-400 border border-violet-500/20 text-[10px] font-bold font-mono">Option C</span>
+            <h3 class="text-sm font-bold text-white mt-1">Peer Debt Split Drawer</h3>
+          </div>
+          <button onclick="choose('Option C: Peer Debt Split Drawer')" class="px-3 py-1 rounded-xl bg-violet-600 text-white text-xs font-bold">Select Option C</button>
+        </div>
+
+        <div class="phone-mockup bg-[#090A0D] text-white border border-[#1A1F2C]">
+          <div class="dynamic-island"></div>
+          <div class="pt-3 px-6 flex justify-between text-[10px] font-mono text-slate-500"><span>9:41</span><i data-lucide="battery" class="w-3.5 h-3.5"></i></div>
+
+          <!-- Slide up Drawer overlay -->
+          <div class="flex-1 flex flex-col justify-end">
+            <div class="rounded-t-[36px] bg-[#141720] border-t border-[#202738] p-5 pt-4 space-y-3.5 shadow-2xl">
+              <!-- Drag Handle -->
+              <div class="w-10 h-1 bg-slate-700 rounded-full mx-auto"></div>
+
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-sm font-bold text-white">Split: Toit Brewery</h3>
+                  <span class="text-xs text-slate-400 font-mono-num">Total: ₹1,500.00</span>
+                </div>
+                <span class="px-2 py-1 rounded-lg bg-indigo-500/20 text-indigo-400 text-xs font-bold">3 People</span>
+              </div>
+
+              <!-- Splits breakdown -->
+              <div class="space-y-2 text-xs">
+                <div class="p-2.5 rounded-xl bg-[#0E1017] border border-[#181E2C] flex items-center justify-between">
+                  <span class="font-bold text-slate-300">You (Your Share)</span>
+                  <span class="font-mono-num font-bold text-white">₹500.00</span>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-[#0E1017] border border-[#181E2C] flex items-center justify-between">
+                  <div>
+                    <span class="font-bold text-white block">Priya (priya@okaxis)</span>
+                    <span class="text-[10px] text-amber-400">Unsettled</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono-num font-bold text-white">₹500.00</span>
+                    <button class="px-2 py-1 rounded-lg bg-emerald-600 text-white text-[10px] font-bold">Paid</button>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-[#0E1017] border border-[#181E2C] flex items-center justify-between">
+                  <div>
+                    <span class="font-bold text-white block">Rahul (rahul@okhdfc)</span>
+                    <span class="text-[10px] text-emerald-400">Settled ✓</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono-num font-bold text-slate-400">₹500.00</span>
+                    <span class="text-[10px] text-slate-500">Done</span>
+                  </div>
+                </div>
+              </div>
+
+              <button class="w-full py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">Save Split Allocation</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    function switchView(mode) {
+      const container = document.getElementById('mockups-container');
+      const d = document.getElementById('card-dual');
+      const c = document.getElementById('card-calc');
+      const s = document.getElementById('card-split');
+
+      if (mode === 'side') {
+        d.style.display = 'flex'; c.style.display = 'flex'; s.style.display = 'flex';
+        container.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center";
+      } else if (mode === 'dual') {
+        d.style.display = 'flex'; c.style.display = 'none'; s.style.display = 'none';
+        container.className = "flex justify-center";
+      } else if (mode === 'calc') {
+        d.style.display = 'none'; c.style.display = 'flex'; s.style.display = 'none';
+        container.className = "flex justify-center";
+      } else if (mode === 'split') {
+        d.style.display = 'none'; c.style.display = 'none'; s.style.display = 'flex';
+        container.className = "flex justify-center";
+      }
+    }
+    function choose(name) {
+      const banner = document.getElementById('decision-banner');
+      const text = document.getElementById('decision-text');
+      const badge = document.getElementById('decision-badge');
+      banner.className = "p-4 rounded-2xl bg-emerald-950/40 border border-emerald-600/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
+      text.innerHTML = `<strong class="text-emerald-300">You picked: ${name}</strong>. Tell me in the chat, and we will finalize it in the catalog!`;
+      badge.textContent = "Candidate Picked";
+      badge.className = "px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold";
+    }
+  </script>
+</body>
+</html>
