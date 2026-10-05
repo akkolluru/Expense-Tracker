@@ -262,23 +262,33 @@ export default function App() {
 
   const handleAddTransaction = (newTxData: Partial<Transaction>) => {
     const newTx: Transaction = {
-      id: `tx-${Date.now()}`,
+      id: newTxData.id || `tx-${Date.now()}`,
       amount: newTxData.amount || 0,
       type: newTxData.type || 'DEBIT',
       merchant: newTxData.merchant || 'Merchant Transfer',
       upiVpa: newTxData.upiVpa,
       category: newTxData.category || 'Food & Dining',
-      date: newTxData.date || '2026-08-31',
-      time: newTxData.time || '12:00 PM',
+      date: newTxData.date || new Date().toISOString().split('T')[0],
+      time: newTxData.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       paymentMethod: newTxData.paymentMethod || 'UPI_GPAY',
       accountNumberMasked: newTxData.accountNumberMasked || 'HDFC Bank **4590',
-      isVerified: true,
-      aiConfidence: newTxData.aiConfidence || 95,
+      isVerified: newTxData.isVerified ?? true,
+      aiConfidence: newTxData.aiConfidence ?? 95,
+      aiSuggestedCategory: newTxData.aiSuggestedCategory,
+      notes: newTxData.notes,
+      referenceId: newTxData.referenceId,
+      tags: newTxData.tags,
       rawSmsSnippet: newTxData.rawSmsSnippet,
       splitDetails: newTxData.splitDetails
     };
 
-    setTransactions(prev => [newTx, ...prev]);
+    setTransactions(prev => {
+      const exists = prev.some(tx => tx.id === newTx.id);
+      if (exists) {
+        return prev.map(tx => (tx.id === newTx.id ? newTx : tx));
+      }
+      return [newTx, ...prev];
+    });
   };
 
   const handleResetDemo = () => {
