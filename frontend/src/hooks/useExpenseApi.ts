@@ -5,6 +5,7 @@ import {
   TransactionCreate,
   TransactionFilterParams,
   SplitItemDTO,
+  PeerSplitItemDTO,
   InboxApproveRequest,
   SyncParseTextRequest,
 } from '../services/api';
@@ -13,6 +14,7 @@ import { offlineQueue } from '../services/offlineQueue';
 export const expenseQueryKeys = {
   health: ['system', 'health'] as const,
   accounts: ['accounts'] as const,
+  categories: ['categories'] as const,
   transactions: (params?: TransactionFilterParams) => ['transactions', params] as const,
   inbox: ['inbox'] as const,
   analyticsSummary: (start: string, end: string) => ['analytics', 'summary', start, end] as const,
@@ -36,6 +38,13 @@ export function useAccounts() {
   return useQuery({
     queryKey: expenseQueryKeys.accounts,
     queryFn: () => api.listAccounts(),
+  });
+}
+
+export function useCategories() {
+  return useQuery({
+    queryKey: expenseQueryKeys.categories,
+    queryFn: () => api.listCategories(),
   });
 }
 
@@ -252,3 +261,26 @@ export function useParseSyncText() {
     },
   });
 }
+
+export function useSetPeerSplits() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ txId, splits }: { txId: number; splits: PeerSplitItemDTO[] }) =>
+      api.setPeerSplits(txId, splits),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+}
+
+export function useTogglePeerSplitPaid() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ txId, peerSplitId }: { txId: number; peerSplitId: number }) =>
+      api.togglePeerSplitPaid(txId, peerSplitId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+}
+

@@ -276,3 +276,147 @@ async def test_system_health_endpoint(client):
     assert data["status"] == "HEALTHY"
     assert data["database"] == "CONNECTED"
     assert "llm_circuit_breaker" in data
+
+
+@pytest.mark.asyncio
+async def test_categories_endpoint(client, async_session):
+    cat1 = Category(name="Travel", icon="plane", color="#3B82F6", is_income=False)
+    cat2 = Category(name="Dining", icon="utensils", color="#EF4444", is_income=False)
+    cat3 = Category(name="Salary", icon="briefcase", color="#10B981", is_income=True)
+    async_session.add_all([cat1, cat2, cat3])
+    await async_session.commit()
+
+    res = await client.get("/api/v1/categories", headers=HEADERS)
+    assert res.status_code == 200
+    data = res.json()
+    assert len(data) >= 3
+
+    # Check alphabetical ordering
+    names = [c["name"] for c in data]
+    assert names == sorted(names)
+
+    # Check fields
+    travel = next(c for c in data if c["name"] == "Travel")
+    assert travel["icon"] == "plane"
+    assert travel["color"] == "#3B82F6"
+    assert travel["is_income"] is False
+    assert "parent_category" in travel
+
+
+@pytest.mark.asyncio
+async def test_peer_splits_endpoints(client, async_session):
+    account = Account(
+        name="Splits Test Account",
+        institution="Axis",
+        balance=Decimal("10000.00"),
+    )
+    async_session.add(account)
+    await async_session.commit()
+    await async_session.refresh(account)
+
+    tx = Transaction(
+        account_id=account.id,
+        amount=Decimal("1000.00"),
+        merchant_name="Group Dinner",
+        timestamp=datetime.now(UTC),
+    )
+    async_session.add(tx)
+    await async_session.commit()
+    await async_session.refresh(tx)
+
+    # 1. 404 for nonexistent transaction
+    res_404 = await client.post(
+        "/api/v1/transactions/99999/peer-splits",
+        json={"peer_splits": [{"member_name": "Alice", "share_amount": "200.00"}]},
+        headers=HEADERS,
+    )
+    assert res_404.status_code == 404
+
+    # 2. 400 when splits sum exceeds tx amount (600 + 500 = 1100 > 1000)
+    res_400 = await client.post(
+        f"/api/v1/transactions/{tx.id}/peer-splits",
+        json={
+            "peer_splits": [
+                {"member_name": "Alice", "share_amount": "600.00"},
+                {"member_name": "Bob", "share_amount": "500.00"},
+            ]
+        },
+        headers=HEADERS,
+    )
+    assert res_400.status_code == 400
+    assert "exceeds transaction amount" in res_400.json()["detail"]
+
+    # 3. Successful peer splits creation
+    res_ok = await client.post(
+        f"/api/v1/transactions/{tx.id}/peer-splits",
+        json={
+            "peer_splits": [
+                {"member_name": "Alice", "share_amount": "400.00", "upi_id": "alice@upi"},
+                {"member_name": "Bob", "share_amount": "300.00", "is_paid": False},
+            ]
+        },
+        headers=HEADERS,
+    )
+    assert res_ok.status_code == 200
+    splits_data = res_ok.json()
+    assert len(splits_data) == 2
+    alice_split = splits_data[0]
+    bob_split = splits_data[1]
+    assert alice_split["member_name"] == "Alice"
+    assert Decimal(str(alice_split["share_amount"])) == Decimal("400.00")
+    assert alice_split["upi_id"] == "alice@upi"
+    assert alice_split["is_paid"] is False
+    assert alice_split["settled_at"] is None
+
+    # 4. Replacement of peer splits
+    res_replace = await client.post(
+        f"/api/v1/transactions/{tx.id}/peer-splits",
+        json={
+            "peer_splits": [
+                {"member_name": "Charlie", "share_amount": "500.00", "upi_id": "charlie@upi"},
+            ]
+        },
+        headers=HEADERS,
+    )
+    assert res_replace.status_code == 200
+    replaced_data = res_replace.json()
+    assert len(replaced_data) == 1
+    charlie_split = replaced_data[0]
+    assert charlie_split["member_name"] == "Charlie"
+    charlie_id = charlie_split["id"]
+
+    # 5. Toggle paid: toggle to True
+    res_toggle_true = await client.post(
+        f"/api/v1/transactions/{tx.id}/peer-splits/{charlie_id}/toggle-paid",
+        headers=HEADERS,
+    )
+    assert res_toggle_true.status_code == 200
+    toggled_true_data = res_toggle_true.json()
+    assert toggled_true_data["is_paid"] is True
+    assert toggled_true_data["settled_at"] is not None
+
+    # 6. Toggle paid: toggle back to False
+    res_toggle_false = await client.post(
+        f"/api/v1/transactions/{tx.id}/peer-splits/{charlie_id}/toggle-paid",
+        headers=HEADERS,
+    )
+    assert res_toggle_false.status_code == 200
+    toggled_false_data = res_toggle_false.json()
+    assert toggled_false_data["is_paid"] is False
+    assert toggled_false_data["settled_at"] is None
+
+    # 7. 404 for invalid toggle
+    res_invalid_toggle = await client.post(
+        f"/api/v1/transactions/{tx.id}/peer-splits/99999/toggle-paid",
+        headers=HEADERS,
+    )
+    assert res_invalid_toggle.status_code == 404
+
+    # 8. Check that GET transactions includes peer_splits
+    res_list = await client.get("/api/v1/transactions", headers=HEADERS)
+    assert res_list.status_code == 200
+    tx_items = res_list.json()["items"]
+    fetched_tx = next(t for t in tx_items if t["id"] == tx.id)
+    assert len(fetched_tx["peer_splits"]) == 1
+    assert fetched_tx["peer_splits"][0]["member_name"] == "Charlie"
+

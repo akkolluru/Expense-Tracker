@@ -49,6 +49,36 @@ export interface AccountCreate {
   account_number_last4?: string | null;
 }
 
+export interface CategoryResponse {
+  id: number;
+  name: string;
+  icon: string;
+  color: string;
+  is_income: boolean;
+  parent_category?: string | null;
+}
+
+export interface PeerSplitItemDTO {
+  member_name: string;
+  share_amount: number | string;
+  upi_id?: string | null;
+  is_paid?: boolean;
+}
+
+export interface PeerSplitRequest {
+  peer_splits: PeerSplitItemDTO[];
+}
+
+export interface PeerSplitResponse {
+  id: number;
+  transaction_id: number;
+  member_name: string;
+  upi_id?: string | null;
+  share_amount: number | string;
+  is_paid: boolean;
+  settled_at?: string | null;
+}
+
 export interface TransactionResponse {
   id: number;
   account_id: number;
@@ -70,6 +100,7 @@ export interface TransactionResponse {
   categorization_strategy: string;
   categorization_confidence: number;
   timestamp: string;
+  peer_splits?: PeerSplitResponse[];
 }
 
 export interface TransactionListResponse {
@@ -283,6 +314,13 @@ export class PaisaIQApiClient {
     });
   }
 
+  // Categories
+  async listCategories(): Promise<CategoryResponse[]> {
+    return this.request<CategoryResponse[]>('/categories', {
+      method: 'GET',
+    });
+  }
+
   // Transactions
   async listTransactions(params?: TransactionFilterParams): Promise<TransactionListResponse> {
     const query = new URLSearchParams();
@@ -326,6 +364,22 @@ export class PaisaIQApiClient {
       method: 'POST',
       body: JSON.stringify({ splits }),
     });
+  }
+
+  async setPeerSplits(txId: number, splits: PeerSplitItemDTO[]): Promise<PeerSplitResponse[]> {
+    return this.request<PeerSplitResponse[]>(`/transactions/${txId}/peer-splits`, {
+      method: 'POST',
+      body: JSON.stringify({ peer_splits: splits }),
+    });
+  }
+
+  async togglePeerSplitPaid(txId: number, peerSplitId: number): Promise<PeerSplitResponse> {
+    return this.request<PeerSplitResponse>(
+      `/transactions/${txId}/peer-splits/${peerSplitId}/toggle-paid`,
+      {
+        method: 'POST',
+      }
+    );
   }
 
   // Inbox

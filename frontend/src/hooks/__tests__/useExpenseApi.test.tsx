@@ -4,9 +4,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   expenseQueryKeys,
+  useCategories,
   useCreateTransaction,
   useApproveInboxItem,
   useParseSyncText,
+  useSetPeerSplits,
+  useTogglePeerSplitPaid,
 } from '../useExpenseApi';
 import { api, ApiError } from '../../services/api';
 import { offlineQueue } from '../../services/offlineQueue';
@@ -344,4 +347,62 @@ describe('useExpenseApi Hook & Queries', () => {
       unmount();
     });
   });
+
+  describe('useCategories query', () => {
+    it('queries api.listCategories', async () => {
+      const mockCats = [
+        { id: 1, name: 'Food', icon: 'utensils', color: '#F00', is_income: false },
+      ];
+      vi.spyOn(api, 'listCategories').mockResolvedValue(mockCats);
+
+      const { result, unmount } = renderHookWithQuery(() => useCategories());
+      expect(result.current.isLoading).toBe(true);
+
+      unmount();
+    });
+  });
+
+  describe('useSetPeerSplits & useTogglePeerSplitPaid mutations', () => {
+    it('sets peer splits via API', async () => {
+      const splitSpy = vi.spyOn(api, 'setPeerSplits').mockResolvedValue([
+        {
+          id: 1,
+          transaction_id: 10,
+          member_name: 'Bob',
+          share_amount: 150,
+          is_paid: false,
+        },
+      ]);
+
+      const { result, unmount } = renderHookWithQuery(() => useSetPeerSplits());
+      await act(async () => {
+        await result.current.mutateAsync({
+          txId: 10,
+          splits: [{ member_name: 'Bob', share_amount: 150 }],
+        });
+      });
+
+      expect(splitSpy).toHaveBeenCalledWith(10, [{ member_name: 'Bob', share_amount: 150 }]);
+      unmount();
+    });
+
+    it('toggles peer split paid via API', async () => {
+      const toggleSpy = vi.spyOn(api, 'togglePeerSplitPaid').mockResolvedValue({
+        id: 1,
+        transaction_id: 10,
+        member_name: 'Bob',
+        share_amount: 150,
+        is_paid: true,
+      });
+
+      const { result, unmount } = renderHookWithQuery(() => useTogglePeerSplitPaid());
+      await act(async () => {
+        await result.current.mutateAsync({ txId: 10, peerSplitId: 1 });
+      });
+
+      expect(toggleSpy).toHaveBeenCalledWith(10, 1);
+      unmount();
+    });
+  });
 });
+

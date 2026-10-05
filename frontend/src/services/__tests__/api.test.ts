@@ -200,6 +200,107 @@ describe('PaisaIQApiClient', () => {
     expect(res).toHaveLength(2);
   });
 
+  it('lists categories via GET /categories', async () => {
+    const mockCategories = [
+      {
+        id: 1,
+        name: 'Dining',
+        icon: 'utensils',
+        color: '#EF4444',
+        is_income: false,
+        parent_category: null,
+      },
+      {
+        id: 2,
+        name: 'Salary',
+        icon: 'briefcase',
+        color: '#10B981',
+        is_income: true,
+        parent_category: null,
+      },
+    ];
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockCategories,
+    });
+
+    const res = await client.listCategories();
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/v1/categories',
+      expect.objectContaining({ method: 'GET' })
+    );
+    expect(res).toEqual(mockCategories);
+  });
+
+  it('sets peer splits via POST /transactions/:id/peer-splits', async () => {
+    const peerSplits = [
+      { member_name: 'Alice', share_amount: 300, upi_id: 'alice@upi' },
+      { member_name: 'Bob', share_amount: 200, is_paid: false },
+    ];
+    const mockResponse = [
+      {
+        id: 1,
+        transaction_id: 101,
+        member_name: 'Alice',
+        share_amount: 300,
+        upi_id: 'alice@upi',
+        is_paid: false,
+        settled_at: null,
+      },
+      {
+        id: 2,
+        transaction_id: 101,
+        member_name: 'Bob',
+        share_amount: 200,
+        upi_id: null,
+        is_paid: false,
+        settled_at: null,
+      },
+    ];
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    });
+
+    const res = await client.setPeerSplits(101, peerSplits);
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/v1/transactions/101/peer-splits',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ peer_splits: peerSplits }),
+      })
+    );
+    expect(res).toEqual(mockResponse);
+  });
+
+  it('toggles peer split paid via POST /transactions/:id/peer-splits/:peerSplitId/toggle-paid', async () => {
+    const mockToggled = {
+      id: 1,
+      transaction_id: 101,
+      member_name: 'Alice',
+      share_amount: 300,
+      upi_id: 'alice@upi',
+      is_paid: true,
+      settled_at: '2026-10-05T12:00:00Z',
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockToggled,
+    });
+
+    const res = await client.togglePeerSplitPaid(101, 1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8000/api/v1/transactions/101/peer-splits/1/toggle-paid',
+      expect.objectContaining({
+        method: 'POST',
+      })
+    );
+    expect(res).toEqual(mockToggled);
+  });
+
   it('lists inbox items via GET /inbox', async () => {
     const mockInbox = [
       {

@@ -42,6 +42,40 @@ class TransactionCreate(BaseModel):
     description: str | None = None
 
 
+class CategoryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    icon: str
+    color: str
+    is_income: bool
+    parent_category: str | None = None
+
+
+class PeerSplitItemDTO(BaseModel):
+    member_name: str
+    share_amount: Decimal = Field(..., gt=Decimal("0.00"))
+    upi_id: str | None = None
+    is_paid: bool = False
+
+
+class PeerSplitRequest(BaseModel):
+    peer_splits: list[PeerSplitItemDTO]
+
+
+class PeerSplitResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    transaction_id: int
+    member_name: str
+    upi_id: str | None = None
+    share_amount: Decimal
+    is_paid: bool
+    settled_at: datetime | None = None
+
+
 class TransactionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -65,6 +99,7 @@ class TransactionResponse(BaseModel):
     categorization_strategy: str
     categorization_confidence: float
     timestamp: datetime
+    peer_splits: list[PeerSplitResponse] = []
 
 
 class TransactionListResponse(BaseModel):

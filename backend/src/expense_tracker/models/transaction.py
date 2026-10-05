@@ -63,6 +63,7 @@ class Transaction(Base):
         foreign_keys="[PeerSplit.transaction_id]",
         back_populates="transaction",
         cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
     __table_args__ = (
