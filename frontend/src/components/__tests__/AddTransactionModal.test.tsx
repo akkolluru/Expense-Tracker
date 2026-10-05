@@ -101,7 +101,6 @@ describe('AddTransactionModal Component', () => {
     const root = createRoot(container);
     const defaultProps = {
       isOpen: true,
-      initialMode: 'sms' as const,
       onClose: vi.fn(),
       onAddTransaction: vi.fn(),
       ...props,
@@ -442,6 +441,204 @@ describe('AddTransactionModal Component', () => {
     );
 
     // Modal closed
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('opens in Keypad mode by default with hero amount ₹ 0.00 and 3x4 keypad grid', async () => {
+    // When initialMode is omitted, it should default to manual/keypad
+    await renderModal();
+
+    // Verify Keypad tab is active
+    const keypadTabBtn = container.querySelector<HTMLButtonElement>('#btn-tab-manual');
+    const smsTabBtn = container.querySelector<HTMLButtonElement>('#btn-tab-sms');
+    expect(keypadTabBtn).not.toBeNull();
+    expect(smsTabBtn).not.toBeNull();
+
+    // Hero amount placeholder
+    expect(container.textContent).toContain('₹');
+    expect(container.textContent).toContain('0.00');
+
+    // 3x4 keypad buttons exist
+    expect(container.querySelector('#keypad-1')).not.toBeNull();
+    expect(container.querySelector('#keypad-2')).not.toBeNull();
+    expect(container.querySelector('#keypad-3')).not.toBeNull();
+    expect(container.querySelector('#keypad-4')).not.toBeNull();
+    expect(container.querySelector('#keypad-5')).not.toBeNull();
+    expect(container.querySelector('#keypad-6')).not.toBeNull();
+    expect(container.querySelector('#keypad-7')).not.toBeNull();
+    expect(container.querySelector('#keypad-8')).not.toBeNull();
+    expect(container.querySelector('#keypad-9')).not.toBeNull();
+    expect(container.querySelector('#keypad-dot')).not.toBeNull();
+    expect(container.querySelector('#keypad-0')).not.toBeNull();
+    expect(container.querySelector('#keypad-backspace')).not.toBeNull();
+
+    // Context pills exist
+    expect(container.querySelector('#btn-type-debit')).not.toBeNull();
+    expect(container.querySelector('#btn-type-credit')).not.toBeNull();
+    expect(container.querySelector('#select-account')).not.toBeNull();
+    expect(container.querySelector('#btn-submit-manual')).not.toBeNull();
+  });
+
+  it('handles keypad interactions: typing digits, decimal point, and backspace', async () => {
+    await renderModal();
+
+    const key1 = container.querySelector<HTMLButtonElement>('#keypad-1')!;
+    const key2 = container.querySelector<HTMLButtonElement>('#keypad-2')!;
+    const keyDot = container.querySelector<HTMLButtonElement>('#keypad-dot')!;
+    const key5 = container.querySelector<HTMLButtonElement>('#keypad-5')!;
+    const keyBackspace = container.querySelector<HTMLButtonElement>('#keypad-backspace')!;
+
+    // Tap 1 -> 2 -> . -> 5
+    await act(async () => {
+      key1.click();
+    });
+    expect(container.querySelector<HTMLInputElement>('#manual-amount-input')?.value).toBe('1');
+
+    await act(async () => {
+      key2.click();
+    });
+    expect(container.querySelector<HTMLInputElement>('#manual-amount-input')?.value).toBe('12');
+
+    await act(async () => {
+      keyDot.click();
+    });
+    expect(container.querySelector<HTMLInputElement>('#manual-amount-input')?.value).toBe('12.');
+
+    await act(async () => {
+      key5.click();
+    });
+    expect(container.querySelector<HTMLInputElement>('#manual-amount-input')?.value).toBe('12.5');
+
+    // Tapping dot again should not duplicate
+    await act(async () => {
+      keyDot.click();
+    });
+    expect(container.querySelector<HTMLInputElement>('#manual-amount-input')?.value).toBe('12.5');
+
+    // Tap backspace
+    await act(async () => {
+      keyBackspace.click();
+    });
+    expect(container.querySelector<HTMLInputElement>('#manual-amount-input')?.value).toBe('12.');
+
+    await act(async () => {
+      keyBackspace.click();
+    });
+    expect(container.querySelector<HTMLInputElement>('#manual-amount-input')?.value).toBe('12');
+  });
+
+  it('submits manual expense using #btn-submit-manual with debit/credit toggles and account chips', async () => {
+    (api.createTransaction as any).mockResolvedValue({
+      id: 1001,
+      account_id: 1,
+      amount: 250,
+      merchant_name: 'Third Wave Coffee',
+      timestamp: '2026-08-31T11:00:00Z',
+      category_id: 1,
+      is_expense: false, // CREDIT
+      status: 'POSTED',
+    });
+
+    const { onAddTransaction, onClose } = await renderModal();
+
+    // Type 2, 5, 0 using virtual keypad
+    const key2 = container.querySelector<HTMLButtonElement>('#keypad-2')!;
+    const key5 = container.querySelector<HTMLButtonElement>('#keypad-5')!;
+    const key0 = container.querySelector<HTMLButtonElement>('#keypad-0')!;
+
+    await act(async () => {
+      key2.click();
+      key5.click();
+      key0.click();
+    });
+
+    // Enter merchant note
+    const merchantInput = container.querySelector<HTMLInputElement>('#manual-merchant-input')!;
+    await act(async () => {
+      setInputValue(merchantInput, 'Third Wave Coffee');
+    });
+
+    // Toggle to Credit (Income)
+    const creditBtn = container.querySelector<HTMLButtonElement>('#btn-type-credit')!;
+    await act(async () => {
+      creditBtn.click();
+    });
+
+    // Primary submit button
+    const submitBtn = container.querySelector<HTMLButtonElement>('#btn-submit-manual')!;
+    expect(submitBtn).not.toBeNull();
+    expect(submitBtn.disabled).toBe(false);
+    expect(submitBtn.textContent).toContain('Record Income');
+
+    await act(async () => {
+      submitBtn.click();
+    });
+    await waitForQueries();
+
+    // Verify backend call
+    expect(api.createTransaction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: 250,
+        merchant_name: 'Third Wave Coffee',
+        is_expense: false,
+      })
+    );
+
+    // Verify optimistic UI update
+    expect(onAddTransaction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: 250,
+        merchant: 'Third Wave Coffee',
+        type: 'CREDIT',
+      })
+    );
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('saves parsed SMS via #btn-confirm-parsed', async () => {
+    (api.parseSyncText as any).mockResolvedValue({
+      status: 'CREATED',
+      action: 'TRANSACTION_CREATED',
+      transaction: {
+        id: 504,
+        account_id: 1,
+        amount: 320,
+        currency: 'INR',
+        is_expense: true,
+        merchant_name: 'Blinkit Delivery',
+        timestamp: '2026-08-31T15:00:00Z',
+        category_id: 2,
+      },
+    });
+
+    const { onAddTransaction, onClose } = await renderModal({ initialMode: 'sms' });
+
+    const textarea = container.querySelector<HTMLTextAreaElement>('#sms-textarea')!;
+    await act(async () => {
+      setInputValue(textarea, 'Sent Rs.320.00 from HDFC Bank to Blinkit');
+    });
+
+    const parseBtn = container.querySelector<HTMLButtonElement>('#btn-backend-parse')!;
+    await act(async () => {
+      parseBtn.click();
+    });
+    await waitForQueries();
+
+    const confirmBtn = container.querySelector<HTMLButtonElement>('#btn-confirm-parsed')!;
+    expect(confirmBtn).not.toBeNull();
+    expect(confirmBtn.disabled).toBe(false);
+
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(onAddTransaction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        merchant: 'Blinkit Delivery',
+        amount: 320,
+      })
+    );
     expect(onClose).toHaveBeenCalled();
   });
 });

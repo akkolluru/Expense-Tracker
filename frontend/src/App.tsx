@@ -43,7 +43,7 @@ export default function App() {
   
   // Modals & Drawers
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [addModalInitialMode, setAddModalInitialMode] = useState<'manual' | 'sms'>('sms');
+  const [addModalInitialMode, setAddModalInitialMode] = useState<'manual' | 'sms'>('manual');
   const [selectedTxForDetail, setSelectedTxForDetail] = useState<Transaction | null>(null);
 
   // In-App Toast Notifications
@@ -287,7 +287,7 @@ export default function App() {
     setTransactions(INITIAL_TRANSACTIONS);
   };
 
-  const handleOpenAddModal = (mode: 'manual' | 'sms' = 'sms') => {
+  const handleOpenAddModal = (mode: 'manual' | 'sms' = 'manual') => {
     setAddModalInitialMode(mode);
     setIsAddModalOpen(true);
   };
