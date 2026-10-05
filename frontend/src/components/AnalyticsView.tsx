@@ -18,6 +18,7 @@ import {
 import { formatINR } from '../utils/formatters';
 import { CategoryBreakdownPoint, ExpenseCategory } from '../types';
 import { TimeTravelCard } from './TimeTravelCard';
+import { StickmanMascot } from './StickmanMascot';
 import { CategoryIcon } from './CategoryIcon';
 import { AlertCircle, Zap, TrendingUp, X } from 'lucide-react';
 import { 
@@ -165,7 +166,10 @@ interface BarTooltipPayload {
         </div>
       </div>
 
-      {/* 2. AI Time Travel Card */}
+      {/* 2. Animated Stickman Financial Persona Mascot */}
+      <StickmanMascot totalMonthSpend={totalMonthSpend} />
+
+      {/* 3. AI Time Travel Card */}
       <TimeTravelCard />
 
       {/* 3. Month-over-Month Variance Card */}

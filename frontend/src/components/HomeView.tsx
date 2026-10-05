@@ -16,7 +16,6 @@ import {
 import { Transaction, CashFlowSummary } from '../types';
 import { formatINR } from '../utils/formatters';
 import { CategoryIcon } from './CategoryIcon';
-import { TimeTravelCard } from './TimeTravelCard';
 
 interface HomeViewProps {
   cashFlow: CashFlowSummary;
@@ -243,10 +242,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </div>
 
-      {/* 5. AI Financial Time-Travel Card */}
-      <TimeTravelCard />
-
-      {/* 6. Ledger (Recent Activity) with Floating Alert */}
+      {/* 5. Ledger (Recent Activity) with Floating Alert */}
       <div className="space-y-2.5 pt-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
