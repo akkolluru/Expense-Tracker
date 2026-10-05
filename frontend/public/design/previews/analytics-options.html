@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics & Financial Avatar Persona — PaisaIQ UI Studio</title>
+  <title>Analytics & Stickman Financial Persona — PaisaIQ UI Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
@@ -34,11 +34,51 @@
     .mockup-scroll::-webkit-scrollbar { display: none; }
     .mockup-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Avatar transitions */
-    .avatar-glow-rich { box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.45); }
-    .avatar-glow-pro { box-shadow: 0 0 35px -5px rgba(20, 184, 166, 0.40); }
-    .avatar-glow-hustle { box-shadow: 0 0 35px -5px rgba(245, 158, 11, 0.40); }
-    .avatar-glow-boxers { box-shadow: 0 0 35px -5px rgba(239, 68, 68, 0.50); }
+    /* Stickman Idle Animations */
+    @keyframes mogul-swagger {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(1.2deg); }
+    }
+    @keyframes pro-breathe {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+    @keyframes steam-rise {
+      0% { opacity: 0; transform: translateY(0px) scale(0.8); }
+      50% { opacity: 0.8; transform: translateY(-6px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-12px) scale(1.3); }
+    }
+    @keyframes hustler-fidget {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      25% { transform: translateY(-2px) rotate(-1deg); }
+      75% { transform: translateY(-1px) rotate(1deg); }
+    }
+    @keyframes sweat-drip {
+      0% { opacity: 0; transform: translateY(-2px); }
+      50% { opacity: 1; transform: translateY(3px); }
+      100% { opacity: 0; transform: translateY(8px); }
+    }
+    @keyframes boxers-shiver {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      15% { transform: translate(-1.5px, 0.8px) rotate(-1deg); }
+      30% { transform: translate(1.5px, -0.8px) rotate(1deg); }
+      45% { transform: translate(-1.2px, -0.6px) rotate(-0.8deg); }
+      60% { transform: translate(1.2px, 0.6px) rotate(0.8deg); }
+      75% { transform: translate(-1.5px, 0.8px) rotate(-1deg); }
+      90% { transform: translate(1.5px, -0.8px) rotate(1deg); }
+    }
+    @keyframes heart-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .anim-mogul { animation: mogul-swagger 3s ease-in-out infinite; }
+    .anim-pro { animation: pro-breathe 3.5s ease-in-out infinite; }
+    .anim-steam { animation: steam-rise 2s ease-out infinite; }
+    .anim-hustler { animation: hustler-fidget 2.5s ease-in-out infinite; }
+    .anim-sweat { animation: sweat-drip 1.6s ease-in infinite; }
+    .anim-boxers { animation: boxers-shiver 0.22s ease-in-out infinite; }
+    .anim-heart { animation: heart-pulse 1.2s ease-in-out infinite; }
   </style>
 </head>
 <body class="bg-[#08090D] text-[#E2E8F0] min-h-screen selection:bg-indigo-600 selection:text-white">
@@ -53,15 +93,15 @@
         </a>
         <div class="h-4 w-px bg-slate-800"></div>
         <h1 class="text-sm font-bold text-white flex items-center gap-2">
-          <span>Screen 04: Analytics & The Financial Avatar Persona</span>
-          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Finalized + New Feature</span>
+          <span>Stickman Financial Persona & Percentage Simulator</span>
+          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Percentage Based</span>
         </h1>
       </div>
 
       <div class="flex items-center gap-2">
         <span class="px-2.5 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1">
           <i data-lucide="check" class="w-3.5 h-3.5"></i>
-          <span>Option A Finalized</span>
+          <span>Animated SVG Stickman Active</span>
         </span>
       </div>
     </div>
@@ -70,99 +110,122 @@
   <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
 
     <!-- ======================================================== -->
-    <!-- INTERACTIVE AVATAR MASCOT SIMULATOR SECTION -->
+    <!-- PERCENTAGE SIMULATOR CONTROL BAR -->
     <!-- ======================================================== -->
     <div class="p-6 rounded-3xl bg-gradient-to-br from-[#111726] via-[#0E121B] to-[#0A0C14] border border-[#1E273B] space-y-6 shadow-2xl relative overflow-hidden">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold uppercase font-mono">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-            <span>Interactive Concept Simulation</span>
+            <span>Percentage-Based Budget Intelligence</span>
           </div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1.5">
-            The Financial Avatar Persona ("PaisaIQ Mascot")
+            The Stickman Financial Persona
           </h2>
           <p class="text-xs sm:text-sm text-slate-400 mt-1">
-            Drag the budget slider below or tap any stage to see how the character's clothing and mood transforms based on your projected month-end balance!
+            Now 100% percentage-driven! Whether your monthly budget is ₹10k or ₹2 Lakhs, spending 50% puts him in a sharp suit; spending 130% leaves him in boxers!
           </p>
         </div>
 
-        <!-- 4 Quick State Buttons -->
+        <!-- 4 Quick Stage Jump Buttons -->
         <div class="flex items-center gap-1.5 bg-[#080A0F] p-1.5 rounded-2xl border border-[#1A2131] flex-wrap">
-          <button onclick="setAvatarStage(1)" class="px-3 py-1.5 rounded-xl bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
-            <span>🎩</span> The Mogul
+          <button onclick="setPercentSpent(50)" class="px-3 py-1.5 rounded-xl bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span>🎩</span> 50% Spent (Suit)
           </button>
-          <button onclick="setAvatarStage(2)" class="px-3 py-1.5 rounded-xl bg-teal-600/20 text-teal-300 hover:bg-teal-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
-            <span>👔</span> The Pro
+          <button onclick="setPercentSpent(80)" class="px-3 py-1.5 rounded-xl bg-teal-600/20 text-teal-300 hover:bg-teal-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span>👔</span> 80% Spent (Shirt)
           </button>
-          <button onclick="setAvatarStage(3)" class="px-3 py-1.5 rounded-xl bg-amber-600/20 text-amber-300 hover:bg-amber-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
-            <span>👕</span> The Hustler
+          <button onclick="setPercentSpent(105)" class="px-3 py-1.5 rounded-xl bg-amber-600/20 text-amber-300 hover:bg-amber-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span>👕</span> 105% Spent (T-Shirt)
           </button>
-          <button onclick="setAvatarStage(4)" class="px-3 py-1.5 rounded-xl bg-rose-600/20 text-rose-300 hover:bg-rose-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
-            <span>🩳</span> In Boxers
+          <button onclick="setPercentSpent(135)" class="px-3 py-1.5 rounded-xl bg-rose-600/20 text-rose-300 hover:bg-rose-600/30 text-xs font-bold transition-all flex items-center gap-1.5">
+            <span>🩳</span> 135% Spent (Boxers)
           </button>
         </div>
       </div>
 
-      <!-- Live Budget Slider -->
-      <div class="p-4 rounded-2xl bg-[#080A0F]/80 border border-[#161D2B] space-y-2 max-w-xl">
-        <div class="flex justify-between items-center text-xs">
-          <span class="text-slate-400 font-medium">Projected Month-End Variance vs Target:</span>
-          <span id="slider-readout" class="font-mono-num font-bold text-emerald-400 text-sm">+₹35,000.00 (Surplus)</span>
+      <!-- Interactive Inputs: Budget Amount + Spend Slider -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+        <!-- Monthly Budget Input -->
+        <div class="md:col-span-4 p-4 rounded-2xl bg-[#080A0F]/80 border border-[#161D2B] space-y-1.5">
+          <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            Your Monthly Budget (₹)
+          </label>
+          <div class="flex items-center gap-2">
+            <span class="text-base font-bold text-slate-400 font-mono">₹</span>
+            <input 
+              id="budget-input" 
+              type="number" 
+              value="10000" 
+              step="1000"
+              oninput="recalculate()"
+              class="w-full bg-[#101420] border border-[#1F273D] text-white font-mono font-bold text-sm px-3 py-1.5 rounded-xl focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+          <span class="text-[10px] text-slate-500 block">Try entering ₹10,000 or ₹50,000</span>
         </div>
-        <input 
-          id="budget-slider" 
-          type="range" 
-          min="-40000" 
-          max="40000" 
-          step="2500" 
-          value="35000" 
-          oninput="handleSliderChange(this.value)"
-          class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-        />
-        <div class="flex justify-between text-[10px] font-mono text-slate-500">
-          <span class="text-rose-400 font-bold">-₹40k (Deep Deficit)</span>
-          <span class="text-teal-400">₹0 (Target Met)</span>
-          <span class="text-emerald-400 font-bold">+₹40k (Huge Surplus)</span>
+
+        <!-- Spend Percentage Slider -->
+        <div class="md:col-span-8 p-4 rounded-2xl bg-[#080A0F]/80 border border-[#161D2B] space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-400 font-medium">Month-End Spend Pace:</span>
+            <div class="flex items-center gap-2 font-mono">
+              <span id="spend-amount-calc" class="text-slate-300 font-bold">₹5,000 spent</span>
+              <span id="percent-badge" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold text-xs">
+                50% of budget (50% Saved!)
+              </span>
+            </div>
+          </div>
+          <input 
+            id="spend-slider" 
+            type="range" 
+            min="10" 
+            max="160" 
+            step="1" 
+            value="50" 
+            oninput="handleSliderChange(this.value)"
+            class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+          />
+          <div class="flex justify-between text-[10px] font-mono text-slate-500">
+            <span class="text-emerald-400">&lt;65% Spent (Mogul Suit)</span>
+            <span class="text-teal-400">65-95% (Smart Shirt)</span>
+            <span class="text-amber-400">96-115% (T-Shirt & Joggers)</span>
+            <span class="text-rose-400">&gt;115% (Boxers)</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- SIDE BY SIDE: AVATAR CARD PREVIEW & LIVE ANALYTICS VIEW -->
+    <!-- SIDE BY SIDE: STICKMAN ART SHOWCASE & LIVE MOBILE VIEW -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start justify-items-center">
 
-      <!-- LEFT: DYNAMIC AVATAR CARD INSPECTION -->
+      <!-- LEFT: ANIMATED SVG STICKMAN CARD -->
       <div class="w-full max-w-[440px] space-y-4">
         <div class="flex items-center justify-between px-2">
           <h3 class="text-sm font-bold text-white flex items-center gap-2">
-            <span>Mascot Card Widget</span>
-            <span class="text-[10px] font-mono text-slate-400">Dynamic Card</span>
+            <span>Animated Stickman Canvas</span>
+            <span class="text-[10px] font-mono text-slate-400">Pure SVG + Idle CSS</span>
           </h3>
-          <span id="card-stage-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          <span id="stickman-stage-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
             Stage 1: The Mogul
           </span>
         </div>
 
-        <!-- The Mascot Card -->
-        <div id="mascot-display-card" class="p-6 rounded-3xl bg-gradient-to-b from-[#0F1E19] to-[#0A1210] border border-emerald-500/40 space-y-5 avatar-glow-rich transition-all duration-300">
+        <!-- The Stickman Card -->
+        <div id="stickman-card" class="p-6 rounded-3xl bg-gradient-to-b from-[#0F1E19] to-[#0A1210] border border-emerald-500/40 space-y-5 transition-all duration-300 shadow-2xl">
           
-          <!-- Character Stage Graphic Container -->
-          <div class="relative w-full h-56 rounded-2xl bg-[#06100E] border border-emerald-900/40 flex flex-col items-center justify-center overflow-hidden p-4">
+          <!-- Animated SVG Graphic Stage -->
+          <div class="relative w-full h-64 rounded-2xl bg-[#06100E] border border-emerald-900/40 flex items-center justify-center overflow-hidden p-2">
             
-            <!-- Dynamic Character SVG & Emoji Composition -->
-            <div id="character-graphic" class="text-center space-y-2 transform transition-all duration-300 scale-100">
-              <div id="character-icon" class="text-7xl filter drop-shadow-xl animate-bounce" style="animation-duration: 2s;">
-                🎩
-              </div>
-              <div class="text-5xl">
-                🤵🏻‍♂️
-              </div>
+            <!-- SVG Container for Stickman -->
+            <div id="stickman-svg-wrapper" class="w-48 h-56 flex items-center justify-center anim-mogul">
+              <!-- DYNAMIC STICKMAN SVG WILL BE INJECTED HERE -->
             </div>
 
-            <!-- Glowing Ambient Badge -->
+            <!-- Outfit & Mood Floating Tag -->
             <div class="absolute bottom-3 left-4 right-4 flex justify-between items-center text-xs font-mono">
-              <span id="outfit-tag" class="px-2.5 py-1 rounded-xl bg-black/60 backdrop-blur-md text-emerald-300 border border-emerald-500/30 font-bold">
-                Tailored Tuxedo & Bow Tie
+              <span id="outfit-tag" class="px-2.5 py-1 rounded-xl bg-black/70 backdrop-blur-md text-emerald-300 border border-emerald-500/30 font-bold">
+                Tailored Suit & Bow Tie
               </span>
               <span id="mood-tag" class="text-emerald-400 font-bold flex items-center gap-1">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Wealth Wizard
@@ -170,43 +233,45 @@
             </div>
           </div>
 
-          <!-- Quip & Financial Context -->
+          <!-- Quip & Status Text -->
           <div class="space-y-1.5">
-            <h4 id="mascot-title" class="text-base font-extrabold text-white">
+            <h4 id="stickman-title" class="text-base font-extrabold text-white">
               "Looking lavish, financial wizard!"
             </h4>
-            <p id="mascot-desc" class="text-xs text-slate-300 leading-relaxed">
-              Your projected month-end balance is tracking <strong class="text-emerald-300">+₹35,000 above your savings threshold</strong>. You have full license to enjoy dinner at that fine dining place tonight.
+            <p id="stickman-desc" class="text-xs text-slate-300 leading-relaxed">
+              You are projected to spend only <strong class="text-emerald-300">50% of your budget</strong>, banking an incredible <strong class="text-emerald-300">50% savings rate</strong>! Suit and cane well earned.
             </p>
           </div>
 
           <!-- Micro Progress Bar -->
           <div class="pt-3 border-t border-emerald-900/30 space-y-1">
             <div class="flex justify-between text-[11px] font-mono">
-              <span class="text-slate-400">Budget Health Index:</span>
-              <span id="health-index-val" class="text-emerald-300 font-bold">142% of Goal</span>
+              <span class="text-slate-400">Monthly Budget Spent:</span>
+              <span id="health-index-val" class="text-emerald-300 font-bold">50% / 100%</span>
             </div>
             <div class="w-full h-2 bg-[#06100E] rounded-full overflow-hidden border border-emerald-900/30">
-              <div id="health-bar-fill" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style="width: 100%;"></div>
+              <div id="health-bar-fill" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500" style="width: 50%;"></div>
             </div>
           </div>
         </div>
 
-        <!-- Design Spec Notes -->
-        <div class="p-4 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-2 text-xs text-slate-400">
-          <span class="font-bold text-white block">How This Integrates with Version 2.0:</span>
-          <p>• Powered by <code>app/services/analytics.py</code> projected month-end velocity endpoint.</p>
-          <p>• Relocated <code>TimeTravelCard.tsx</code> sliders immediately below this mascot, allowing users to play "what if" simulations and see the mascot dress up or strip down in real-time!</p>
+        <!-- Technical Specification Note -->
+        <div class="p-4 rounded-2xl bg-[#0D1017] border border-[#1A2131] space-y-1.5 text-xs text-slate-400">
+          <span class="font-bold text-white block">Stickman Animation Specifications:</span>
+          <p>• <strong>The Mogul</strong>: Subtle rhythmic swagger sway & cane tap (<code>@keyframes mogul-swagger</code>).</p>
+          <p>• <strong>The Pro</strong>: Calm breathing + animated rising coffee steam (<code>@keyframes steam-rise</code>).</p>
+          <p>• <strong>The Hustler</strong>: Nervous fidgeting + animated temple sweat drop (<code>@keyframes sweat-drip</code>).</p>
+          <p>• <strong>In Boxers</strong>: High-frequency shivering & knocked knees (<code>@keyframes boxers-shiver</code>).</p>
         </div>
       </div>
 
 
-      <!-- RIGHT: LIVE PHONE MOCKUP SHOWING PLACEMENT IN ANALYTICS -->
+      <!-- RIGHT: MOBILE VIEW WITH EMBEDDED STICKMAN WIDGET -->
       <div class="w-full max-w-[390px] space-y-4">
         <div class="flex items-center justify-between px-2">
           <h3 class="text-sm font-bold text-white flex items-center gap-2">
             <span>In-App Mobile View</span>
-            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Final Option A Layout</span>
+            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Analytics Screen</span>
           </h3>
           <span class="text-xs text-slate-500 font-mono">iPhone 15 Pro</span>
         </div>
@@ -222,29 +287,29 @@
                 <span class="text-[10px] uppercase font-bold text-[#8EB69B]">Intelligence</span>
                 <h2 class="text-base font-bold text-white">August Analytics</h2>
               </div>
-              <span class="px-2 py-0.5 rounded-lg bg-[#0B2B26] border border-[#235347] text-[10px] text-emerald-400 font-mono">August 2026</span>
+              <span class="px-2 py-0.5 rounded-lg bg-[#0B2B26] border border-[#235347] text-[10px] text-emerald-400 font-mono">Live Budget Pace</span>
             </div>
 
-            <!-- 1. The Mascot Persona Widget Embedded In Feed -->
-            <div id="phone-mascot-widget" class="p-3.5 rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border border-emerald-500/30 flex items-center gap-3 shadow-md">
-              <div id="phone-mascot-avatar" class="w-12 h-12 rounded-xl bg-[#163832] border border-emerald-500/40 flex items-center justify-center text-2xl flex-shrink-0">
-                🤵🏻‍♂️
+            <!-- Stickman Mascot Widget in Mobile Feed -->
+            <div id="phone-mascot-card" class="p-3.5 rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border border-emerald-500/30 flex items-center gap-3 shadow-md">
+              <div id="phone-stickman-mini" class="w-14 h-14 rounded-xl bg-[#06100E] border border-emerald-500/40 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <!-- Mini Stickman -->
               </div>
               <div class="space-y-0.5 flex-1 min-w-0">
                 <div class="flex items-center justify-between">
-                  <span id="phone-mascot-label" class="text-xs font-bold text-emerald-300 truncate">The Mogul (+₹35k)</span>
-                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600/40 font-mono">Surplus</span>
+                  <span id="phone-mascot-label" class="text-xs font-bold text-emerald-300 truncate">The Mogul (50% Spent)</span>
+                  <span id="phone-mascot-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600/40 font-mono">50% Saved!</span>
                 </div>
                 <p id="phone-mascot-quip" class="text-[10px] text-[#8EB69B] line-clamp-2">
-                  "Suit and tie active. You are beating your monthly budget with ease."
+                  "Suit and cane active. Banking massive savings this month!"
                 </p>
               </div>
             </div>
 
-            <!-- 2. Finalized Option A Recharts Donut -->
+            <!-- Category Donut (Finalized Option A) -->
             <div class="p-4 rounded-2xl bg-[#0B2B26] border border-[#235347] flex flex-col items-center relative shadow-sm">
               <span class="text-[10px] uppercase font-bold text-[#8EB69B]">Category Breakdown</span>
-              <div class="relative w-36 h-36 flex items-center justify-center my-2">
+              <div class="relative w-32 h-32 flex items-center justify-center my-2">
                 <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="38" stroke="#163832" stroke-width="11" fill="none" />
                   <circle cx="50" cy="50" r="38" stroke="#10B981" stroke-width="11" fill="none" stroke-dasharray="238.7" stroke-dashoffset="95" stroke-linecap="round" />
@@ -252,39 +317,28 @@
                   <circle cx="50" cy="50" r="38" stroke="#EC4899" stroke-width="11" fill="none" stroke-dasharray="238.7" stroke-dashoffset="220" stroke-linecap="round" />
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="text-[9px] text-[#8EB69B]">Food & Dining</span>
-                  <span class="text-sm font-extrabold text-white font-mono-num">₹14,500</span>
-                  <span class="text-[8px] text-emerald-400 font-bold">38% total</span>
+                  <span class="text-[8px] text-[#8EB69B]">Food & Dining</span>
+                  <span class="text-xs font-extrabold text-white font-mono-num">₹2,450</span>
+                  <span class="text-[8px] text-emerald-400 font-bold">49%</span>
                 </div>
               </div>
-              <p class="text-[9px] text-[#8EB69B]">Tap slice to open Top-5 Largest Spends</p>
+              <p class="text-[9px] text-[#8EB69B]">Tap slice to inspect largest expenses</p>
             </div>
 
-            <!-- 3. Relocated Time-Travel Burn Simulator (Moved from Home per Decision 3A) -->
+            <!-- Relocated Time-Travel Burn Simulator (Option 3A) -->
             <div class="p-3.5 rounded-2xl bg-[#0B2B26] border border-[#235347] space-y-2">
               <div class="flex justify-between items-center text-xs">
                 <span class="font-bold text-white flex items-center gap-1.5">
                   <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
                   Predictive Burn Simulator
                 </span>
-                <span class="text-[10px] font-mono text-[#8EB69B]">Time-Travel</span>
+                <span class="text-[10px] font-mono text-[#8EB69B]">31-Day Horizon</span>
               </div>
-              <p class="text-[10px] text-[#8EB69B]">Forecast balance at month end based on current ₹1,556/day burn velocity.</p>
-            </div>
-
-            <!-- 4. Month-over-Month Velocity Card -->
-            <div class="p-3 rounded-2xl bg-[#0B2B26] border border-[#163832] flex items-center justify-between">
-              <div>
-                <span class="text-[10px] uppercase font-bold text-[#8EB69B] block">Daily Burn Velocity</span>
-                <span class="text-xs font-bold text-white font-mono-num">₹1,556.00 / day</span>
-              </div>
-              <span class="px-2 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-[10px] font-mono font-bold">
-                -12% vs July
-              </span>
+              <p class="text-[10px] text-[#8EB69B]">Adjust daily budget to see how it affects your Stickman's outfit at month end!</p>
             </div>
           </div>
 
-          <!-- Bottom Navigation Bar -->
+          <!-- Bottom Nav -->
           <div class="h-16 bg-[#051F20]/95 border-t border-[#235347] flex items-center justify-around px-4 z-50">
             <div class="flex flex-col items-center text-[#8EB69B]"><i data-lucide="home" class="w-4 h-4"></i><span class="text-[9px] mt-0.5">Overview</span></div>
             <div class="flex flex-col items-center text-[#8EB69B]"><i data-lucide="inbox" class="w-4 h-4"></i><span class="text-[9px] mt-0.5">Review</span></div>
@@ -301,131 +355,334 @@
   <script>
     lucide.createIcons();
 
+    // ==========================================
+    // STICKMAN SVG GENERATORS FOR EACH STAGE
+    // ==========================================
+
+    function getStickmanSvg(stage) {
+      if (stage === 1) {
+        // STAGE 1: THE MOGUL (SUIT, BOW TIE, TOP HAT, CANE)
+        return `
+          <svg viewBox="0 0 200 240" class="w-full h-full">
+            <!-- Shadow -->
+            <ellipse cx="100" cy="225" rx="35" ry="6" fill="rgba(0,0,0,0.5)" />
+
+            <!-- Stick Head & Monocle -->
+            <circle cx="100" cy="55" r="18" fill="#F8FAFC" stroke="#0F172A" stroke-width="2.5" />
+            <!-- Monocle (Gold) -->
+            <circle cx="106" cy="52" r="6" fill="none" stroke="#F59E0B" stroke-width="2" />
+            <path d="M112 55 Q118 68 112 80" fill="none" stroke="#F59E0B" stroke-width="1.2" stroke-dasharray="2 1" />
+            <!-- Smug Smile & Eye -->
+            <circle cx="94" cy="52" r="2" fill="#0F172A" />
+            <path d="M93 62 Q100 68 107 61" fill="none" stroke="#0F172A" stroke-width="2" stroke-linecap="round" />
+
+            <!-- Top Hat -->
+            <rect x="80" y="22" width="40" height="24" rx="2" fill="#0F172A" stroke="#334155" stroke-width="1.5" />
+            <rect x="70" y="44" width="60" height="5" rx="2" fill="#0F172A" />
+            <rect x="80" y="40" width="40" height="4" fill="#F59E0B" /> <!-- Gold band -->
+
+            <!-- Torso & Tuxedo Jacket -->
+            <line x1="100" y1="73" x2="100" y2="145" stroke="#0F172A" stroke-width="3.5" />
+            <!-- White Shirt V-shape -->
+            <polygon points="100,78 92,105 108,105" fill="#FFFFFF" />
+            <!-- Gold Bow Tie -->
+            <polygon points="94,76 106,82 94,82 106,76" fill="#F59E0B" />
+            <!-- Black Tailored Tuxedo Jacket Polygons -->
+            <polygon points="92,76 80,125 96,128 98,90" fill="#0F172A" />
+            <polygon points="108,76 120,125 104,128 102,90" fill="#0F172A" />
+
+            <!-- Left Arm Resting on Hip -->
+            <path d="M92 82 L75 105 L88 120" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- Right Arm Holding Walking Cane -->
+            <path d="M108 82 L130 102 L132 120" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" />
+            <!-- Gold Handled Cane -->
+            <path d="M128 116 Q135 110 140 118 L138 222" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" />
+
+            <!-- Tailored Black Suit Trousers & Legs -->
+            <line x1="100" y1="145" x2="88" y2="215" stroke="#0F172A" stroke-width="4.5" stroke-linecap="round" />
+            <line x1="100" y1="145" x2="114" y2="215" stroke="#0F172A" stroke-width="4.5" stroke-linecap="round" />
+            <!-- Polished Dress Shoes -->
+            <ellipse cx="84" cy="218" rx="8" ry="4" fill="#000000" />
+            <ellipse cx="118" cy="218" rx="8" ry="4" fill="#000000" />
+          </svg>
+        `;
+      } else if (stage === 2) {
+        // STAGE 2: THE PRO (CRISP BUTTON-DOWN SHIRT, CHINOS, COFFEE MUG)
+        return `
+          <svg viewBox="0 0 200 240" class="w-full h-full">
+            <ellipse cx="100" cy="225" rx="35" ry="6" fill="rgba(0,0,0,0.5)" />
+
+            <!-- Stick Head -->
+            <circle cx="100" cy="55" r="18" fill="#F8FAFC" stroke="#0F172A" stroke-width="2.5" />
+            <!-- Neat Hair Swoop -->
+            <path d="M85 45 Q100 35 115 48" fill="none" stroke="#334155" stroke-width="3" stroke-linecap="round" />
+            <!-- Confident Smile & Eyes -->
+            <circle cx="94" cy="53" r="2" fill="#0F172A" />
+            <circle cx="106" cy="53" r="2" fill="#0F172A" />
+            <path d="M95 62 Q100 66 105 62" fill="none" stroke="#0F172A" stroke-width="2" stroke-linecap="round" />
+
+            <!-- Crisp Oxford Shirt (Light Blue / Teal) -->
+            <polygon points="88,75 112,75 114,138 86,138" fill="#38BDF8" rx="4" />
+            <line x1="100" y1="75" x2="100" y2="138" stroke="#0284C7" stroke-width="1.5" />
+            <!-- Collar -->
+            <polygon points="94,74 100,82 90,82" fill="#E0F2FE" />
+            <polygon points="106,74 100,82 110,82" fill="#E0F2FE" />
+
+            <!-- Left Arm Hanging Relaxed -->
+            <path d="M88 78 L74 110 L76 135" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" />
+
+            <!-- Right Arm Holding Coffee Mug -->
+            <path d="M112 78 L126 102 L132 108" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" />
+            <!-- Coffee Mug -->
+            <rect x="130" y="100" width="14" height="18" rx="2" fill="#F8FAFC" stroke="#0F172A" stroke-width="1.5" />
+            <path d="M144 104 Q148 109 144 114" fill="none" stroke="#0F172A" stroke-width="1.5" />
+            <!-- Animated Steam Lines -->
+            <path d="M134 96 Q132 90 135 84" fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-linecap="round" class="anim-steam" />
+            <path d="M140 96 Q142 90 139 84" fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-linecap="round" class="anim-steam" style="animation-delay: 0.8s;" />
+
+            <!-- Tailored Chinos (Navy/Slate) -->
+            <line x1="100" y1="138" x2="90" y2="215" stroke="#1E293B" stroke-width="4.5" stroke-linecap="round" />
+            <line x1="100" y1="138" x2="110" y2="215" stroke="#1E293B" stroke-width="4.5" stroke-linecap="round" />
+            <ellipse cx="87" cy="218" rx="7" ry="3.5" fill="#475569" />
+            <ellipse cx="113" cy="218" rx="7" ry="3.5" fill="#475569" />
+          </svg>
+        `;
+      } else if (stage === 3) {
+        // STAGE 3: THE HUSTLER (SLOUCHY T-SHIRT, JOGGERS, SWEAT DROP)
+        return `
+          <svg viewBox="0 0 200 240" class="w-full h-full">
+            <ellipse cx="100" cy="225" rx="35" ry="6" fill="rgba(0,0,0,0.5)" />
+
+            <!-- Stick Head (Slightly tilted) -->
+            <circle cx="100" cy="55" r="18" fill="#F8FAFC" stroke="#0F172A" stroke-width="2.5" />
+            <!-- Anxious Eyes & Wavy Mouth -->
+            <circle cx="93" cy="53" r="2.5" fill="#0F172A" />
+            <circle cx="105" cy="53" r="2.5" fill="#0F172A" />
+            <path d="M93 63 Q97 59 101 63 Q105 59 108 63" fill="none" stroke="#0F172A" stroke-width="2" stroke-linecap="round" />
+            <!-- Animated Sweat Drop -->
+            <path d="M116 46 Q118 52 116 55 Q113 52 116 46" fill="#38BDF8" class="anim-sweat" />
+
+            <!-- Baggy Oversized Grey T-Shirt -->
+            <polygon points="84,74 116,74 120,138 80,138" fill="#64748B" rx="6" />
+            <text x="92" y="105" font-size="8" font-family="monospace" fill="#CBD5E1" font-weight="bold">SWIGGY?</text>
+
+            <!-- Slouching Arms -->
+            <path d="M84 78 L68 112 L72 135" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" />
+            <!-- Scratching Head Arm -->
+            <path d="M116 78 L128 95 L118 65" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- Baggy Joggers / Sweatpants -->
+            <line x1="100" y1="138" x2="90" y2="214" stroke="#334155" stroke-width="5.5" stroke-linecap="round" />
+            <line x1="100" y1="138" x2="110" y2="214" stroke="#334155" stroke-width="5.5" stroke-linecap="round" />
+            <!-- White Sneakers -->
+            <ellipse cx="87" cy="217" rx="8" ry="4" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1" />
+            <ellipse cx="113" cy="217" rx="8" ry="4" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1" />
+          </svg>
+        `;
+      } else {
+        // STAGE 4: IN BOXERS (BARE STICK CHEST, HEART BOXERS, SHIVERING)
+        return `
+          <svg viewBox="0 0 200 240" class="w-full h-full">
+            <ellipse cx="100" cy="225" rx="35" ry="6" fill="rgba(0,0,0,0.5)" />
+
+            <!-- Stick Head (Panicked) -->
+            <circle cx="100" cy="55" r="18" fill="#F8FAFC" stroke="#EF4444" stroke-width="2.5" />
+            <!-- Huge Wide Panicked Eyes -->
+            <circle cx="93" cy="51" r="4.5" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+            <circle cx="93" cy="51" r="2" fill="#EF4444" />
+            <circle cx="107" cy="51" r="4.5" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+            <circle cx="107" cy="51" r="2" fill="#EF4444" />
+            <!-- Wide Open Shouting Mouth -->
+            <ellipse cx="100" cy="64" rx="4.5" ry="5.5" fill="#EF4444" stroke="#0F172A" stroke-width="1.5" />
+
+            <!-- Bare Stick Torso with Exposed Stick Ribs -->
+            <line x1="100" y1="73" x2="100" y2="140" stroke="#0F172A" stroke-width="3" />
+            <line x1="93" y1="95" x2="107" y2="95" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" />
+            <line x1="94" y1="105" x2="106" y2="105" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" />
+            <line x1="95" y1="115" x2="105" y2="115" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" />
+
+            <!-- Shivering Arms with Hands Clutched to Head/Cheeks -->
+            <path d="M100 76 L78 90 L85 64" fill="none" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M100 76 L122 90 L115 64" fill="none" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- Heart-Patterned Boxer Shorts -->
+            <rect x="85" y="138" width="30" height="26" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="2" />
+            <!-- Little Red Hearts on Boxers -->
+            <text x="88" y="152" font-size="7" fill="#EF4444" class="anim-heart">♥</text>
+            <text x="104" y="152" font-size="7" fill="#EF4444" class="anim-heart">♥</text>
+            <text x="96" y="160" font-size="7" fill="#EF4444" class="anim-heart">♥</text>
+
+            <!-- Knock-Kneed Shivering Stick Legs (Bare Feet) -->
+            <!-- Knees touching at center -->
+            <path d="M92 164 L98 188 L90 216" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" />
+            <path d="M108 164 L102 188 L110 216" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" />
+            <!-- Shivering lines around legs -->
+            <path d="M84 185 L80 188 L84 191" fill="none" stroke="#EF4444" stroke-width="1" />
+            <path d="M116 185 L120 188 L116 191" fill="none" stroke="#EF4444" stroke-width="1" />
+
+            <!-- Bare Feet (Toes) -->
+            <circle cx="88" cy="218" r="3" fill="#0F172A" />
+            <circle cx="112" cy="218" r="3" fill="#0F172A" />
+          </svg>
+        `;
+      }
+    }
+
+    // ==========================================
+    // PERCENTAGE CALCULATION & STAGE DISPATCHER
+    // ==========================================
+
     const STAGES = {
       1: {
+        id: 1,
         name: "The Mogul",
-        outfit: "Tailored Tuxedo & Bow Tie",
-        icon: "🎩",
-        avatar: "🤵🏻‍♂️",
+        outfit: "Tailored Tuxedo & Top Hat",
         title: '"Looking lavish, financial wizard!"',
-        desc: "Your projected month-end balance is tracking +₹35,000 above your savings threshold. You have full license to enjoy dinner at that fine dining place tonight.",
         mood: "Wealth Wizard",
+        animClass: "anim-mogul",
         glow: "avatar-glow-rich",
         cardBg: "from-[#0F1E19] to-[#0A1210]",
         border: "border-emerald-500/40",
         badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
         barColor: "from-emerald-500 to-teal-400",
-        barWidth: "100%",
-        healthText: "142% of Goal",
-        phoneQuip: '"Suit and tie active. You are beating your monthly budget with ease."'
+        phoneQuip: '"Suit and cane active. Banking massive savings this month!"'
       },
       2: {
+        id: 2,
         name: "The Pro",
         outfit: "Crisp Oxford Shirt & Chinos",
-        icon: "☕",
-        avatar: "👨🏻‍💼",
         title: '"Steady, balanced, and sharp."',
-        desc: "Projected month-end balance is right on track with your target budget (+₹4,500 buffer). Perfectly poised.",
         mood: "On Track",
+        animClass: "anim-pro",
         glow: "avatar-glow-pro",
         cardBg: "from-[#0B1A1E] to-[#081114]",
         border: "border-teal-500/40",
         badgeColor: "bg-teal-500/20 text-teal-300 border-teal-500/30",
         barColor: "from-teal-500 to-cyan-400",
-        barWidth: "95%",
-        healthText: "98% of Goal",
-        phoneQuip: '"Looking sharp in shirt and pants. Budget is well disciplined."'
+        phoneQuip: '"Looking sharp in shirt and pants. Budget well disciplined."'
       },
       3: {
+        id: 3,
         name: "The Hustler",
-        outfit: "Grey T-Shirt & Joggers",
-        icon: "👟",
-        avatar: "🧍🏻‍♂️",
+        outfit: "Slouchy T-Shirt & Joggers",
         title: '"Comfort mode active — budget tightening."',
-        desc: "Spending velocity is tracking -₹8,500 over your planned allowance. Time to swap food delivery apps for home cooking!",
         mood: "Elevated Burn",
+        animClass: "anim-hustler",
         glow: "avatar-glow-hustle",
         cardBg: "from-[#1E170A] to-[#120E06]",
         border: "border-amber-500/40",
         badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30",
         barColor: "from-amber-500 to-orange-400",
-        barWidth: "72%",
-        healthText: "72% of Goal",
         phoneQuip: '"Down to T-shirt and track pants. Moderate burn warning."'
       },
       4: {
+        id: 4,
         name: "In Boxers (Broke)",
         outfit: "Heart-Patterned Boxers & Bare Chest",
-        icon: "🩳",
-        avatar: "🧎🏻‍♂️",
         title: '"RED ALERT: Down to your boxers!"',
-        desc: "Catastrophic burn rate! Projected month-end deficit of -₹32,000. All discretionary entertainment & dining must be frozen immediately.",
         mood: "Discretionary Freeze",
+        animClass: "anim-boxers",
         glow: "avatar-glow-boxers",
         cardBg: "from-[#1F0D0D] to-[#140808]",
         border: "border-rose-500/50",
         badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
         barColor: "from-rose-500 to-red-600",
-        barWidth: "25%",
-        healthText: "25% (Critical)",
         phoneQuip: '"Down to boxers! Cease all Swiggy orders and discretionary spends."'
       }
     };
 
-    function setAvatarStage(stageNum) {
-      const s = STAGES[stageNum];
-      if (!s) return;
+    function recalculate() {
+      const budget = parseFloat(document.getElementById('budget-input').value) || 10000;
+      const percent = parseInt(document.getElementById('spend-slider').value, 10);
+      const spentAmount = Math.round((budget * percent) / 100);
+      const savingsRate = Math.max(0, 100 - percent);
 
-      // Update main card
-      const card = document.getElementById('mascot-display-card');
-      card.className = `p-6 rounded-3xl bg-gradient-to-b ${s.cardBg} border ${s.border} space-y-5 ${s.glow} transition-all duration-300`;
-      
-      document.getElementById('card-stage-pill').textContent = `Stage ${stageNum}: ${s.name}`;
-      document.getElementById('card-stage-pill').className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${s.badgeColor}`;
-      
-      document.getElementById('character-icon').textContent = s.icon;
-      document.getElementById('character-graphic').children[1].textContent = s.avatar;
+      // Update text indicators
+      document.getElementById('spend-amount-calc').textContent = `₹${spentAmount.toLocaleString('en-IN')} spent`;
+      const badge = document.getElementById('percent-badge');
+
+      let stageNum = 1;
+      if (percent <= 65) {
+        stageNum = 1; // Suit (The Mogul)
+        badge.className = "px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold text-xs";
+        badge.textContent = `${percent}% of budget (${savingsRate}% Saved!)`;
+      } else if (percent <= 95) {
+        stageNum = 2; // Shirt (The Pro)
+        badge.className = "px-2 py-0.5 rounded-md bg-teal-500/20 text-teal-400 font-bold text-xs";
+        badge.textContent = `${percent}% of budget (${savingsRate}% Buffer)`;
+      } else if (percent <= 115) {
+        stageNum = 3; // T-Shirt (The Hustler)
+        badge.className = "px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-bold text-xs";
+        badge.textContent = `${percent}% of budget (+${percent - 100}% Over Target)`;
+      } else {
+        stageNum = 4; // Boxers (Broke)
+        badge.className = "px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-400 font-bold text-xs animate-pulse";
+        badge.textContent = `${percent}% of budget (Catastrophic Deficit!)`;
+      }
+
+      applyStage(stageNum, percent, spentAmount, budget, savingsRate);
+    }
+
+    function applyStage(stageNum, percent, spentAmount, budget, savingsRate) {
+      const s = STAGES[stageNum];
+
+      // Update Card Visuals
+      const card = document.getElementById('stickman-card');
+      card.className = `p-6 rounded-3xl bg-gradient-to-b ${s.cardBg} border ${s.border} space-y-5 transition-all duration-300 shadow-2xl`;
+
+      document.getElementById('stickman-stage-pill').textContent = `Stage ${stageNum}: ${s.name}`;
+      document.getElementById('stickman-stage-pill').className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${s.badgeColor}`;
+
+      // Inject Stickman SVG and apply idle animation class
+      const svgWrapper = document.getElementById('stickman-svg-wrapper');
+      svgWrapper.className = `w-48 h-56 flex items-center justify-center ${s.animClass}`;
+      svgWrapper.innerHTML = getStickmanSvg(stageNum);
+
       document.getElementById('outfit-tag').textContent = s.outfit;
       document.getElementById('mood-tag').innerHTML = `<i data-lucide="sparkles" class="w-3.5 h-3.5"></i> ${s.mood}`;
-      
-      document.getElementById('mascot-title').textContent = s.title;
-      document.getElementById('mascot-desc').innerHTML = s.desc;
-      document.getElementById('health-index-val').textContent = s.healthText;
-      
+      document.getElementById('stickman-title').textContent = s.title;
+
+      // Dynamic Context Description
+      let desc = '';
+      if (stageNum === 1) {
+        desc = `You are projected to spend only <strong class="text-emerald-300">${percent}% of your budget (₹${spentAmount.toLocaleString('en-IN')})</strong>, banking an incredible <strong class="text-emerald-300">${savingsRate}% savings rate</strong>! Suit, top hat, and gold cane active.`;
+      } else if (stageNum === 2) {
+        desc = `Projected spend is at <strong class="text-teal-300">${percent}% of budget (₹${spentAmount.toLocaleString('en-IN')})</strong>. Perfectly composed and balanced. Looking sharp in your button-down shirt.`;
+      } else if (stageNum === 3) {
+        desc = `Pacing at <strong class="text-amber-300">${percent}% of budget</strong> (+${percent - 100}% over planned pace). Time to cut back on discretionary Swiggy orders before you drop to the next tier!`;
+      } else {
+        desc = `Disaster pacing! Spending is tracking at <strong class="text-rose-400 font-bold">${percent}% of budget</strong>! You've burned through your entire ₹${budget.toLocaleString('en-IN')} allowance and then some. Down to your boxers!`;
+      }
+      document.getElementById('stickman-desc').innerHTML = desc;
+
+      document.getElementById('health-index-val').textContent = `${percent}% of Budget`;
       const bar = document.getElementById('health-bar-fill');
       bar.className = `h-full bg-gradient-to-r ${s.barColor} rounded-full transition-all duration-500`;
-      bar.style.width = s.barWidth;
+      bar.style.width = `${Math.min(100, percent)}%`;
 
-      // Update phone mockup widget
-      document.getElementById('phone-mascot-avatar').textContent = s.avatar;
-      document.getElementById('phone-mascot-label').textContent = `${s.name}`;
+      // Update In-App Mobile Mockup
+      const phoneMini = document.getElementById('phone-stickman-mini');
+      phoneMini.innerHTML = getStickmanSvg(stageNum);
+      document.getElementById('phone-mascot-label').textContent = `${s.name} (${percent}% Spent)`;
+      document.getElementById('phone-mascot-badge').textContent = stageNum <= 2 ? `${savingsRate}% Saved` : `Over Budget`;
+      document.getElementById('phone-mascot-badge').className = `text-[9px] px-1.5 py-0.5 rounded font-mono ${stageNum <= 2 ? 'bg-emerald-950 text-emerald-400 border border-emerald-600/40' : 'bg-rose-950 text-rose-400 border border-rose-600/40'}`;
       document.getElementById('phone-mascot-quip').textContent = s.phoneQuip;
 
       lucide.createIcons();
     }
 
     function handleSliderChange(val) {
-      const num = parseInt(val, 10);
-      const readout = document.getElementById('slider-readout');
-      
-      if (num >= 15000) {
-        readout.className = "font-mono-num font-bold text-emerald-400 text-sm";
-        readout.textContent = `+₹${num.toLocaleString('en-IN')} (Surplus)`;
-        setAvatarStage(1);
-      } else if (num >= 0) {
-        readout.className = "font-mono-num font-bold text-teal-400 text-sm";
-        readout.textContent = `+₹${num.toLocaleString('en-IN')} (On Target)`;
-        setAvatarStage(2);
-      } else if (num >= -15000) {
-        readout.className = "font-mono-num font-bold text-amber-400 text-sm";
-        readout.textContent = `-₹${Math.abs(num).toLocaleString('en-IN')} (Over Budget)`;
-        setAvatarStage(3);
-      } else {
-        readout.className = "font-mono-num font-bold text-rose-400 text-sm animate-pulse";
-        readout.textContent = `-₹${Math.abs(num).toLocaleString('en-IN')} (Severe Deficit)`;
-        setAvatarStage(4);
-      }
+      recalculate();
     }
+
+    function setPercentSpent(pct) {
+      document.getElementById('spend-slider').value = pct;
+      recalculate();
+    }
+
+    // Initial render on load
+    recalculate();
   </script>
 </body>
 </html>
