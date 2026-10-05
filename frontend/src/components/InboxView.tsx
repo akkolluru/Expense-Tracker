@@ -5,7 +5,10 @@ import {
   RotateCcw, 
   CheckCircle2, 
   MessageSquareText, 
-  ShieldCheck 
+  ShieldCheck,
+  Sparkles,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Transaction, ExpenseCategory } from '../types';
@@ -52,7 +55,7 @@ export const InboxView: React.FC<InboxViewProps> = ({
   ];
 
   return (
-    <div id="inbox-view" className="space-y-4 pb-20 animate-in fade-in duration-200">
+    <div id="inbox-view" className="space-y-4 pb-6 animate-in fade-in duration-200">
       {/* 1. Header & Protocol Banner */}
       <div className="space-y-3 pt-1">
         <div className="flex items-center justify-between">
@@ -60,7 +63,7 @@ export const InboxView: React.FC<InboxViewProps> = ({
             <span className="text-[11px] font-medium tracking-wide uppercase text-[#8EB69B]">
               Review Queue
             </span>
-            <h1 className="text-lg font-bold text-[#DAF1DE] tracking-tight">
+            <h1 className="text-xl font-bold text-[#DAF1DE] tracking-tight">
               Pending Classification ({unverifiedTransactions.length})
             </h1>
           </div>
@@ -68,7 +71,7 @@ export const InboxView: React.FC<InboxViewProps> = ({
           {unverifiedTransactions.length === 0 && (
             <button
               onClick={onResetInbox}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#163832] hover:bg-[#235347] border border-[#235347] text-[#DAF1DE] text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#163832] hover:bg-[#235347] border border-[#235347] text-[#DAF1DE] text-xs font-semibold transition-colors touch-press shadow-sm"
             >
               <RotateCcw size={13} />
               <span>Reset Demo</span>
@@ -77,14 +80,16 @@ export const InboxView: React.FC<InboxViewProps> = ({
         </div>
 
         {/* Clean Slate Protocol Banner as specified */}
-        <div className="p-3.5 rounded-2xl bg-[#163832] border border-[#235347] flex items-center gap-2.5 text-xs text-[#DAF1DE]">
-          <ShieldCheck size={16} className="text-[#DAF1DE] flex-shrink-0" />
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/40 via-[#163832] to-[#0B2B26] border border-amber-600/50 flex items-center gap-3 text-xs text-[#DAF1DE] shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]">
+          <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-300 flex-shrink-0">
+            <ShieldCheck size={18} />
+          </div>
           <div>
-            <span className="font-bold block">
+            <span className="font-bold block text-[#DAF1DE]">
               The 'Clean Slate' Protocol: Clear your queue for a dopamine hit.
             </span>
-            <span className="text-[11px] text-[#8EB69B]">
-              Review and categorize pending bank transactions to keep budgets accurate.
+            <span className="text-[11px] text-amber-200/90 mt-0.5 block">
+              Review and categorize pending bank transactions to keep budgets and ledger accurate.
             </span>
           </div>
         </div>
@@ -101,27 +106,27 @@ export const InboxView: React.FC<InboxViewProps> = ({
             transition={{ duration: 0.15 }}
             className="space-y-3.5"
           >
-            {/* Card Counter */}
-            <div className="flex items-center justify-between text-xs text-[#8EB69B] px-0.5">
-              <span>Card 1 of {unverifiedTransactions.length}</span>
-              <span className="font-mono text-[#DAF1DE]">
+            {/* Card Counter & Pending Total */}
+            <div className="flex items-center justify-between text-xs text-[#8EB69B] px-1">
+              <span className="font-medium">Card 1 of {unverifiedTransactions.length}</span>
+              <span className="font-mono text-amber-300 font-semibold">
                 Pending: ₹{unverifiedTransactions.reduce((a, b) => a + b.amount, 0).toLocaleString('en-IN')}
               </span>
             </div>
 
             {/* Active Transaction Review Card */}
-            <div className="rounded-2xl bg-[#0B2B26] border border-[#235347] p-5 space-y-4 shadow-sm">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#163832] border border-[#235347] flex items-center justify-center flex-shrink-0">
+            <div className="rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border border-[#235347] p-5 space-y-4 shadow-[0_4px_24px_-4px_rgba(35,83,71,0.35)]">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 rounded-xl bg-[#163832] border border-[#235347] flex items-center justify-center flex-shrink-0 shadow-sm">
                     <CategoryIcon 
                       category={selectedCategoryOverride || currentTx.aiSuggestedCategory || 'Uncategorized'} 
-                      size={18}
+                      size={20}
                       showBg={false}
                     />
                   </div>
-                  <div>
-                    <h2 className="text-base font-bold text-[#DAF1DE] leading-snug">{currentTx.merchant}</h2>
+                  <div className="min-w-0">
+                    <h2 className="text-base font-bold text-[#DAF1DE] leading-snug truncate">{currentTx.merchant}</h2>
                     <span className="text-xs text-[#8EB69B] font-mono block mt-0.5">
                       {currentTx.accountNumberMasked} • {currentTx.time}
                     </span>
@@ -133,19 +138,30 @@ export const InboxView: React.FC<InboxViewProps> = ({
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <span className="text-xl font-bold text-[#DAF1DE] font-mono-num">
+                <div className="text-right flex-shrink-0">
+                  <span className="text-2xl font-black text-rose-400 font-mono-num block">
                     -{formatINR(currentTx.amount)}
                   </span>
+                  <span className="text-[10px] text-[#8EB69B] uppercase font-mono tracking-wider">Debit</span>
                 </div>
               </div>
 
-              {/* Category Selection Preview */}
-              <div className="pt-3 border-t border-[#163832] flex items-center justify-between text-xs">
-                <span className="text-[#8EB69B]">Category:</span>
-                <span className="font-semibold text-[#DAF1DE]">
-                  {selectedCategoryOverride || currentTx.aiSuggestedCategory || 'Uncategorized'}
-                </span>
+              {/* AI Recommendation Pill & Active Category Preview */}
+              <div className="pt-3 border-t border-[#163832] flex items-center justify-between text-xs gap-2">
+                <div className="flex items-center gap-1.5 text-[#8EB69B]">
+                  <Sparkles size={13} className="text-amber-400" />
+                  <span>AI Suggestion:</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-[#DAF1DE] bg-[#163832] border border-[#235347] px-2.5 py-1 rounded-lg">
+                    {selectedCategoryOverride || currentTx.aiSuggestedCategory || 'Uncategorized'}
+                  </span>
+                  {currentTx.aiConfidence && (
+                    <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-600/40 px-1.5 py-0.5 rounded">
+                      {currentTx.aiConfidence}% match
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Raw Bank Alert SMS Snippet Dropdown */}
@@ -153,39 +169,52 @@ export const InboxView: React.FC<InboxViewProps> = ({
                 <div className="pt-1">
                   <button
                     onClick={() => setShowRawSms(!showRawSms)}
-                    className="flex items-center justify-between w-full text-[11px] text-[#8EB69B] hover:text-[#DAF1DE] transition-colors py-1"
+                    className="flex items-center justify-between w-full text-[11px] text-[#8EB69B] hover:text-[#DAF1DE] transition-colors py-1.5 px-2.5 rounded-lg bg-[#051F20]/50 border border-[#163832]"
                   >
                     <span className="flex items-center gap-1.5">
                       <MessageSquareText size={13} />
-                      Original Bank SMS
+                      Original Bank Alert SMS
                     </span>
-                    <span className="text-[#8EB69B]">{showRawSms ? 'Hide' : 'Show'}</span>
+                    <span className="flex items-center gap-1 text-[10px] font-mono">
+                      {showRawSms ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                      {showRawSms ? 'Hide' : 'Show'}
+                    </span>
                   </button>
 
                   {showRawSms && (
-                    <div className="p-2.5 rounded-xl bg-[#163832] border border-[#235347] text-[11px] font-mono text-[#DAF1DE] leading-relaxed mt-1 select-all">
+                    <div className="p-3 rounded-xl bg-[#051F20] border border-[#235347] text-[11px] font-mono text-[#DAF1DE] leading-relaxed mt-1.5 select-all">
                       "{currentTx.rawSmsSnippet}"
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Selective Learning Option */}
-              <label className="flex items-center gap-2 pt-2 text-xs text-[#8EB69B] cursor-pointer select-none">
+              {/* Selective Learning Option - Thumb-Friendly Row */}
+              <label 
+                htmlFor="checkbox-learn-merchant"
+                className="flex items-center gap-3 p-3 rounded-xl bg-[#163832]/60 hover:bg-[#163832] border border-[#235347] transition-colors cursor-pointer select-none touch-press"
+              >
                 <input
                   id="checkbox-learn-merchant"
                   type="checkbox"
                   checked={learnMerchant}
                   onChange={(e) => setLearnMerchant(e.target.checked)}
-                  className="rounded border-[#235347] bg-[#163832] text-[#8EB69B] focus:ring-0 w-3.5 h-3.5"
+                  className="rounded border-[#235347] bg-[#051F20] text-emerald-500 focus:ring-0 w-4 h-4 cursor-pointer"
                 />
-                <span>Remember for future transactions (Selective Learning)</span>
+                <div className="flex-1">
+                  <span className="text-xs font-semibold text-[#DAF1DE] block">
+                    Remember for future transactions (Selective Learning)
+                  </span>
+                  <span className="text-[10px] text-[#8EB69B] block mt-0.5">
+                    Saves pattern into Tier-2 merchant memory for 100% instant auto-categorization
+                  </span>
+                </div>
               </label>
             </div>
 
             {/* Category Selection Grid */}
             <div className="space-y-2 pt-1">
-              <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between text-xs px-1">
                 <span className="font-semibold uppercase tracking-wider text-[#8EB69B]">
                   Select Category
                 </span>
@@ -201,9 +230,9 @@ export const InboxView: React.FC<InboxViewProps> = ({
                     <button
                       key={cat}
                       onClick={() => setSelectedCategoryOverride(cat)}
-                      className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition-colors text-left ${
+                      className={`flex items-center gap-2 p-3 min-h-[46px] rounded-xl border text-xs font-medium transition-all text-left touch-press ${
                         isSelected
-                          ? 'bg-[#163832] border-[#8EB69B] text-[#DAF1DE] font-semibold'
+                          ? 'bg-[#163832] border-[#8EB69B] text-[#DAF1DE] font-bold shadow-sm'
                           : 'bg-[#0B2B26] border-[#235347] text-[#8EB69B] hover:bg-[#163832] hover:text-[#DAF1DE]'
                       }`}
                     >
@@ -212,54 +241,54 @@ export const InboxView: React.FC<InboxViewProps> = ({
                         style={{ backgroundColor: config.colorHex }}
                       />
                       <span className="truncate">{cat}</span>
-                      {isSelected && <Check size={13} className="ml-auto text-[#DAF1DE] flex-shrink-0" />}
+                      {isSelected && <Check size={14} className="ml-auto text-emerald-400 flex-shrink-0" />}
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons with 48px Touch Targets */}
             <div className="grid grid-cols-2 gap-2.5 pt-2">
               <button
                 id="btn-split-inbox"
                 onClick={() => onOpenSplitDrawer(currentTx)}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#0B2B26] hover:bg-[#163832] border border-[#235347] text-[#DAF1DE] text-xs font-semibold transition-colors"
+                className="flex items-center justify-center gap-2 min-h-[48px] py-2.5 px-3 rounded-xl bg-[#0B2B26] hover:bg-[#163832] active:bg-[#163832] border border-[#235347] text-[#DAF1DE] text-xs font-semibold transition-all touch-press shadow-sm"
               >
-                <Split size={14} className="text-[#8EB69B]" />
+                <Split size={15} className="text-[#8EB69B]" />
                 <span>Split Bill</span>
               </button>
 
               <button
                 id="btn-confirm-verify"
                 onClick={() => handleQuickConfirm()}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#DAF1DE] hover:bg-white text-[#051F20] text-xs font-bold transition-colors shadow-sm"
+                className="flex items-center justify-center gap-2 min-h-[48px] py-2.5 px-3 rounded-xl bg-[#DAF1DE] hover:bg-white active:bg-white text-[#051F20] text-sm font-bold transition-all shadow-md touch-press"
               >
-                <CheckCircle2 size={14} />
+                <CheckCircle2 size={16} />
                 <span>Confirm</span>
               </button>
             </div>
           </motion.div>
         ) : (
           /* Inbox Zero State */
-          <div className="rounded-2xl bg-[#0B2B26] border border-[#235347] p-8 text-center space-y-3 shadow-sm">
-            <div className="w-12 h-12 rounded-xl bg-[#163832] border border-[#235347] flex items-center justify-center mx-auto text-[#DAF1DE]">
-              <ShieldCheck size={24} />
+          <div className="rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border border-[#235347] p-8 text-center space-y-4 shadow-[0_4px_24px_-4px_rgba(35,83,71,0.35)]">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-950/60 border border-emerald-600/40 flex items-center justify-center mx-auto text-emerald-400 shadow-sm">
+              <CheckCircle2 size={28} />
             </div>
 
-            <div>
-              <h2 className="text-base font-bold text-[#DAF1DE]">All Transactions Verified</h2>
-              <p className="text-xs text-[#8EB69B] max-w-xs mx-auto mt-1 leading-relaxed">
-                No pending SMS alerts waiting for review. All expenses are categorized.
+            <div className="space-y-1">
+              <h2 className="text-lg font-bold text-[#DAF1DE]">All Transactions Verified!</h2>
+              <p className="text-xs text-[#8EB69B] max-w-xs mx-auto leading-relaxed">
+                Zero pending items in review queue. Your ledger and spending analytics are fully up to date.
               </p>
             </div>
 
             <div className="pt-2">
               <button
                 onClick={onResetInbox}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#163832] hover:bg-[#235347] border border-[#235347] text-[#DAF1DE] text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#163832] hover:bg-[#235347] border border-[#235347] text-[#DAF1DE] text-xs font-semibold transition-colors touch-press shadow-sm"
               >
-                <RotateCcw size={13} />
+                <RotateCcw size={14} />
                 <span>Simulate Demo Alerts</span>
               </button>
             </div>
