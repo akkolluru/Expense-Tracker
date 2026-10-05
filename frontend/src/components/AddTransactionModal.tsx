@@ -245,46 +245,49 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-md rounded-2xl bg-[#0B2B26] border border-[#235347] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border-t sm:border border-[#235347] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] pb-[max(env(safe-area-inset-bottom),0.5rem)]">
+        {/* Mobile Top Drag Handle */}
+        <div className="w-12 h-1.5 bg-[#235347] rounded-full mx-auto my-2.5 sm:hidden flex-shrink-0" />
+
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#235347]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#235347]">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-bold text-[#DAF1DE]">Record Transaction</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#8EB69B] hover:text-[#DAF1DE] hover:bg-[#163832] transition-colors"
+            className="p-1.5 rounded-xl text-[#8EB69B] hover:text-[#DAF1DE] hover:bg-[#163832] transition-colors touch-press"
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Mode Switcher Tabs */}
-        <div className="flex p-2 bg-[#051F20] border-b border-[#235347] gap-1.5">
+        <div className="flex p-2 bg-[#051F20]/80 border-b border-[#235347] gap-2">
           <button
             type="button"
             onClick={() => setActiveTab('sms')}
-            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            className={`flex-1 min-h-[42px] py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 touch-press ${
               activeTab === 'sms'
-                ? 'bg-[#163832] text-[#DAF1DE] font-semibold border border-[#235347]'
+                ? 'bg-[#163832] text-[#DAF1DE] border border-[#235347] shadow-sm'
                 : 'text-[#8EB69B] hover:text-[#DAF1DE]'
             }`}
           >
-            <Scan size={13} />
+            <Scan size={14} />
             <span>Bank SMS</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('manual')}
-            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            className={`flex-1 min-h-[42px] py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 touch-press ${
               activeTab === 'manual'
-                ? 'bg-[#163832] text-[#DAF1DE] font-semibold border border-[#235347]'
+                ? 'bg-[#163832] text-[#DAF1DE] border border-[#235347] shadow-sm'
                 : 'text-[#8EB69B] hover:text-[#DAF1DE]'
             }`}
           >
-            <Wallet size={13} />
+            <Wallet size={14} />
             <span>Manual Form</span>
           </button>
         </div>
@@ -505,11 +508,12 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                 <label className="text-[11px] text-[#8EB69B] block mb-1">Amount (₹)</label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   id="manual-amount-input"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="e.g. 450"
-                  className="w-full p-2.5 rounded-xl bg-[#163832] border border-[#235347] text-sm font-bold font-mono text-[#DAF1DE] placeholder-[#8EB69B]/60 focus:outline-none focus:border-[#8EB69B]"
+                  className="w-full p-3 rounded-xl bg-[#163832] border border-[#235347] text-base font-bold font-mono text-[#DAF1DE] placeholder-[#8EB69B]/60 focus:outline-none focus:border-[#8EB69B]"
                 />
               </div>
 
@@ -570,11 +574,11 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-[#235347] flex items-center justify-end gap-2 bg-[#051F20]/60">
+        <div className="p-4 border-t border-[#235347] flex items-center justify-end gap-2 bg-[#051F20]/80">
           <button
             type="button"
             onClick={onClose}
-            className="px-3.5 py-2 rounded-xl text-xs font-medium text-[#8EB69B] hover:text-[#DAF1DE] hover:bg-[#163832] transition-colors"
+            className="px-4 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-[#8EB69B] hover:text-[#DAF1DE] hover:bg-[#163832] transition-colors touch-press"
           >
             Cancel
           </button>
@@ -585,9 +589,9 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               id="btn-save-parsed-sms"
               onClick={handleSaveParsedSms}
               disabled={!parsedPreview || !parsedPreview.amount || parseSyncTextMutation.isPending}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#DAF1DE] hover:bg-white disabled:opacity-40 text-[#051F20] text-xs font-bold transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-5 py-2.5 min-h-[44px] rounded-xl bg-[#DAF1DE] hover:bg-white active:bg-white disabled:opacity-40 text-[#051F20] text-xs font-bold transition-all shadow-md touch-press"
             >
-              <CheckCircle2 size={14} />
+              <CheckCircle2 size={15} />
               <span>Save Transaction</span>
             </button>
           ) : (
@@ -596,12 +600,12 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               id="btn-save-manual-tx"
               onClick={handleSaveManual}
               disabled={!amount || !merchant.trim() || createTransactionMutation.isPending}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#DAF1DE] hover:bg-white disabled:opacity-40 text-[#051F20] text-xs font-bold transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-5 py-2.5 min-h-[44px] rounded-xl bg-[#DAF1DE] hover:bg-white active:bg-white disabled:opacity-40 text-[#051F20] text-xs font-bold transition-all shadow-md touch-press"
             >
               {createTransactionMutation.isPending ? (
-                <Loader2 size={14} className="animate-spin text-[#051F20]" />
+                <Loader2 size={15} className="animate-spin text-[#051F20]" />
               ) : (
-                <Plus size={14} />
+                <Plus size={15} />
               )}
               <span>{createTransactionMutation.isPending ? 'Saving...' : 'Add Entry'}</span>
             </button>

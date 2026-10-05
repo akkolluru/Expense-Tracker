@@ -16,6 +16,7 @@ import { ExpensesView } from './components/ExpensesView';
 import { AnalyticsView } from './components/AnalyticsView';
 import { AddTransactionModal } from './components/AddTransactionModal';
 import { TransactionDetailDrawer } from './components/TransactionDetailDrawer';
+import { ToastContainer, ToastMessage, ToastType } from './components/Toast';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import {
   useTransactions,
@@ -44,6 +45,21 @@ export default function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [addModalInitialMode, setAddModalInitialMode] = useState<'manual' | 'sms'>('sms');
   const [selectedTxForDetail, setSelectedTxForDetail] = useState<Transaction | null>(null);
+
+  // In-App Toast Notifications
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  const showToast = (message: string, type: ToastType = 'success') => {
+    const id = `toast-${Date.now()}-${Math.random()}`;
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 3200);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   // Live API queries & mutations
   const transactionsQuery = useTransactions();
@@ -165,6 +181,8 @@ export default function App() {
         console.error('Failed to approve inbox item:', err);
       });
     }
+
+    showToast(`Categorized as ${assignedCategory}`);
   };
 
   const handleUpdateCategory = (txId: string, category: ExpenseCategory) => {
@@ -172,6 +190,7 @@ export default function App() {
     if (selectedTxForDetail && selectedTxForDetail.id === txId) {
       setSelectedTxForDetail(prev => prev ? { ...prev, category } : null);
     }
+    showToast(`Category updated to ${category}`);
   };
 
   const handleUpdateSplit = (txId: string, splits: SplitMember[]) => {
@@ -222,10 +241,13 @@ export default function App() {
         console.error('Failed to toggle peer split paid:', err);
       });
     }
+
+    showToast('Peer settlement status updated');
   };
 
   const handleDeleteTransaction = (txId: string) => {
     setTransactions(prev => prev.filter(tx => tx.id !== txId));
+    showToast('Transaction removed', 'info');
   };
 
   const handleAddTransaction = (newTxData: Partial<Transaction>) => {
@@ -257,6 +279,8 @@ export default function App() {
       }
       return [newTx, ...prev];
     });
+
+    showToast(`Recorded: ${newTx.merchant} (${formatINR(newTx.amount)})`);
   };
 
   const handleResetDemo = () => {
@@ -355,6 +379,9 @@ export default function App() {
           onTogglePeerSplitPaid={handleTogglePeerSplitPaid}
           onDeleteTransaction={handleDeleteTransaction}
         />
+
+        {/* In-App Toast Notification Stack */}
+        <ToastContainer toasts={toasts} onDismiss={removeToast} />
       </div>
     </div>
   );

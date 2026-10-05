@@ -125,19 +125,19 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
       <div 
-        className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-[#0B2B26] border border-[#235347] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border-t sm:border border-[#235347] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] pb-[max(env(safe-area-inset-bottom),0.5rem)]"
         data-testid="transaction-detail-drawer"
       >
-        {/* Top Handle for mobile */}
-        <div className="w-10 h-1 bg-[#235347] rounded-full mx-auto mt-2.5 sm:hidden" />
+        {/* Top Handle for mobile gestures */}
+        <div className="w-12 h-1.5 bg-[#235347] rounded-full mx-auto my-2.5 sm:hidden flex-shrink-0" />
 
         {/* Drawer Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#235347]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#163832] border border-[#235347] flex items-center justify-center flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#235347]">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-[#163832] border border-[#235347] flex items-center justify-center flex-shrink-0 shadow-sm">
               <CategoryIcon category={transaction.category} size={16} showBg={false} />
             </div>
-            <div>
+            <div className="min-w-0">
               <h2 className="text-sm font-bold text-[#DAF1DE] truncate max-w-[220px]">{transaction.merchant}</h2>
               <span className="text-[10px] text-[#8EB69B] font-mono">{transaction.date} • {transaction.time}</span>
             </div>
@@ -145,7 +145,7 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
           <button
             onClick={onClose}
             aria-label="Close drawer"
-            className="p-1.5 rounded-lg text-[#8EB69B] hover:text-[#DAF1DE] hover:bg-[#163832] transition-colors"
+            className="p-1.5 rounded-xl text-[#8EB69B] hover:text-[#DAF1DE] hover:bg-[#163832] transition-colors touch-press"
           >
             <X size={16} />
           </button>
@@ -154,11 +154,11 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
         {/* Drawer Content */}
         <div className="p-4 overflow-y-auto space-y-3.5 flex-1">
           {/* Big Amount Card */}
-          <div className="rounded-xl bg-[#163832] border border-[#235347] p-4 text-center">
-            <span className="text-[10px] text-[#8EB69B] uppercase tracking-wider">
+          <div className="rounded-2xl bg-gradient-to-b from-[#163832] to-[#0E2C26] border border-[#235347] p-4 text-center shadow-sm">
+            <span className="text-[10px] text-[#8EB69B] uppercase font-mono tracking-wider">
               {isCredit ? 'Income Received' : 'Amount Paid'}
             </span>
-            <div className={`text-2xl font-bold font-mono-num mt-0.5 ${isCredit ? 'text-[#8EB69B]' : 'text-[#DAF1DE]'}`}>
+            <div className={`text-2xl font-black font-mono-num mt-0.5 ${isCredit ? 'text-emerald-400' : 'text-[#DAF1DE]'}`}>
               {isCredit ? '+' : '-'}{formatINR(transaction.amount)}
             </div>
 
