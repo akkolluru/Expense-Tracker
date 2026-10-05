@@ -1,3 +1,4 @@
+import os
 from typing import Any
 
 from sqlalchemy import event
@@ -7,6 +8,9 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+
+_engine: AsyncEngine | None = None
+_session_factory: async_sessionmaker[AsyncSession] | None = None
 
 
 def init_sqlite_pragmas(engine: AsyncEngine) -> None:
@@ -27,3 +31,18 @@ def get_engine(database_url: str = "sqlite+aiosqlite:///expense_tracker.db") -> 
 
 def get_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
+
+def get_session_maker() -> async_sessionmaker[AsyncSession]:
+    global _engine, _session_factory
+    if _session_factory is None:
+        db_url = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///expense_tracker.db")
+        _engine = get_engine(db_url)
+        _session_factory = get_session_factory(_engine)
+    return _session_factory
+
+
+def reset_session_maker() -> None:
+    global _engine, _session_factory
+    _engine = None
+    _session_factory = None

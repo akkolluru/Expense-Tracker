@@ -3,21 +3,9 @@ import secrets
 from collections.abc import AsyncGenerator
 
 from fastapi import Header, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from expense_tracker.database import get_engine, get_session_factory
-
-_engine = None
-_session_factory = None
-
-
-def get_session_maker() -> async_sessionmaker[AsyncSession]:
-    global _engine, _session_factory
-    if _session_factory is None:
-        db_url = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///expense_tracker.db")
-        _engine = get_engine(db_url)
-        _session_factory = get_session_factory(_engine)
-    return _session_factory
+from expense_tracker.database import get_session_maker
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
