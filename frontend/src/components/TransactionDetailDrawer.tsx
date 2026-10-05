@@ -51,6 +51,22 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
     }
   }, [transaction?.id, transaction?.splitDetails]);
 
+  // Escape key listener to close drawer
+  useEffect(() => {
+    if (!transaction) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [transaction, onClose]);
+
   if (!transaction) return null;
 
   const isCredit = transaction.type === 'CREDIT';
@@ -64,11 +80,17 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
   const personalShare = Math.round((transaction.amount - peerSplitsTotal) * 100) / 100;
   const isOverallocated = personalShare < 0;
 
-  const handleCopyVpa = () => {
+  const handleCopyVpa = async () => {
     if (!transaction.upiVpa) return;
-    navigator.clipboard.writeText(transaction.upiVpa);
-    setCopiedVpa(true);
-    setTimeout(() => setCopiedVpa(false), 2000);
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(transaction.upiVpa);
+        setCopiedVpa(true);
+        setTimeout(() => setCopiedVpa(false), 2000);
+      }
+    } catch (err) {
+      console.warn('Failed to copy UPI ID:', err);
+    }
   };
 
   const handleAddSplitMember = () => {
@@ -123,7 +145,15 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <div 
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      data-testid="transaction-detail-backdrop"
+    >
       <div 
         className="w-full max-w-md rounded-t-3xl sm:rounded-2xl bg-gradient-to-b from-[#0B2B26] to-[#07201D] border-t sm:border border-[#235347] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] pb-[max(env(safe-area-inset-bottom),0.5rem)]"
         data-testid="transaction-detail-drawer"
@@ -370,21 +400,35 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
           </div>
         </div>
 
-        {/* Delete option */}
-        {onDeleteTransaction && (
-          <div className="p-3 border-t border-[#235347] bg-[#051F20]/40 flex justify-end">
-            <button
-              onClick={() => {
-                onDeleteTransaction(transaction.id);
-                onClose();
-              }}
-              className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-rose-500/10 transition-colors"
-            >
-              <Trash2 size={12} />
-              <span>Delete Entry</span>
-            </button>
-          </div>
-        )}
+        {/* Bottom Action Footer */}
+        <div className="p-3 border-t border-[#235347] bg-[#051F20]/60 space-y-2 flex-shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full py-2.5 rounded-xl bg-[#163832] hover:bg-[#235347] border border-[#235347] text-[#DAF1DE] font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 touch-press shadow-sm"
+            data-testid="done-return-button"
+          >
+            <Check size={14} />
+            <span>Done / Return to Review</span>
+          </button>
+
+          {/* Delete option */}
+          {onDeleteTransaction && (
+            <div className="flex justify-end pt-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteTransaction(transaction.id);
+                  onClose();
+                }}
+                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-rose-500/10 transition-colors touch-press"
+              >
+                <Trash2 size={12} />
+                <span>Delete Entry</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

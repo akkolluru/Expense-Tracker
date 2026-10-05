@@ -125,7 +125,8 @@ describe('InboxView Component', () => {
 
     // Verify accessible labels exist
     expect(reclassifyBtn?.getAttribute('aria-label')).toBe('Reclassify / Change Category');
-    expect(splitBtn?.getAttribute('aria-label')).toBe('Split Bill');
+    expect(splitBtn?.getAttribute('aria-label')).toBe('Split Bill with Friends');
+    expect(splitBtn?.getAttribute('title')).toBe('Split Bill with Friends');
     expect(confirmBtn?.getAttribute('aria-label')).toBe('Confirm AI Category');
 
     // Verify buttons are tactile symbols only (no text label inside per User Decision 2A)

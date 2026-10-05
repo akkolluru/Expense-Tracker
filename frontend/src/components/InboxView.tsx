@@ -9,7 +9,7 @@ import {
   ChevronDown,
   ChevronUp,
   X,
-  Zap,
+  Split,
 } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
 import type { PanInfo } from 'motion/react';
@@ -317,16 +317,16 @@ export const InboxView: React.FC<InboxViewProps> = ({
                 <X size={20} strokeWidth={2.5} />
               </button>
 
-              {/* Center Button: [ ⚡ ] Split Bill (44px circle, indigo accent) */}
+              {/* Center Button: [ ⑂ ] Split Bill (44px circle, indigo accent) */}
               <button
                 type="button"
                 id="btn-split-inbox"
-                aria-label="Split Bill"
-                title="Split Bill"
+                aria-label="Split Bill with Friends"
+                title="Split Bill with Friends"
                 onClick={() => onOpenSplitDrawer(currentTx)}
                 className="w-11 h-11 rounded-full bg-indigo-950/40 border border-indigo-600/40 text-indigo-400 hover:bg-indigo-900/50 active:scale-95 flex items-center justify-center transition-all touch-press shadow-sm"
               >
-                <Zap size={18} className="fill-indigo-400/20" />
+                <Split size={18} />
               </button>
 
               {/* Right Button: [ ✓ ] Confirm AI Category (52px circle, emerald accent with gentle aura pulse) */}

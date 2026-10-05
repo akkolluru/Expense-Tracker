@@ -179,4 +179,121 @@ describe('TransactionDetailDrawer Component', () => {
       ])
     );
   });
+
+  it('dismisses drawer when backdrop is clicked, but not when drawer card is clicked', () => {
+    const handleClose = vi.fn();
+    const root = createRoot(container);
+    act(() => {
+      root.render(
+        <TransactionDetailDrawer
+          transaction={mockTransaction}
+          onClose={handleClose}
+          onUpdateCategory={vi.fn()}
+          onUpdateSplit={vi.fn()}
+        />
+      );
+    });
+
+    const backdrop = container.querySelector<HTMLDivElement>('[data-testid="transaction-detail-backdrop"]');
+    const drawerCard = container.querySelector<HTMLDivElement>('[data-testid="transaction-detail-drawer"]');
+    expect(backdrop).not.toBeNull();
+    expect(drawerCard).not.toBeNull();
+
+    // Clicking drawer card itself should not dismiss the drawer
+    act(() => {
+      drawerCard?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    expect(handleClose).not.toHaveBeenCalled();
+
+    // Clicking outer backdrop should trigger onClose
+    act(() => {
+      backdrop?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('dismisses drawer when Escape key is pressed', () => {
+    const handleClose = vi.fn();
+    const root = createRoot(container);
+    act(() => {
+      root.render(
+        <TransactionDetailDrawer
+          transaction={mockTransaction}
+          onClose={handleClose}
+          onUpdateCategory={vi.fn()}
+          onUpdateSplit={vi.fn()}
+        />
+      );
+    });
+
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    });
+    expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('dismisses drawer when "Done / Return to Review" button is clicked', () => {
+    const handleClose = vi.fn();
+    const root = createRoot(container);
+    act(() => {
+      root.render(
+        <TransactionDetailDrawer
+          transaction={mockTransaction}
+          onClose={handleClose}
+          onUpdateCategory={vi.fn()}
+          onUpdateSplit={vi.fn()}
+        />
+      );
+    });
+
+    const doneBtn = container.querySelector<HTMLButtonElement>('[data-testid="done-return-button"]');
+    expect(doneBtn).not.toBeNull();
+
+    act(() => {
+      doneBtn?.click();
+    });
+
+    expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('handles copy VPA safely without throwing even if clipboard fails or is unavailable', async () => {
+    const handleClose = vi.fn();
+    const root = createRoot(container);
+    act(() => {
+      root.render(
+        <TransactionDetailDrawer
+          transaction={mockTransaction}
+          onClose={handleClose}
+          onUpdateCategory={vi.fn()}
+          onUpdateSplit={vi.fn()}
+        />
+      );
+    });
+
+    const copyBtn = container.querySelector<HTMLButtonElement>('button[title="Copy UPI ID"]');
+    expect(copyBtn).not.toBeNull();
+
+    const originalClipboard = navigator.clipboard;
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: vi.fn().mockRejectedValue(new Error('Permission denied')),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    await act(async () => {
+      copyBtn?.click();
+    });
+
+    expect(warnSpy).toHaveBeenCalledWith('Failed to copy UPI ID:', expect.any(Error));
+    warnSpy.mockRestore();
+
+    Object.defineProperty(navigator, 'clipboard', {
+      value: originalClipboard,
+      writable: true,
+      configurable: true,
+    });
+  });
 });
