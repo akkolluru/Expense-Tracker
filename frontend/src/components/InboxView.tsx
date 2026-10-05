@@ -15,7 +15,7 @@ import { CATEGORIES_CONFIG } from '../data/mockData';
 
 interface InboxViewProps {
   unverifiedTransactions: Transaction[];
-  onVerifyTransaction: (txId: string, assignedCategory: ExpenseCategory) => void;
+  onVerifyTransaction: (txId: string, assignedCategory: ExpenseCategory, learnMerchant?: boolean) => void;
   onOpenSplitDrawer: (tx: Transaction) => void;
   onResetInbox: () => void;
 }
@@ -28,13 +28,14 @@ export const InboxView: React.FC<InboxViewProps> = ({
 }) => {
   const [selectedCategoryOverride, setSelectedCategoryOverride] = useState<ExpenseCategory | null>(null);
   const [showRawSms, setShowRawSms] = useState<boolean>(false);
+  const [learnMerchant, setLearnMerchant] = useState<boolean>(true);
 
   const currentTx = unverifiedTransactions[0];
 
   const handleQuickConfirm = (categoryToUse?: ExpenseCategory) => {
     if (!currentTx) return;
     const finalCategory = categoryToUse || selectedCategoryOverride || currentTx.aiSuggestedCategory || 'Uncategorized';
-    onVerifyTransaction(currentTx.id, finalCategory);
+    onVerifyTransaction(currentTx.id, finalCategory, learnMerchant);
     setSelectedCategoryOverride(null);
     setShowRawSms(false);
   };
@@ -168,6 +169,18 @@ export const InboxView: React.FC<InboxViewProps> = ({
                   )}
                 </div>
               )}
+
+              {/* Selective Learning Option */}
+              <label className="flex items-center gap-2 pt-2 text-xs text-[#8EB69B] cursor-pointer select-none">
+                <input
+                  id="checkbox-learn-merchant"
+                  type="checkbox"
+                  checked={learnMerchant}
+                  onChange={(e) => setLearnMerchant(e.target.checked)}
+                  className="rounded border-[#235347] bg-[#163832] text-[#8EB69B] focus:ring-0 w-3.5 h-3.5"
+                />
+                <span>Remember for future transactions (Selective Learning)</span>
+              </label>
             </div>
 
             {/* Category Selection Grid */}
