@@ -8,25 +8,62 @@
     --border-pine: #235347;
     --text-sage: #8EB69B;
     --text-celadon: #DAF1DE;
+
+    /* Semantic Tokens */
+    --emerald-income: #10B981;
+    --rose-expense: #F43F5E;
+    --amber-review: #F59E0B;
+    --cyan-transfer: #06B6D4;
   }
 
-  body {
+  html, body {
     font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
     background-color: #051F20;
     color: #DAF1DE;
     overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   
   .font-mono-num {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-feature-settings: 'tnum' on, 'zero' on;
   }
+
+  /* Prevent iOS automatic zoom on focus while maintaining styling */
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Tactile mobile tap effect */
+.touch-press {
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.1s ease;
+}
+.touch-press:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* Safe area utilities */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.h-dvh {
+  height: 100dvh;
+}
+.min-h-dvh {
+  min-height: 100dvh;
 }
 
 /* Minimalist Forest/Sage Card & Surface styles */
 .clean-card {
   background-color: #0B2B26;
   border: 1px solid #235347;
+  box-shadow: 0 4px 20px -2px rgba(11, 43, 38, 0.4);
 }
 
 .clean-card-subtle {
@@ -40,7 +77,7 @@
   transition: all 0.15s ease-in-out;
 }
 
-.clean-card-interactive:hover {
+.clean-card-interactive:hover, .clean-card-interactive:active {
   background-color: #163832;
   border-color: #8EB69B;
 }

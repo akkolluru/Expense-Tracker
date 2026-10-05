@@ -34,6 +34,8 @@ flowchart TD
     T09 --> T12["12 — Production Hardening & Schedulers"]
     
     T10 --> T11["11 — PaisaIQ Screens Live Binding"]
+    T11 --> T11b["11b — Mobile-First UI/UX Refinement"]
+    T11b --> T12["12 — Production Hardening & Schedulers"]
 ```
 
 ---
@@ -54,4 +56,5 @@ flowchart TD
 | **09** | [FastAPI REST Endpoints & Health](file:///Users/kaushik/Projects/Expense%20Tracker/docs/tickets/09-fastapi-rest-endpoints-and-health.md) | 03, 05, 07, 08 | Authenticated REST catalog, `/sync/parse-text`, `/system/health` |
 | **10** | [PaisaIQ API Client & Offline Queue](file:///Users/kaushik/Projects/Expense%20Tracker/docs/tickets/10-paisaiq-pwa-client-and-offline-queue.md) | 00, 09 | TanStack Query, IndexedDB offline buffer, UUID idempotency |
 | **11** | [PaisaIQ Screens Live Binding](file:///Users/kaushik/Projects/Expense%20Tracker/docs/tickets/11-paisaiq-screens-live-binding.md) | 10 | HomeView, InboxView triage, ExpensesView, Recharts AnalyticsView |
-| **12** | [Production Hardening & Schedulers](file:///Users/kaushik/Projects/Expense%20Tracker/docs/tickets/12-production-hardening-and-backups.md) | 09 | APScheduler (Gmail 15m, VACUUM 2 AM), ntfy alerts, Dockerfile |
+| **11b** | [Mobile-First UI/UX Refinement](file:///Users/kaushik/Projects/Expense%20Tracker/docs/tickets/11b-mobile-ui-ux-refinement.md) | 11 | Component-by-component polish, mobile safe areas, gestures, toast feedback |
+| **12** | [Production Hardening & Schedulers](file:///Users/kaushik/Projects/Expense%20Tracker/docs/tickets/12-production-hardening-and-backups.md) | 09, 11b | APScheduler (Gmail 15m, VACUUM 2 AM), ntfy alerts, Dockerfile |

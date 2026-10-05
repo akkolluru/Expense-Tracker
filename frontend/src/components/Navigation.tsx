@@ -56,22 +56,22 @@ export const Navigation: React.FC<NavigationProps> = ({
   return (
     <>
       {/* Top Application Bar */}
-      <header className="sticky top-0 z-40 w-full bg-[#051F20]/90 backdrop-blur-md border-b border-[#235347]/80 px-4 sm:px-6 py-2.5">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
+      <header className="sticky top-0 z-40 w-full bg-[#051F20]/95 backdrop-blur-md border-b border-[#235347]/80 px-4 sm:px-6 py-2.5 pt-[max(env(safe-area-inset-top),0.625rem)]">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 sm:gap-3">
           {/* Logo, Brand & Sync Status */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div 
               onClick={() => onSelectTab('home')}
-              className="flex items-center gap-2.5 cursor-pointer"
+              className="flex items-center gap-2 cursor-pointer touch-press"
             >
-              <div className="w-7 h-7 rounded-lg bg-[#163832] border border-[#235347] flex items-center justify-center text-[#DAF1DE] font-bold text-xs">
+              <div className="w-7 h-7 rounded-lg bg-[#163832] border border-[#235347] flex items-center justify-center text-[#DAF1DE] font-bold text-xs shadow-sm">
                 ₹
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <span className="text-sm font-bold text-[#DAF1DE] tracking-tight">
                   PaisaIQ
                 </span>
-                <span className="text-[10px] font-mono text-[#8EB69B] bg-[#163832] px-1.5 py-0.2 rounded border border-[#235347] font-medium">
+                <span className="text-[10px] font-mono text-[#8EB69B] bg-[#163832] px-1.5 py-0.5 rounded border border-[#235347] font-medium">
                   v2.0
                 </span>
               </div>
@@ -80,7 +80,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             {/* Connectivity / Sync Status Badge */}
             <button
               onClick={() => setShowStatusModal(true)}
-              className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-mono transition-all ${
+              className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-mono transition-all touch-press ${
                 isSyncing
                   ? 'bg-amber-950/40 border-amber-600/50 text-amber-300'
                   : connectionState === 'online'
@@ -116,8 +116,8 @@ export const Navigation: React.FC<NavigationProps> = ({
             </button>
           </div>
 
-          {/* Center Layout Mode Switcher */}
-          <div className="flex items-center p-0.5 rounded-lg bg-[#0B2B26] border border-[#235347]">
+          {/* Center Layout Mode Switcher (Visible on desktop/expanded views) */}
+          <div className="hidden sm:flex items-center p-0.5 rounded-lg bg-[#0B2B26] border border-[#235347]">
             <button
               onClick={() => onChangeLayoutMode('phone')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
@@ -128,7 +128,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               title="Mobile View"
             >
               <Smartphone size={13} />
-              <span className="hidden sm:inline">Mobile</span>
+              <span>Mobile</span>
             </button>
 
             <button
@@ -141,27 +141,27 @@ export const Navigation: React.FC<NavigationProps> = ({
               title="Expanded View"
             >
               <Monitor size={13} />
-              <span className="hidden sm:inline">Expanded</span>
+              <span>Expanded</span>
             </button>
           </div>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={() => onOpenAddModal('sms')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0B2B26] hover:bg-[#163832] text-[#8EB69B] hover:text-[#DAF1DE] border border-[#235347] text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#0B2B26] hover:bg-[#163832] text-[#8EB69B] hover:text-[#DAF1DE] border border-[#235347] text-xs font-medium transition-colors touch-press"
               title="Parse Bank Alert SMS"
             >
-              <Scan size={13} />
+              <Scan size={14} />
               <span className="hidden sm:inline">Parse SMS</span>
             </button>
 
             <button
               onClick={() => onOpenAddModal('manual')}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#DAF1DE] hover:bg-white text-[#051F20] text-xs font-bold transition-colors shadow-sm"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#DAF1DE] hover:bg-white text-[#051F20] text-xs font-bold transition-colors shadow-sm touch-press"
               title="Add Transaction"
             >
-              <Plus size={14} />
+              <Plus size={15} />
               <span className="hidden sm:inline">Add Entry</span>
             </button>
           </div>
@@ -272,8 +272,8 @@ export const Navigation: React.FC<NavigationProps> = ({
       )}
 
       {/* Bottom Mobile Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#051F20]/95 backdrop-blur-md border-t border-[#235347] px-3 py-1.5">
-        <div className="max-w-md mx-auto flex items-center justify-around">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#051F20]/95 backdrop-blur-md border-t border-[#235347] px-3 pt-1.5 pb-[max(env(safe-area-inset-bottom),0.75rem)] shadow-[0_-4px_24px_rgba(5,31,32,0.85)]">
+        <div className="max-w-[430px] mx-auto flex items-center justify-around">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = currentTab === tab.id;
@@ -283,21 +283,21 @@ export const Navigation: React.FC<NavigationProps> = ({
                 key={tab.id}
                 id={`tab-${tab.id}`}
                 onClick={() => onSelectTab(tab.id)}
-                className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-colors ${
+                className={`relative flex flex-col items-center justify-center min-h-[50px] min-w-[68px] py-1 px-3 rounded-xl transition-all touch-press ${
                   isActive
-                    ? 'text-[#DAF1DE] font-semibold bg-[#163832] border border-[#235347]'
+                    ? 'text-[#DAF1DE] font-semibold bg-[#163832] border border-[#235347] shadow-[0_0_14px_rgba(35,83,71,0.45)]'
                     : 'text-[#8EB69B] hover:text-[#DAF1DE]'
                 }`}
               >
                 <div className="relative">
-                  <Icon size={17} />
+                  <Icon size={18} />
                   {tab.badge !== undefined && tab.badge > 0 && (
-                    <span className="absolute -top-1.5 -right-2 min-w-3.5 h-3.5 px-1 rounded-full bg-[#8EB69B] text-[#051F20] text-[9px] font-extrabold flex items-center justify-center">
+                    <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-amber-950 text-[10px] font-black flex items-center justify-center shadow-sm animate-pulse">
                       {tab.badge}
                     </span>
                   )}
                 </div>
-                <span className="text-[10px] mt-0.5 tracking-tight">{tab.label}</span>
+                <span className="text-[11px] mt-1 font-medium tracking-tight">{tab.label}</span>
               </button>
             );
           })}

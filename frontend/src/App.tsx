@@ -313,8 +313,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#051F20] text-[#DAF1DE] flex flex-col items-center justify-start relative font-sans selection:bg-[#235347] selection:text-[#DAF1DE]">
-      <div className="relative z-10 w-full flex flex-col items-center min-h-screen">
+    <div className="min-h-[100dvh] bg-[#051F20] text-[#DAF1DE] flex flex-col items-center justify-start relative font-sans selection:bg-[#235347] selection:text-[#DAF1DE]">
+      <div className="relative z-10 w-full flex flex-col items-center min-h-[100dvh]">
         <Navigation
           currentTab={currentTab}
           onSelectTab={setCurrentTab}
@@ -326,11 +326,11 @@ export default function App() {
         />
 
         {/* Main Content Area */}
-        <main className="w-full flex-1 flex justify-center p-3 sm:p-5 md:p-6 z-10">
+        <main className="w-full flex-1 flex justify-center px-3 sm:px-4 pt-2 pb-24 sm:pb-28 z-10">
           <div 
             className={`w-full transition-all duration-200 ${
               layoutMode === 'phone'
-                ? 'max-w-[430px]' 
+                ? 'max-w-[430px] sm:rounded-3xl sm:border sm:border-[#235347]/30 sm:shadow-[0_0_50px_-12px_rgba(35,83,71,0.5)] sm:p-2 sm:bg-[#051F20]' 
                 : 'max-w-3xl'
             }`}
           >
