@@ -122,11 +122,16 @@ gantt
 
 ---
 
-### Phase 7: Hardening, Background Schedulers & Deployment
+### Phase 7: Hardening, Background Schedulers & Deployment (Completed)
 - **Ticket 7.1: Zero-Downtime Backups**
-  - Scheduled daily 2:00 AM `VACUUM INTO` backup worker.
+  - Scheduled daily 2:00 AM `VACUUM INTO` backup worker with 30-day retention rotation and SQLite write mutex locking (`expense_tracker/services/backup.py`).
 - **Ticket 7.2: Unified Push Notifications**
-  - `ntfy.sh` integration for inbox alerts and spending anomaly warnings.
-- **Ticket 7.3: Docker & Tailscale Packaging**
-  - Create production multi-stage `Dockerfile` and `docker-compose.yml`.
-  - Document zero-port-forwarding Tailscale setup.
+  - `ntfy.sh` integration for instant inbox alerts on `PENDING_REVIEW` transactions and daily 9:00 PM summary (`expense_tracker/services/notifications.py`).
+- **Ticket 7.3: Threaded Background Ingestion & Schedulers**
+  - 15-minute background Gmail poller running in non-blocking worker threads (`asyncio.to_thread`) with automatic staging and cross-channel UTR reconciliation (`expense_tracker/services/gmail_fetcher.py`).
+  - APScheduler lifecycle integration in FastAPI app (`expense_tracker/workers/scheduler.py`).
+- **Ticket 7.4: Docker, Tailscale & Laptop Deployment Packaging**
+  - Multi-stage production `Dockerfile` packaging FastAPI backend and pre-compiled PaisaIQ PWA static assets into a single lightweight image.
+  - Production `docker-compose.yml` with persistent volume mounts (`/data`, `/backups`) and healthcheck.
+  - Complete operations manual for running 24/7 headless on an old Linux laptop (`docs/DEPLOYMENT_GUIDE_LAPTOP.md`).
+
