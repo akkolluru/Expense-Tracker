@@ -23,11 +23,14 @@ import {
   useAnalyticsSummary,
   useCategories,
   useApproveInboxItem,
+  useSetPeerSplits,
+  useTogglePeerSplitPaid,
 } from './hooks/useExpenseApi';
 import {
   mapTransactionResponseToUi,
   mapInboxItemToUi,
   mapSummaryToCashFlow,
+  mapUiSplitsToPeerSplitDto,
 } from './utils/adapters';
 
 export default function App() {
@@ -47,6 +50,8 @@ export default function App() {
   const categoriesQuery = useCategories();
   const summaryQuery = useAnalyticsSummary('2026-08-01', '2026-08-31');
   const approveInboxMutation = useApproveInboxItem();
+  const setPeerSplitsMutation = useSetPeerSplits();
+  const togglePeerSplitPaidMutation = useTogglePeerSplitPaid();
 
   // Category ID <-> Name maps
   const categoryNameMap = useMemo<Record<number, string>>(() => {
@@ -181,6 +186,74 @@ export default function App() {
     if (selectedTxForDetail && selectedTxForDetail.id === txId) {
       setSelectedTxForDetail(prev => prev ? { ...prev, splitDetails: splits } : null);
     }
+
+    let numericId: number | null = null;
+    if (!isNaN(Number(txId))) {
+      numericId = Number(txId);
+    } else {
+      const match = txId.match(/^tx-(\d+)$/);
+      if (match) {
+        numericId = Number(match[1]);
+      }
+    }
+
+    if (numericId !== null && Number.isFinite(numericId)) {
+      setPeerSplitsMutation.mutateAsync({
+        txId: numericId,
+        splits: mapUiSplitsToPeerSplitDto(splits),
+      }).catch(err => {
+        console.error('Failed to set peer splits:', err);
+      });
+    }
+  };
+
+  const handleTogglePeerSplitPaid = (txId: string, peerSplitId: string | number) => {
+    setTransactions(prev => prev.map(tx => {
+      if (tx.id !== txId || !tx.splitDetails) return tx;
+      const updated = tx.splitDetails.map(m =>
+        String(m.id) === String(peerSplitId) ? { ...m, isPaid: !m.isPaid } : m
+      );
+      return { ...tx, splitDetails: updated };
+    }));
+
+    if (selectedTxForDetail && selectedTxForDetail.id === txId && selectedTxForDetail.splitDetails) {
+      setSelectedTxForDetail(prev => {
+        if (!prev || !prev.splitDetails) return prev;
+        const updated = prev.splitDetails.map(m =>
+          String(m.id) === String(peerSplitId) ? { ...m, isPaid: !m.isPaid } : m
+        );
+        return { ...prev, splitDetails: updated };
+      });
+    }
+
+    let numericTxId: number | null = null;
+    if (!isNaN(Number(txId))) {
+      numericTxId = Number(txId);
+    } else {
+      const match = txId.match(/^tx-(\d+)$/);
+      if (match) {
+        numericTxId = Number(match[1]);
+      }
+    }
+
+    let numericSplitId: number | null = null;
+    if (!isNaN(Number(peerSplitId))) {
+      numericSplitId = Number(peerSplitId);
+    } else {
+      const match = String(peerSplitId).match(/\d+/);
+      if (match) {
+        numericSplitId = Number(match[0]);
+      }
+    }
+
+    if (numericTxId !== null && Number.isFinite(numericTxId) && numericSplitId !== null && Number.isFinite(numericSplitId)) {
+      togglePeerSplitPaidMutation.mutateAsync({
+        txId: numericTxId,
+        peerSplitId: numericSplitId,
+      }).catch(err => {
+        console.error('Failed to toggle peer split paid:', err);
+      });
+    }
   };
 
   const handleDeleteTransaction = (txId: string) => {
@@ -301,6 +374,7 @@ export default function App() {
           onClose={() => setSelectedTxForDetail(null)}
           onUpdateCategory={handleUpdateCategory}
           onUpdateSplit={handleUpdateSplit}
+          onTogglePeerSplitPaid={handleTogglePeerSplitPaid}
           onDeleteTransaction={handleDeleteTransaction}
         />
       </div>

@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   X, 
   Split, 
   Copy, 
   Check, 
-  Trash2
+  Trash2,
+  Plus,
+  Clock,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { Transaction, ExpenseCategory, SplitMember } from '../types';
 import { formatINR, getPaymentMethodLabel } from '../utils/formatters';
@@ -16,6 +20,7 @@ interface TransactionDetailDrawerProps {
   onClose: () => void;
   onUpdateCategory: (txId: string, category: ExpenseCategory) => void;
   onUpdateSplit: (txId: string, splits: SplitMember[]) => void;
+  onTogglePeerSplitPaid?: (txId: string, peerSplitId: string | number) => void;
   onDeleteTransaction?: (txId: string) => void;
 }
 
@@ -24,22 +29,40 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
   onClose,
   onUpdateCategory,
   onUpdateSplit,
+  onTogglePeerSplitPaid,
   onDeleteTransaction,
 }) => {
   const [copiedVpa, setCopiedVpa] = useState<boolean>(false);
   const [isEditingSplit, setIsEditingSplit] = useState<boolean>(false);
-  const [splitMembers, setSplitMembers] = useState<SplitMember[]>(
-    transaction?.splitDetails || [
-      { id: '1', name: 'You', shareAmount: transaction ? transaction.amount / 2 : 0, isPaid: true },
-      { id: '2', name: 'Friend', upiId: 'friend@okhdfc', shareAmount: transaction ? transaction.amount / 2 : 0, isPaid: false }
-    ]
-  );
+  const [splitMembers, setSplitMembers] = useState<SplitMember[]>([]);
+
+  // Form state for adding/editing split members
   const [newMemberName, setNewMemberName] = useState<string>('');
+  const [newMemberUpi, setNewMemberUpi] = useState<string>('');
+  const [newMemberAmount, setNewMemberAmount] = useState<string>('');
+
+  // Synchronize local splitMembers when transaction prop updates
+  useEffect(() => {
+    if (transaction) {
+      setSplitMembers(transaction.splitDetails || []);
+      setNewMemberName('');
+      setNewMemberUpi('');
+      setNewMemberAmount('');
+    }
+  }, [transaction?.id, transaction?.splitDetails]);
 
   if (!transaction) return null;
 
   const isCredit = transaction.type === 'CREDIT';
   const methodMeta = getPaymentMethodLabel(transaction.paymentMethod);
+
+  // Compute splits sum and personal share
+  const peerSplitsTotal = useMemo(() => {
+    return splitMembers.reduce((sum, m) => sum + (Number(m.shareAmount) || 0), 0);
+  }, [splitMembers]);
+
+  const personalShare = Math.round((transaction.amount - peerSplitsTotal) * 100) / 100;
+  const isOverallocated = personalShare < 0;
 
   const handleCopyVpa = () => {
     if (!transaction.upiVpa) return;
@@ -50,32 +73,61 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
 
   const handleAddSplitMember = () => {
     if (!newMemberName.trim()) return;
-    const newMembers = [
-      ...splitMembers,
-      {
-        id: Date.now().toString(),
-        name: newMemberName.trim(),
-        upiId: `${newMemberName.toLowerCase().replace(/\s+/g, '')}@upi`,
-        shareAmount: 0,
-        isPaid: false
-      }
-    ];
-    const equalShare = parseFloat((transaction.amount / newMembers.length).toFixed(2));
-    const balanced = newMembers.map(m => ({ ...m, shareAmount: equalShare }));
-    setSplitMembers(balanced);
+
+    // Determine share amount: explicit input or remaining split share
+    let shareAmount = parseFloat(newMemberAmount);
+    if (isNaN(shareAmount) || shareAmount <= 0) {
+      const remaining = Math.max(0, transaction.amount - peerSplitsTotal);
+      shareAmount = remaining > 0 ? parseFloat(remaining.toFixed(2)) : 0;
+    }
+
+    const newMember: SplitMember = {
+      id: Date.now().toString(),
+      name: newMemberName.trim(),
+      upiId: newMemberUpi.trim() || undefined,
+      shareAmount,
+      isPaid: false,
+    };
+
+    const updated = [...splitMembers, newMember];
+    setSplitMembers(updated);
     setNewMemberName('');
-    onUpdateSplit(transaction.id, balanced);
+    setNewMemberUpi('');
+    setNewMemberAmount('');
+    onUpdateSplit(transaction.id, updated);
   };
 
-  const handleToggleMemberPaid = (memberId: string) => {
-    const updated = splitMembers.map(m => m.id === memberId ? { ...m, isPaid: !m.isPaid } : m);
+  const handleRemoveSplitMember = (memberId: string) => {
+    const updated = splitMembers.filter(m => m.id !== memberId);
     setSplitMembers(updated);
     onUpdateSplit(transaction.id, updated);
   };
 
+  const handleUpdateMemberAmount = (memberId: string, amountStr: string) => {
+    const val = parseFloat(amountStr) || 0;
+    const updated = splitMembers.map(m => m.id === memberId ? { ...m, shareAmount: val } : m);
+    setSplitMembers(updated);
+    onUpdateSplit(transaction.id, updated);
+  };
+
+  const handleToggleMemberPaid = (memberId: string) => {
+    const updated = splitMembers.map(m => 
+      m.id === memberId ? { ...m, isPaid: !m.isPaid } : m
+    );
+    setSplitMembers(updated);
+    onUpdateSplit(transaction.id, updated);
+
+    if (onTogglePeerSplitPaid) {
+      onTogglePeerSplitPaid(transaction.id, memberId);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-[#0B2B26] border border-[#235347] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <div 
+        className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-[#0B2B26] border border-[#235347] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        data-testid="transaction-detail-drawer"
+      >
         {/* Top Handle for mobile */}
         <div className="w-10 h-1 bg-[#235347] rounded-full mx-auto mt-2.5 sm:hidden" />
 
@@ -92,6 +144,7 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
           </div>
           <button
             onClick={onClose}
+            aria-label="Close drawer"
             className="p-1.5 rounded-lg text-[#8EB69B] hover:text-[#DAF1DE] hover:bg-[#163832] transition-colors"
           >
             <X size={16} />
@@ -154,67 +207,163 @@ export const TransactionDetailDrawer: React.FC<TransactionDetailDrawerProps> = (
             </select>
           </div>
 
-          {/* Split Bill Module */}
-          <div className="space-y-2 pt-1 border-t border-[#163832]">
+          {/* Peer Split Bill Module */}
+          <div className="space-y-2.5 pt-2 border-t border-[#163832]">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#DAF1DE] flex items-center gap-1.5">
-                <Split size={13} className="text-[#8EB69B]" />
-                Split Bill
+                <Split size={14} className="text-[#8EB69B]" />
+                Peer Splits & Settlement
               </span>
               <button
                 onClick={() => setIsEditingSplit(!isEditingSplit)}
-                className="text-[11px] text-[#8EB69B] hover:text-[#DAF1DE] font-medium"
+                className="text-[11px] text-[#8EB69B] hover:text-[#DAF1DE] font-medium underline-offset-2 hover:underline"
               >
-                {isEditingSplit ? 'Done' : 'Edit Split'}
+                {isEditingSplit ? 'Done Editing' : 'Edit Splits'}
               </button>
             </div>
 
-            <div className="space-y-1.5">
-              {splitMembers.map((member) => (
-                <div 
-                  key={member.id}
-                  onClick={() => handleToggleMemberPaid(member.id)}
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-[#163832] border border-[#235347] cursor-pointer hover:bg-[#235347]/50 text-xs transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] ${
-                      member.isPaid 
-                        ? 'bg-[#DAF1DE] border-[#DAF1DE] text-[#051F20] font-bold' 
-                        : 'border-[#235347] bg-[#0B2B26]'
-                    }`}>
-                      {member.isPaid && '✓'}
-                    </div>
-                    <div>
-                      <span className="font-medium text-[#DAF1DE] block">{member.name}</span>
-                      {member.upiId && <span className="text-[10px] text-[#8EB69B] font-mono">{member.upiId}</span>}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-mono-num font-semibold text-[#DAF1DE]">
-                      {formatINR(member.shareAmount)}
-                    </span>
-                    <span className={`text-[10px] block ${member.isPaid ? 'text-[#8EB69B]' : 'text-[#8EB69B]/60'}`}>
-                      {member.isPaid ? 'Settled' : 'Pending'}
-                    </span>
-                  </div>
+            {/* Personal Share Readout */}
+            <div className="p-3 rounded-xl bg-[#0B2B26] border border-[#235347] space-y-1.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[#8EB69B]">Your Personal Share</span>
+                <span className="font-bold font-mono-num text-[#DAF1DE]" data-testid="personal-share-amount">
+                  {formatINR(Math.max(0, personalShare))}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-[#8EB69B]">
+                <span>Peer Splits Total ({splitMembers.length})</span>
+                <span className="font-mono-num">{formatINR(peerSplitsTotal)}</span>
+              </div>
+
+              {isOverallocated && (
+                <div className="flex items-center gap-1.5 text-rose-300 text-[11px] pt-1 border-t border-rose-500/20">
+                  <AlertCircle size={12} className="flex-shrink-0" />
+                  <span>Peer splits exceed total expense amount by {formatINR(Math.abs(personalShare))}</span>
                 </div>
-              ))}
+              )}
             </div>
 
+            {/* Split Members List */}
+            {splitMembers.length > 0 ? (
+              <div className="space-y-1.5" data-testid="split-members-list">
+                {splitMembers.map((member) => (
+                  <div 
+                    key={member.id}
+                    className="p-2.5 rounded-xl bg-[#163832] border border-[#235347] flex items-center justify-between gap-2 text-xs"
+                    data-testid={`split-member-${member.id}`}
+                  >
+                    {/* Left: Member identity & Settlement status */}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <button
+                        onClick={() => handleToggleMemberPaid(member.id)}
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 ${
+                          member.isPaid
+                            ? 'bg-[#235347] text-[#DAF1DE] border border-[#8EB69B]'
+                            : 'bg-[#0B2B26] text-[#8EB69B]/50 border border-[#235347] hover:border-[#8EB69B]'
+                        }`}
+                        title={member.isPaid ? 'Mark as Pending' : 'Mark as Settled'}
+                        data-testid={`toggle-paid-${member.id}`}
+                      >
+                        {member.isPaid ? <CheckCircle2 size={15} /> : <Clock size={14} />}
+                      </button>
+
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-medium text-[#DAF1DE] truncate">{member.name}</span>
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${
+                            member.isPaid
+                              ? 'bg-[#235347] text-[#DAF1DE] border border-[#8EB69B]/40'
+                              : 'bg-[#0B2B26] text-[#8EB69B] border border-[#235347]'
+                          }`}>
+                            {member.isPaid ? 'Settled' : 'Pending'}
+                          </span>
+                        </div>
+                        {member.upiId && (
+                          <span className="text-[10px] text-[#8EB69B] font-mono block truncate">
+                            {member.upiId}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Right: Share Amount & Remove button */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {isEditingSplit ? (
+                        <div className="flex items-center gap-1">
+                          <span className="text-[11px] text-[#8EB69B]">₹</span>
+                          <input
+                            type="number"
+                            value={member.shareAmount}
+                            onChange={(e) => handleUpdateMemberAmount(member.id, e.target.value)}
+                            className="w-16 px-1.5 py-1 rounded bg-[#0B2B26] border border-[#235347] text-xs font-mono-num text-[#DAF1DE] text-right focus:outline-none focus:border-[#8EB69B]"
+                          />
+                          <button
+                            onClick={() => handleRemoveSplitMember(member.id)}
+                            className="p-1 text-[#8EB69B] hover:text-rose-400 transition-colors"
+                            title="Remove split member"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="text-right">
+                          <span className="font-mono-num font-bold text-[#DAF1DE] block">
+                            {formatINR(member.shareAmount)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-2 text-[11px] text-[#8EB69B]">
+                No peer splits yet. Add a friend below to split this transaction.
+              </div>
+            )}
+
+            {/* Add New Split Member Section */}
             {isEditingSplit && (
-              <div className="flex items-center gap-1.5 pt-1">
-                <input
-                  type="text"
-                  value={newMemberName}
-                  onChange={(e) => setNewMemberName(e.target.value)}
-                  placeholder="Add friend's name..."
-                  className="flex-1 p-2 rounded-xl bg-[#163832] border border-[#235347] text-xs text-[#DAF1DE] placeholder-[#8EB69B]/60 focus:outline-none"
-                />
+              <div className="p-3 rounded-xl bg-[#0B2B26] border border-[#235347] space-y-2 text-xs">
+                <span className="text-[10px] uppercase font-semibold text-[#8EB69B] tracking-wider block">
+                  Add Peer Split
+                </span>
+                <div className="space-y-1.5">
+                  <input
+                    type="text"
+                    value={newMemberName}
+                    onChange={(e) => setNewMemberName(e.target.value)}
+                    placeholder="Friend's name (e.g. Rahul)"
+                    className="w-full p-2 rounded-lg bg-[#163832] border border-[#235347] text-xs text-[#DAF1DE] placeholder-[#8EB69B]/60 focus:outline-none focus:border-[#8EB69B]"
+                    data-testid="new-split-name-input"
+                  />
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      value={newMemberUpi}
+                      onChange={(e) => setNewMemberUpi(e.target.value)}
+                      placeholder="UPI ID (optional, e.g. rahul@upi)"
+                      className="flex-1 p-2 rounded-lg bg-[#163832] border border-[#235347] text-xs text-[#DAF1DE] placeholder-[#8EB69B]/60 focus:outline-none focus:border-[#8EB69B]"
+                      data-testid="new-split-upi-input"
+                    />
+                    <input
+                      type="number"
+                      value={newMemberAmount}
+                      onChange={(e) => setNewMemberAmount(e.target.value)}
+                      placeholder={`₹${Math.max(0, personalShare)}`}
+                      className="w-24 p-2 rounded-lg bg-[#163832] border border-[#235347] text-xs font-mono-num text-[#DAF1DE] placeholder-[#8EB69B]/60 focus:outline-none focus:border-[#8EB69B]"
+                      data-testid="new-split-amount-input"
+                    />
+                  </div>
+                </div>
                 <button
                   onClick={handleAddSplitMember}
-                  className="px-3 py-2 rounded-xl bg-[#235347] hover:bg-[#8EB69B] hover:text-[#051F20] text-[#DAF1DE] text-xs font-semibold"
+                  disabled={!newMemberName.trim()}
+                  className="w-full py-2 rounded-lg bg-[#235347] hover:bg-[#8EB69B] hover:text-[#051F20] text-[#DAF1DE] text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1.5"
+                  data-testid="add-split-btn"
                 >
-                  Add
+                  <Plus size={13} />
+                  <span>Add Split Member</span>
                 </button>
               </div>
             )}
