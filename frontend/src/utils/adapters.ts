@@ -255,3 +255,25 @@ export function mapUiSplitsToPeerSplitDto(splits: SplitMember[]): PeerSplitItemD
     is_paid: Boolean(s?.isPaid),
   }));
 }
+
+/**
+ * Safely extracts a numeric ID from a string like "101" or "tx-101".
+ */
+export function parseNumericId(id: string | number | null | undefined): number | null {
+  if (id === null || id === undefined) {
+    return null;
+  }
+  if (typeof id === 'number') {
+    return Number.isFinite(id) ? id : null;
+  }
+  const str = String(id).trim();
+  if (!isNaN(Number(str))) {
+    return Number(str);
+  }
+  const match = str.match(/^tx-(\d+)$/);
+  if (match) {
+    return Number(match[1]);
+  }
+  return null;
+}
+

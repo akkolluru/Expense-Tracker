@@ -8,6 +8,7 @@ import {
   mapSummaryToCashFlow,
   mapCategoryBreakdownToUi,
   mapUiSplitsToPeerSplitDto,
+  parseNumericId,
 } from '../adapters';
 import {
   TransactionResponse,
@@ -325,4 +326,30 @@ describe('adapters utility functions', () => {
       expect(mapUiSplitsToPeerSplitDto(null as unknown as SplitMember[])).toEqual([]);
     });
   });
+
+  describe('parseNumericId', () => {
+    it('parses numbers directly', () => {
+      expect(parseNumericId(101)).toBe(101);
+      expect(parseNumericId(0)).toBe(0);
+    });
+
+    it('parses pure numeric strings', () => {
+      expect(parseNumericId('101')).toBe(101);
+      expect(parseNumericId('  42  ')).toBe(42);
+    });
+
+    it('parses tx-prefixed strings', () => {
+      expect(parseNumericId('tx-101')).toBe(101);
+      expect(parseNumericId('tx-9999')).toBe(9999);
+    });
+
+    it('returns null for non-numeric or invalid inputs', () => {
+      expect(parseNumericId(null)).toBeNull();
+      expect(parseNumericId(undefined)).toBeNull();
+      expect(parseNumericId('abc')).toBeNull();
+      expect(parseNumericId('tx-')).toBeNull();
+      expect(parseNumericId(NaN)).toBeNull();
+    });
+  });
 });
+

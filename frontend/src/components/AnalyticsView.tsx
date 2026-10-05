@@ -85,9 +85,28 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     ? categoryBreakdown.find(c => c.category === selectedCategory) || null 
     : null);
 
-  const pieTooltip = ({ active, payload }: any) => {
+interface PieTooltipPayload {
+  active?: boolean;
+  payload?: Array<{
+    payload: CategoryBreakdownPoint;
+  }>;
+}
+
+interface BarTooltipPayload {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      date: string;
+      dayLabel: string;
+      amount: number;
+      peakExpenseMerchant?: string;
+    };
+  }>;
+}
+
+  const pieTooltip = ({ active, payload }: PieTooltipPayload) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload as CategoryBreakdownPoint;
+      const data = payload[0].payload;
       return (
         <div className="rounded-xl bg-[#0B2B26] border border-[#235347] p-3 shadow-2xl space-y-1 min-w-[140px] pointer-events-none z-50">
           <div className="flex items-center gap-1.5">
@@ -111,7 +130,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     return null;
   };
 
-  const barTooltip = ({ active, payload }: any) => {
+  const barTooltip = ({ active, payload }: BarTooltipPayload) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

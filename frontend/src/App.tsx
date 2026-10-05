@@ -31,6 +31,7 @@ import {
   mapInboxItemToUi,
   mapSummaryToCashFlow,
   mapUiSplitsToPeerSplitDto,
+  parseNumericId,
 } from './utils/adapters';
 
 export default function App() {
@@ -150,17 +151,9 @@ export default function App() {
     }));
 
     // 2. Call backend mutation if numeric ID is present
-    let numericId: number | null = null;
-    if (!isNaN(Number(txId))) {
-      numericId = Number(txId);
-    } else {
-      const match = txId.match(/^tx-(\d+)$/);
-      if (match) {
-        numericId = Number(match[1]);
-      }
-    }
+    const numericId = parseNumericId(txId);
 
-    if (numericId !== null && Number.isFinite(numericId)) {
+    if (numericId !== null) {
       const catId = categoryIdMap[assignedCategory] || 1;
       approveInboxMutation.mutateAsync({
         txId: numericId,
@@ -187,17 +180,9 @@ export default function App() {
       setSelectedTxForDetail(prev => prev ? { ...prev, splitDetails: splits } : null);
     }
 
-    let numericId: number | null = null;
-    if (!isNaN(Number(txId))) {
-      numericId = Number(txId);
-    } else {
-      const match = txId.match(/^tx-(\d+)$/);
-      if (match) {
-        numericId = Number(match[1]);
-      }
-    }
+    const numericId = parseNumericId(txId);
 
-    if (numericId !== null && Number.isFinite(numericId)) {
+    if (numericId !== null) {
       setPeerSplitsMutation.mutateAsync({
         txId: numericId,
         splits: mapUiSplitsToPeerSplitDto(splits),
@@ -226,27 +211,10 @@ export default function App() {
       });
     }
 
-    let numericTxId: number | null = null;
-    if (!isNaN(Number(txId))) {
-      numericTxId = Number(txId);
-    } else {
-      const match = txId.match(/^tx-(\d+)$/);
-      if (match) {
-        numericTxId = Number(match[1]);
-      }
-    }
+    const numericTxId = parseNumericId(txId);
+    const numericSplitId = parseNumericId(peerSplitId);
 
-    let numericSplitId: number | null = null;
-    if (!isNaN(Number(peerSplitId))) {
-      numericSplitId = Number(peerSplitId);
-    } else {
-      const match = String(peerSplitId).match(/\d+/);
-      if (match) {
-        numericSplitId = Number(match[0]);
-      }
-    }
-
-    if (numericTxId !== null && Number.isFinite(numericTxId) && numericSplitId !== null && Number.isFinite(numericSplitId)) {
+    if (numericTxId !== null && numericSplitId !== null) {
       togglePeerSplitPaidMutation.mutateAsync({
         txId: numericTxId,
         peerSplitId: numericSplitId,
