@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AccountCreate(BaseModel):
@@ -29,7 +29,7 @@ class AccountResponse(BaseModel):
 
 class TransactionCreate(BaseModel):
     account_id: int
-    amount: Decimal
+    amount: Decimal = Field(..., gt=Decimal("0.00"), description="Amount must be strictly positive")
     merchant_name: str
     timestamp: datetime
     destination_account_id: int | None = None
@@ -77,7 +77,9 @@ class TransactionListResponse(BaseModel):
 
 class SplitItemDTO(BaseModel):
     category_id: int
-    amount: Decimal
+    amount: Decimal = Field(
+        ..., gt=Decimal("0.00"), description="Split amount must be strictly positive"
+    )
     note: str | None = None
 
 

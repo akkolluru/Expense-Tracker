@@ -95,13 +95,15 @@ class HybridLLMClient:
                 self.circuit_breaker.record_failure()
 
         # 2. Fallback to Gemini 2.0 Flash
-        gemini_url = (
-            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
-            f"?key={self.gemini_api_key}"
-        )
+        gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+        headers = {}
+        if self.gemini_api_key:
+            headers["x-goog-api-key"] = self.gemini_api_key
+
         async with httpx.AsyncClient() as client:
             resp = await client.post(
                 gemini_url,
+                headers=headers,
                 json={
                     "contents": [{"parts": [{"text": prompt + "\nCategorize this transaction."}]}],
                     "generationConfig": {

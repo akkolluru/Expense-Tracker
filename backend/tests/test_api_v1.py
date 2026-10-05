@@ -48,6 +48,30 @@ async def test_security_x_api_key(client):
 
 
 @pytest.mark.asyncio
+async def test_transaction_negative_amount_rejected(client):
+    payload = {
+        "account_id": 1,
+        "amount": "-500.00",
+        "merchant_name": "Invalid Merchant",
+        "timestamp": datetime.now(UTC).isoformat(),
+    }
+    res = await client.post("/api/v1/transactions", json=payload, headers=HEADERS)
+    assert res.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_transaction_zero_amount_rejected(client):
+    payload = {
+        "account_id": 1,
+        "amount": "0.00",
+        "merchant_name": "Zero Merchant",
+        "timestamp": datetime.now(UTC).isoformat(),
+    }
+    res = await client.post("/api/v1/transactions", json=payload, headers=HEADERS)
+    assert res.status_code == 422
+
+
+@pytest.mark.asyncio
 async def test_accounts_endpoints(client):
     payload = {
         "name": "HDFC Salary Account",
