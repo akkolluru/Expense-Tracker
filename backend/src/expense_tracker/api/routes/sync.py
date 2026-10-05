@@ -1,19 +1,38 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from expense_tracker.api.deps import get_db, verify_api_key
+from expense_tracker.api.deps import get_db, get_session_maker, verify_api_key
 from expense_tracker.api.schemas import (
+    SyncGmailResponse,
     SyncParseTextRequest,
     SyncParseTextResponse,
     TransactionResponse,
 )
 from expense_tracker.parsers.registry import BankParserRegistry
+from expense_tracker.services.gmail_fetcher import GmailFetcherService
 from expense_tracker.services.reconciliation import ReconciliationService
 from expense_tracker.services.staging import StagingService
 
 router = APIRouter(prefix="/sync", tags=["Sync"], dependencies=[Depends(verify_api_key)])
+
+
+async def _run_background_gmail_sync() -> None:
+    session_maker = get_session_maker()
+    async with session_maker() as session:
+        await GmailFetcherService.fetch_and_process_emails(session)
+
+
+@router.post("/gmail", response_model=SyncGmailResponse, status_code=status.HTTP_202_ACCEPTED)
+async def sync_gmail(background_tasks: BackgroundTasks) -> SyncGmailResponse:
+    """Triggers an immediate background Gmail polling run."""
+    background_tasks.add_task(_run_background_gmail_sync)
+    return SyncGmailResponse(
+        status="SYNC_STARTED",
+        message="Gmail poller initiated in background",
+    )
+
 
 
 @router.post("/parse-text", response_model=SyncParseTextResponse)
