@@ -42,6 +42,12 @@ self.addEventListener('activate', (event) => {
 // Fetch: Strategy depending on request type
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+
+  // Ignore non-GET requests (e.g. POST, PUT, DELETE)
+  if (request.method !== 'GET') {
+    return;
+  }
+
   const url = new URL(request.url);
 
   // 1. Never cache backend API calls - let network or offline queue handle API traffic
@@ -78,7 +84,7 @@ self.addEventListener('fetch', (event) => {
           // Asynchronously update cache in background
           fetch(request)
             .then((networkResponse) => {
-              if (networkResponse && networkResponse.status === 200) {
+              if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
                 const responseClone = networkResponse.clone();
                 caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
               }
