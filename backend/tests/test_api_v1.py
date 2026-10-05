@@ -3,11 +3,15 @@ from decimal import Decimal
 
 import pytest
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import select
 
 from expense_tracker.api.app import create_app
 from expense_tracker.models.account import Account
 from expense_tracker.models.category import Category
+from expense_tracker.models.rule import MerchantMemory
 from expense_tracker.models.transaction import Transaction
+from expense_tracker.parsers.base import DraftTransaction
+from expense_tracker.services.categorization import CategorizationService
 
 API_KEY = "test-api-key"
 HEADERS = {"X-API-Key": API_KEY}
@@ -269,6 +273,74 @@ async def test_inbox_and_approve_endpoint(client, async_session):
 
 
 @pytest.mark.asyncio
+async def test_inbox_approve_with_never_auto_classify(client, async_session):
+    account = Account(name="SBI Savings", institution="SBI", balance=Decimal("15000.00"), is_active=True)
+    cat_food = Category(name="Dinner", color="#EF4444")
+    async_session.add_all([account, cat_food])
+    await async_session.commit()
+    await async_session.refresh(account)
+    await async_session.refresh(cat_food)
+
+    # 1. Insert a transaction with PENDING_REVIEW for a friend
+    tx = Transaction(
+        account_id=account.id,
+        amount=Decimal("650.00"),
+        merchant_name="Aakash Friend",
+        merchant_vpa="aakash@upi",
+        status="PENDING_REVIEW",
+        is_expense=True,
+        categorization_strategy="MANUAL",
+        categorization_confidence=0.0,
+        timestamp=datetime.now(UTC),
+    )
+    async_session.add(tx)
+    await async_session.commit()
+    await async_session.refresh(tx)
+
+    # 2. Approve with never_auto_classify=True
+    approve_res = await client.post(
+        f"/api/v1/inbox/{tx.id}/approve",
+        json={"category_id": cat_food.id, "never_auto_classify": True},
+        headers=HEADERS,
+    )
+    assert approve_res.status_code == 200
+    appr_data = approve_res.json()
+    assert appr_data["status"] == "POSTED"
+    assert appr_data["category_id"] == cat_food.id
+
+    # 3. Verify MerchantMemory has never_auto_classify == True
+    stmt = select(MerchantMemory).where(MerchantMemory.merchant_key == "aakash@upi")
+    res = await async_session.execute(stmt)
+    memory = res.scalar_one_or_none()
+    assert memory is not None
+    assert memory.never_auto_classify is True
+
+    # 4. Subsequent transaction for the same merchant/vpa via CategorizationService
+    next_draft = DraftTransaction(
+        raw_message_id=None,
+        account_institution="SBI",
+        amount=Decimal("300.00"),
+        merchant_name="Aakash Friend",
+        merchant_vpa="aakash@upi",
+    )
+    next_tx = await CategorizationService.process_and_record(
+        session=async_session,
+        draft=next_draft,
+        account_id=account.id,
+    )
+    assert next_tx.status == "PENDING_REVIEW"
+    assert next_tx.categorization_strategy == "NEVER_AUTO_CLASSIFY"
+    assert next_tx.category_id is None
+
+    # 5. Verify it appears in GET /api/v1/inbox
+    inbox_res = await client.get("/api/v1/inbox", headers=HEADERS)
+    assert inbox_res.status_code == 200
+    inbox_items = inbox_res.json()
+    assert any(item["id"] == next_tx.id for item in inbox_items)
+
+
+
+@pytest.mark.asyncio
 async def test_system_health_endpoint(client):
     res = await client.get("/api/v1/system/health", headers=HEADERS)
     assert res.status_code == 200
@@ -363,6 +435,7 @@ async def test_peer_splits_endpoints(client, async_session):
     alice_split = splits_data[0]
     bob_split = splits_data[1]
     assert alice_split["member_name"] == "Alice"
+    assert bob_split["member_name"] == "Bob"
     assert Decimal(str(alice_split["share_amount"])) == Decimal("400.00")
     assert alice_split["upi_id"] == "alice@upi"
     assert alice_split["is_paid"] is False

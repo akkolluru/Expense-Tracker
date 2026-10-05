@@ -67,12 +67,21 @@ async def approve_inbox_item(
     tx.suggested_category_id = None
     tx.status = "POSTED"
 
-    if payload.learn_merchant:
+    if payload.never_auto_classify:
         await MerchantMemoryService.learn_merchant(
             session=session,
             category_id=payload.category_id,
             merchant_name=tx.merchant_name,
             merchant_vpa=tx.merchant_vpa,
+            never_auto_classify=True,
+        )
+    elif payload.learn_merchant:
+        await MerchantMemoryService.learn_merchant(
+            session=session,
+            category_id=payload.category_id,
+            merchant_name=tx.merchant_name,
+            merchant_vpa=tx.merchant_vpa,
+            never_auto_classify=False,
         )
 
     await session.commit()

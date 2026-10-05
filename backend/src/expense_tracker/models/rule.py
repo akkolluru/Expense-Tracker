@@ -41,6 +41,7 @@ class MerchantMemory(Base):
     )
     hit_count: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     confidence: Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
+    never_auto_classify: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     last_used_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )

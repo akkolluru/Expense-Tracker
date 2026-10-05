@@ -16,7 +16,7 @@ from expense_tracker.services.rules import RuleEngine
 
 @dataclass
 class ClassificationResult:
-    category_id: int
+    category_id: int | None
     group_id: int | None = None
     strategy: str = "MANUAL"
     confidence: float = 1.0
@@ -48,6 +48,13 @@ class CategorizationService:
             merchant_vpa=draft.merchant_vpa,
         )
         if memory_match:
+            if memory_match.never_auto_classify:
+                return ClassificationResult(
+                    category_id=None,
+                    group_id=None,
+                    strategy="NEVER_AUTO_CLASSIFY",
+                    confidence=0.0,
+                )
             return ClassificationResult(
                 category_id=memory_match.category_id,
                 group_id=None,
@@ -76,11 +83,19 @@ class CategorizationService:
         raw_llm: str | None = None
 
         if match:
-            category_id = match.category_id
-            status = "POSTED"
-            strategy = match.strategy
-            confidence = match.confidence
-            reasoning = f"Matched {match.strategy}"
+            if match.strategy == "NEVER_AUTO_CLASSIFY":
+                category_id = None
+                suggested_category_id = None
+                status = "PENDING_REVIEW"
+                strategy = "NEVER_AUTO_CLASSIFY"
+                confidence = 0.0
+                reasoning = "Merchant marked as Never Auto-Classify (Always Ask)"
+            else:
+                category_id = match.category_id
+                status = "POSTED"
+                strategy = match.strategy
+                confidence = match.confidence
+                reasoning = f"Matched {match.strategy}"
         else:
             # Tier 3: Hybrid LLM
             stmt = select(Category)

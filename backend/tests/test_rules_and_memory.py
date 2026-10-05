@@ -1,9 +1,11 @@
 from decimal import Decimal
 
 import pytest
+from sqlalchemy import select
 
+from expense_tracker.models.account import Account
 from expense_tracker.models.category import Category
-from expense_tracker.models.rule import Rule
+from expense_tracker.models.rule import CategorizationLog, Rule
 from expense_tracker.parsers.base import DraftTransaction
 from expense_tracker.services.categorization import CategorizationService
 from expense_tracker.services.merchant_memory import MerchantMemoryService
@@ -222,3 +224,119 @@ async def test_categorization_cascade_precedence(async_session):
     assert result.strategy == "RULE"  # Rule takes precedence!
     assert result.category_id == cat_rule.id
     assert result.confidence == 1.0
+
+
+@pytest.mark.asyncio
+async def test_merchant_memory_never_auto_classify_lifecycle(async_session):
+    cat_friends = Category(name="Friends & Family", color="#123")
+    async_session.add(cat_friends)
+    await async_session.commit()
+
+    # 1. Learn with never_auto_classify=True
+    memory = await MerchantMemoryService.learn_merchant(
+        async_session,
+        category_id=cat_friends.id,
+        merchant_name="Rahul Sharma",
+        merchant_vpa="rahul@upi",
+        never_auto_classify=True,
+    )
+    assert memory.never_auto_classify is True
+    assert memory.merchant_key == "rahul@upi"
+
+    # 2. Lookup preserves never_auto_classify=True
+    found = await MerchantMemoryService.lookup(
+        async_session,
+        merchant_name="Rahul Sharma",
+        merchant_vpa="rahul@upi",
+    )
+    assert found is not None
+    assert found.never_auto_classify is True
+
+    # 3. Subsequent classify returns NEVER_AUTO_CLASSIFY strategy and 0.0 confidence
+    draft = DraftTransaction(
+        raw_message_id=None,
+        account_institution="HDFC",
+        amount=Decimal("500.00"),
+        merchant_name="Rahul Sharma",
+        merchant_vpa="rahul@upi",
+    )
+    result = await CategorizationService.classify(async_session, draft)
+    assert result is not None
+    assert result.strategy == "NEVER_AUTO_CLASSIFY"
+    assert result.category_id is None
+    assert result.confidence == 0.0
+
+    # 4. Update memory with never_auto_classify=False
+    updated = await MerchantMemoryService.learn_merchant(
+        async_session,
+        category_id=cat_friends.id,
+        merchant_name="Rahul Sharma",
+        merchant_vpa="rahul@upi",
+        never_auto_classify=False,
+    )
+    assert updated.never_auto_classify is False
+
+    # 5. set_never_classify helper method can toggle it back
+    toggled = await MerchantMemoryService.set_never_classify(
+        async_session,
+        merchant_name="Rahul Sharma",
+        merchant_vpa="rahul@upi",
+        never_auto_classify=True,
+    )
+    assert toggled is not None
+    assert toggled.never_auto_classify is True
+
+
+@pytest.mark.asyncio
+async def test_categorization_service_never_auto_classify_bypasses_llm(async_session, monkeypatch):
+    cat_friends = Category(name="Friends", color="#456")
+    account = Account(name="HDFC Test", institution="HDFC", balance=Decimal("10000.00"), is_active=True)
+    async_session.add_all([cat_friends, account])
+    await async_session.commit()
+    await async_session.refresh(account)
+
+    # Set merchant memory to never_auto_classify
+    await MerchantMemoryService.learn_merchant(
+        async_session,
+        category_id=cat_friends.id,
+        merchant_name="Rahul Dinner Cab",
+        merchant_vpa="rahul@upi",
+        never_auto_classify=True,
+    )
+
+    # If LLM is invoked, fail the test
+    async def fail_if_llm_called(*args, **kwargs):
+        raise AssertionError("Tier 3 LLM client should NOT be called when never_auto_classify is set!")
+
+    monkeypatch.setattr(CategorizationService.llm_client, "categorize", fail_if_llm_called)
+
+    draft = DraftTransaction(
+        raw_message_id=None,
+        account_institution="HDFC",
+        amount=Decimal("1200.00"),
+        merchant_name="Rahul Dinner Cab",
+        merchant_vpa="rahul@upi",
+    )
+
+    tx = await CategorizationService.process_and_record(
+        session=async_session,
+        draft=draft,
+        account_id=account.id,
+    )
+
+    # Transaction must be routed to PENDING_REVIEW without category
+    assert tx.status == "PENDING_REVIEW"
+    assert tx.category_id is None
+    assert tx.suggested_category_id is None
+    assert tx.categorization_strategy == "NEVER_AUTO_CLASSIFY"
+    assert tx.categorization_confidence == 0.0
+
+    # Verify CategorizationLog
+    stmt = select(CategorizationLog).where(CategorizationLog.transaction_id == tx.id)
+    log_res = await async_session.execute(stmt)
+    log = log_res.scalar_one_or_none()
+    assert log is not None
+    assert log.strategy_used == "NEVER_AUTO_CLASSIFY"
+    assert log.confidence == 0.0
+    assert log.reasoning == "Merchant marked as Never Auto-Classify (Always Ask)"
+

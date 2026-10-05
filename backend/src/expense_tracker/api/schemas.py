@@ -164,6 +164,7 @@ class InboxItemResponse(BaseModel):
 class InboxApproveRequest(BaseModel):
     category_id: int
     learn_merchant: bool = True
+    never_auto_classify: bool = False
 
 
 class SystemHealthResponse(BaseModel):

@@ -56,6 +56,7 @@ class MerchantMemoryService:
         category_id: int,
         merchant_name: str,
         merchant_vpa: str | None = None,
+        never_auto_classify: bool = False,
     ) -> MerchantMemory:
         key = cls.normalize_key(merchant_name, merchant_vpa)
         stmt = select(MerchantMemory).where(MerchantMemory.merchant_key == key)
@@ -65,6 +66,7 @@ class MerchantMemoryService:
         now = datetime.now(UTC)
         if memory:
             memory.category_id = category_id
+            memory.never_auto_classify = never_auto_classify
             memory.hit_count += 1
             memory.updated_at = now
             memory.last_used_at = now
@@ -74,6 +76,7 @@ class MerchantMemoryService:
                 merchant_name=merchant_name,
                 merchant_vpa=merchant_vpa,
                 category_id=category_id,
+                never_auto_classify=never_auto_classify,
                 hit_count=1,
                 confidence=1.0,
                 last_used_at=now,
@@ -85,3 +88,23 @@ class MerchantMemoryService:
         await session.commit()
         await session.refresh(memory)
         return memory
+
+    @classmethod
+    async def set_never_classify(
+        cls,
+        session: AsyncSession,
+        merchant_name: str,
+        merchant_vpa: str | None = None,
+        never_auto_classify: bool = True,
+    ) -> MerchantMemory | None:
+        key = cls.normalize_key(merchant_name, merchant_vpa)
+        stmt = select(MerchantMemory).where(MerchantMemory.merchant_key == key)
+        res = await session.execute(stmt)
+        memory = res.scalar_one_or_none()
+        if memory:
+            memory.never_auto_classify = never_auto_classify
+            memory.updated_at = datetime.now(UTC)
+            await session.commit()
+            await session.refresh(memory)
+        return memory
+
