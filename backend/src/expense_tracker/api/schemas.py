@@ -173,3 +173,16 @@ class SystemHealthResponse(BaseModel):
     llm_circuit_breaker: str
     active_parsers_count: int
     timestamp: datetime
+
+
+class SystemBackupResponse(BaseModel):
+    status: str
+    backup_file: str
+    size_bytes: int
+    timestamp: datetime
+
+
+class SyncGmailResponse(BaseModel):
+    status: str
+    message: str
+

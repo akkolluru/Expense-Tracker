@@ -5,7 +5,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from expense_tracker.api.deps import get_db, verify_api_key
-from expense_tracker.api.schemas import SystemHealthResponse
+from expense_tracker.api.schemas import SystemBackupResponse, SystemHealthResponse
+from expense_tracker.services.backup import BackupService
 from expense_tracker.services.categorization import CategorizationService
 
 router = APIRouter(prefix="/system", tags=["System"], dependencies=[Depends(verify_api_key)])
@@ -30,3 +31,16 @@ async def system_health(session: AsyncSession = Depends(get_db)) -> SystemHealth
         active_parsers_count=4,
         timestamp=datetime.now(UTC),
     )
+
+
+@router.post("/backup", response_model=SystemBackupResponse)
+async def system_backup(session: AsyncSession = Depends(get_db)) -> SystemBackupResponse:
+    """Trigger an immediate zero-downtime SQLite VACUUM INTO backup snapshot."""
+    result = await BackupService.create_backup(session=session)
+    return SystemBackupResponse(
+        status="SUCCESS",
+        backup_file=result.backup_file,
+        size_bytes=result.size_bytes,
+        timestamp=result.timestamp,
+    )
+
