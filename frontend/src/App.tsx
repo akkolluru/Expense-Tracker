@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   INITIAL_TRANSACTIONS 
 } from './data/mockData';
@@ -17,6 +17,18 @@ import { AnalyticsView } from './components/AnalyticsView';
 import { AddTransactionModal } from './components/AddTransactionModal';
 import { TransactionDetailDrawer } from './components/TransactionDetailDrawer';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
+import {
+  useTransactions,
+  useInbox,
+  useAnalyticsSummary,
+  useCategories,
+  useApproveInboxItem,
+} from './hooks/useExpenseApi';
+import {
+  mapTransactionResponseToUi,
+  mapInboxItemToUi,
+  mapSummaryToCashFlow,
+} from './utils/adapters';
 
 export default function App() {
   const networkStatus = useNetworkStatus();
@@ -29,12 +41,55 @@ export default function App() {
   const [addModalInitialMode, setAddModalInitialMode] = useState<'manual' | 'sms'>('sms');
   const [selectedTxForDetail, setSelectedTxForDetail] = useState<Transaction | null>(null);
 
+  // Live API queries & mutations
+  const transactionsQuery = useTransactions();
+  const inboxQuery = useInbox();
+  const categoriesQuery = useCategories();
+  const summaryQuery = useAnalyticsSummary('2026-08-01', '2026-08-31');
+  const approveInboxMutation = useApproveInboxItem();
+
+  // Category ID <-> Name maps
+  const categoryNameMap = useMemo<Record<number, string>>(() => {
+    const map: Record<number, string> = {};
+    if (categoriesQuery.data && Array.isArray(categoriesQuery.data)) {
+      for (const cat of categoriesQuery.data) {
+        map[cat.id] = cat.name;
+      }
+    }
+    return map;
+  }, [categoriesQuery.data]);
+
+  const categoryIdMap = useMemo<Record<string, number>>(() => {
+    const map: Record<string, number> = {};
+    if (categoriesQuery.data && Array.isArray(categoriesQuery.data)) {
+      for (const cat of categoriesQuery.data) {
+        map[cat.name] = cat.id;
+      }
+    }
+    return map;
+  }, [categoriesQuery.data]);
+
+  // Synchronize live transactions and inbox items when available from API
+  useEffect(() => {
+    const txItems = transactionsQuery.data?.items;
+    const inboxItems = inboxQuery.data;
+
+    const hasTx = Boolean(txItems && txItems.length > 0);
+    const hasInbox = Boolean(inboxItems && inboxItems.length > 0);
+
+    if (hasTx || hasInbox) {
+      const mappedTx = (txItems || []).map(tx => mapTransactionResponseToUi(tx, categoryNameMap));
+      const mappedInbox = (inboxItems || []).map(item => mapInboxItemToUi(item));
+      setTransactions([...mappedInbox, ...mappedTx]);
+    }
+  }, [transactionsQuery.data, inboxQuery.data, categoryNameMap]);
+
   // Derived datasets
   const unverifiedTransactions = useMemo(() => {
     return transactions.filter(t => !t.isVerified);
   }, [transactions]);
 
-  // Cash flow analytics calculation
+  // Cash flow analytics calculation (with live summary support & fallback)
   const cashFlow: CashFlowSummary = useMemo(() => {
     const totalIncome = transactions
       .filter(t => t.type === 'CREDIT')
@@ -44,24 +99,40 @@ export default function App() {
       .filter(t => t.type === 'DEBIT')
       .reduce((acc, t) => acc + t.amount, 0);
 
+    const fallbackBalance = 185000 + (totalIncome > 0 ? 0 : 0) - totalSpend + 63920.50;
+    const unverifiedAmount = unverifiedTransactions.reduce((acc, t) => acc + t.amount, 0);
+
+    if (summaryQuery.data) {
+      return mapSummaryToCashFlow(
+        summaryQuery.data,
+        unverifiedTransactions.length,
+        unverifiedAmount,
+        fallbackBalance
+      );
+    }
+
     const burnRate = totalSpend / 31; // 31 days in August
-    const totalBalance = 185000 + (totalIncome > 0 ? 0 : 0) - totalSpend + 63920.50;
     const savingsRate = totalIncome > 0 ? Math.max(0, Math.round(((totalIncome - totalSpend) / totalIncome) * 100)) : 70;
 
     return {
-      totalBalance,
+      totalBalance: fallbackBalance,
       monthSpend: totalSpend,
       monthIncome: totalIncome || 185000,
       dailyBurnRate: burnRate,
       projectedMonthEnd: totalSpend * 1.05,
       savingsRatePercent: savingsRate,
       unverifiedCount: unverifiedTransactions.length,
-      unverifiedAmount: unverifiedTransactions.reduce((acc, t) => acc + t.amount, 0)
+      unverifiedAmount: unverifiedAmount,
     };
-  }, [transactions, unverifiedTransactions]);
+  }, [transactions, unverifiedTransactions, summaryQuery.data]);
 
   // Handlers
-  const handleVerifyTransaction = (txId: string, assignedCategory: ExpenseCategory) => {
+  const handleVerifyTransaction = (
+    txId: string,
+    assignedCategory: ExpenseCategory,
+    learnMerchant: boolean = true
+  ) => {
+    // 1. Immediate optimistic UI feedback
     setTransactions(prev => prev.map(tx => {
       if (tx.id === txId) {
         return {
@@ -72,6 +143,30 @@ export default function App() {
       }
       return tx;
     }));
+
+    // 2. Call backend mutation if numeric ID is present
+    let numericId: number | null = null;
+    if (!isNaN(Number(txId))) {
+      numericId = Number(txId);
+    } else {
+      const match = txId.match(/^tx-(\d+)$/);
+      if (match) {
+        numericId = Number(match[1]);
+      }
+    }
+
+    if (numericId !== null && Number.isFinite(numericId)) {
+      const catId = categoryIdMap[assignedCategory] || 1;
+      approveInboxMutation.mutateAsync({
+        txId: numericId,
+        payload: {
+          category_id: catId,
+          learn_merchant: learnMerchant,
+        },
+      }).catch(err => {
+        console.error('Failed to approve inbox item:', err);
+      });
+    }
   };
 
   const handleUpdateCategory = (txId: string, category: ExpenseCategory) => {
