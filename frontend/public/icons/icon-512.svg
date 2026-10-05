@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="108" fill="#051F20" />
+  <rect x="32" y="32" width="448" height="448" rx="88" fill="#0B2B26" stroke="#235347" stroke-width="10" />
+  <circle cx="256" cy="256" r="170" fill="#163832" />
+  <text x="256" y="318" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="220" font-weight="800" fill="#DAF1DE" text-anchor="middle">₹</text>
+  <circle cx="368" cy="144" r="22" fill="#8EB69B" />
+</svg>

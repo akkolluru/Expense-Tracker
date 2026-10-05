@@ -16,8 +16,10 @@ import { ExpensesView } from './components/ExpensesView';
 import { AnalyticsView } from './components/AnalyticsView';
 import { AddTransactionModal } from './components/AddTransactionModal';
 import { TransactionDetailDrawer } from './components/TransactionDetailDrawer';
+import { useNetworkStatus } from './hooks/useNetworkStatus';
 
 export default function App() {
+  const networkStatus = useNetworkStatus();
   const [currentTab, setCurrentTab] = useState<ViewTab>('home');
   const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('phone');
@@ -174,6 +176,7 @@ export default function App() {
           layoutMode={layoutMode}
           onChangeLayoutMode={setLayoutMode}
           onOpenAddModal={handleOpenAddModal}
+          networkStatus={networkStatus}
         />
 
         {/* Main Content Area */}
